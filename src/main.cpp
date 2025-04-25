@@ -3,9 +3,16 @@
 #include <cmath>
 #include <iostream>
 #include <limits.h> // For PATH_MAX
+#include <ostream>
 #include <string>
 #include <unistd.h> // For getcwd
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
+#include "glm/detail/func_trigonometric.hpp"
+#include "glm/detail/type_mat.hpp"
+#include "glm/detail/type_vec.hpp"
 #include "shader.h"
 #include "stb_image.h"
 
@@ -44,6 +51,11 @@ int main() {
     std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
+
+  // glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+  // trans = glm::translate(trans, glm::vec3(1.0f, 1.0f,0.0f));
+  // vec = trans * vec;
+  // std::cout << vec.x << vec.y << vec.z << std::endl;
 
   // Load shader
   // ---------------
@@ -159,8 +171,17 @@ int main() {
 
     // Update color uniform
     float timeValue = glfwGetTime();
+
+
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, (float)timeValue, glm::vec3(0.0f, 0.0f, 1.0f));
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+    
     float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
     ourShader.setFloat("ourColor", greenValue);
+
+    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
     // Draw Triangle
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
