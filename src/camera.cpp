@@ -67,7 +67,7 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
 // Process mouse scroll for zoom functionality
 void Camera::ProcessMouseScroll(float yoffset)
 {
-    Zoom -= yoffset;
+    Zoom -=(float)yoffset;
     if (Zoom < 1.0f)
         Zoom = 1.0f;
     if (Zoom > 45.0f)
@@ -87,4 +87,4 @@ void Camera::updateCameraVectors()
     // Also re-calculate the Right and Up vector
     Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     Up    = glm::normalize(glm::cross(Right, Front));
-} 
+};
