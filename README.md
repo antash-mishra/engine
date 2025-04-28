@@ -1,74 +1,47 @@
 # Mini-Engine
 
-A lightweight 3D graphics engine built with OpenGL.
+A simple 3D graphics engine using OpenGL.
 
-## Overview
+## What is Mini-Engine?
 
-Mini-Engine is a simple 3D rendering engine that demonstrates fundamental computer graphics concepts using modern OpenGL. It provides a foundation for learning graphics programming with features like shader management, texture mapping, 3D transformations, and camera controls.
+Mini-Engine is a learning project that shows how to make basic 3D graphics with OpenGL. It helps beginners understand computer graphics concepts like shaders, textures, and cameras.
 
-## Current Features
+## Features
 
-### Rendering
-- Modern OpenGL (3.3+) rendering pipeline
-- Vertex and fragment shader support
-- Index buffer rendering for optimized mesh display
-- Depth testing for proper 3D rendering
+### Graphics
+- 3D rendering with modern OpenGL
+- Depth testing for proper 3D display
+- Multiple objects with different positions and rotations
 
 ### Shader System
-- Custom `Shader` class for easy shader program management
-- Simplified uniform setting with typed methods (floats, vectors, matrices)
-- External GLSL shader file loading
+- Easy-to-use `Shader` class 
+- Load shader code from separate files
+- Simple methods to update shader values
 
 ### Textures
-- Texture loading via stb_image
-- Multi-texture support with texture units
-- UV coordinate mapping
-- Texture mixing/blending
-
-### Transformations
-- 3D transformations (translation, rotation, scaling)
-- Model-View-Projection matrix implementation
-- GLM math library integration
+- `Texture` class for loading and managing images
+- Support for different image formats
+- Mix multiple textures together
 
 ### Camera
-- First-person camera controls (WASD movement)
-- Mouse look controls
-- Field of view adjustment with scroll wheel
-- Camera position and orientation vectors
+- `Camera` class for moving around the 3D world
+- First-person controls (WASD + mouse)
+- Zoom in/out with scroll wheel
 
-## Development Progress
+### Transformations
+- Position, rotate, and scale 3D objects
+- Model-View-Projection matrix system
 
-The project has evolved through several stages:
+## Project Progress
 
-1. **Initial Setup**: Basic OpenGL triangle rendering
-2. **Shader Implementation**: Created shader class to manage GLSL programs
-3. **Texture Support**: Added texture loading and mapping
-4. **Transformations**: Implemented matrix transformations for 3D objects
-5. **Multiple Objects**: Rendering multiple 3D objects with different transformations
-6. **Camera System**: Implemented first-person camera controls
+1. Started with basic triangle rendering
+2. Added shader support with custom Shader class
+3. Added texture loading and display
+4. Implemented 3D transformations
+5. Built camera controls for movement
+6. Created dedicated Texture and Camera classes for better organization
 
-## Next Steps
-
-### Camera Class
-- Create a dedicated `Camera` class to encapsulate camera functionality
-- Implement different camera types (FPS, orbital, etc.)
-- Add camera movement smoothing and constraints
-
-### Texture Class
-- Develop a `Texture` class to manage texture loading and configuration
-- Support for different texture types (2D, cubemaps)
-- Implement texture caching for better performance
-
-### Future Enhancements
-- Lighting system (ambient, diffuse, specular)
-- Model loading (.obj, .fbx)
-- Simple physics
-- Scene graph
-- Material system
-
-## Building and Running
-
-The project uses CMake as its build system:
+## How to Build and Run
 
 ```bash
 mkdir -p build
@@ -80,14 +53,21 @@ make
 
 ## Controls
 
-- **W/A/S/D**: Move camera forward/left/backward/right
+- **W/A/S/D**: Move forward/left/backward/right
 - **Mouse**: Look around
-- **Scroll wheel**: Adjust field of view (zoom)
-- **ESC**: Exit application
+- **Scroll wheel**: Zoom in/out
+- **ESC**: Exit
 
 ## Dependencies
 
-- GLFW: Window and input management
-- GLAD: OpenGL function loader
-- GLM: Mathematics library
-- stb_image: Image loading
+- GLFW: Creates window and handles input
+- GLAD: Loads OpenGL functions
+- GLM: Math library for 3D graphics
+- stb_image: Loads image files for textures
+
+## Next Steps
+
+- Add lighting system
+- Load 3D models from files
+- Add basic physics
+- Create materials system
