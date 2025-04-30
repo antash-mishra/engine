@@ -1,7 +1,6 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "glm/detail/type_vec.hpp"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <string>

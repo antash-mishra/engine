@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "glm/detail/type_mat.hpp"
 #include "glm/detail/type_vec.hpp"
 #include "shader.h"
 #include "stb_image.h"
@@ -26,7 +27,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.5f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 // Time
 float deltaTime = 0.0f;
@@ -39,7 +40,7 @@ bool firstMouse = true;
 float fov = 45.0f;
 
 // light pos
-glm::vec3 lightPos(0.0f, 1.0f, 2.0f);
+glm::vec3 lightPos(0.5f, 0.0f, 2.0f);
 
 int main() {
 
@@ -173,16 +174,6 @@ int main() {
   // Texture texture2("resources/awesomeface.png", true, GL_TEXTURE_2D);
   
   // setting texture uniform for shader usage
-  ourShader.use();
-  // glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
-  // ourShader.setInt("texture2", 1);
-    
-  // Setting light source and object color as a uniform
-  ourShader.setVec3("objectColor",glm::vec3( 1.0f, 0.5f, 0.31f));
-  ourShader.setVec3("lightColor", glm::vec3( 1.0f, 1.0f, 1.0f));
-
-  // Declaring light source pos as uniform for diffuse light calc
-  ourShader.setVec3("lightPos", lightPos);
     
   // render loop
   // -----------
@@ -200,8 +191,43 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // light color
+    glm::vec3 lightColor;
+    lightColor.x = sin(currentFrame * 2.0f);
+    lightColor.y = sin(currentFrame * 0.7);
+    lightColor.z = sin(currentFrame * 1.3);
+    glm::vec3 ambientColor = lightColor * glm::vec3(0.5);
+    glm::vec3 diffuseColor = ambientColor * glm::vec3(0.2);
+    
     // object shader
     ourShader.use();
+    // glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
+    // ourShader.setInt("texture2", 1);
+    
+    // Setting light source and object color as a uniform
+    ourShader.setVec3("objectColor",glm::vec3( 1.0f, 0.5f, 0.31f));
+
+    // Ambient light source has same color as object color
+    ourShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+    // Diffuse light has same color as object
+    ourShader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+    // specular has reflected color of object surface
+    ourShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    ourShader.setFloat("material.shininess", 32.0f);
+
+    // light color strength for ambient/diffuse/specular as uniform
+    ourShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    ourShader.setVec3("light.diffuse", glm::vec3(0.5f));
+    ourShader.setVec3("light.specular", glm::vec3(1.0f));
+
+    // Declaring light source pos as uniform for diffuse light calc
+    glm::mat4 lightModel = glm::mat4(1.0f);
+    lightModel = glm::rotate(lightModel, (float)currentFrame, glm::vec3(0.0f, 1.0f, 0.0f));
+    lightModel = glm::translate(lightModel, lightPos);
+
+    // Extract the actual light position from the matrix
+    glm::vec3 actualLightPos = glm::vec3(lightModel[3][0], lightModel[3][1], lightModel[3][2]);
+    ourShader.setVec3("lightPos", actualLightPos);
   
     // Declaring camera pos or view pos for specular light calc
     ourShader.setVec3("viewPos", camera.Position);
@@ -220,7 +246,6 @@ int main() {
  
     // Draw  cube in provided cube positions
     glm::mat4 model =  glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(0.5));
     ourShader.setMat4("model", model);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -231,6 +256,7 @@ int main() {
     
     // Draw light source
     model = glm::mat4(1.0f);
+    model = glm::rotate(model, (float)currentFrame, glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::translate(model, lightPos);
     model = glm::scale(model, glm::vec3(0.2f));
 
