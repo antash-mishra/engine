@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "glm/detail/type_vec.hpp"
 #include "shader.h"
 #include "stb_image.h"
 #include "camera.h"
@@ -25,7 +26,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.5f, 3.0f));
 
 // Time
 float deltaTime = 0.0f;
@@ -38,7 +39,7 @@ bool firstMouse = true;
 float fov = 45.0f;
 
 // light pos
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(0.0f, 1.0f, 2.0f);
 
 int main() {
 
@@ -92,47 +93,47 @@ int main() {
   // Setup Vertex Data and configure vertex attribute
   // -----------------------------------------------
   float vertices[] = {
-        -0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f,  
-         0.5f,  0.5f, -0.5f,  
-         0.5f,  0.5f, -0.5f,  
-        -0.5f,  0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
 
-        -0.5f, -0.5f,  0.5f, 
-         0.5f, -0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f, 
-        -0.5f, -0.5f,  0.5f, 
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-        -0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
-        -0.5f, -0.5f,  0.5f, 
-        -0.5f,  0.5f,  0.5f, 
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-         0.5f,  0.5f,  0.5f,  
-         0.5f,  0.5f, -0.5f,  
-         0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-        -0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f,  0.5f,  
-         0.5f, -0.5f,  0.5f,  
-        -0.5f, -0.5f,  0.5f, 
-        -0.5f, -0.5f, -0.5f, 
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-        -0.5f,  0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f,  
-         0.5f,  0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f, -0.5f, 
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
   };
   
   unsigned int VAO, VBO;
@@ -146,9 +147,13 @@ int main() {
   // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   // Setting vertex attribute pointers
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
+  // setting Normal attrib pointer
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+  
   // Enable Depth Test
   // -----------------
    glEnable(GL_DEPTH_TEST);
@@ -159,7 +164,7 @@ int main() {
    glBindVertexArray(lightVAO);
    // using then same VBO as the cube one no need to fill the buffer, it already has vertices data
    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-   glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, 3 * sizeof(float),(void*)0);
+   glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, 6 * sizeof(float),(void*)0);
    glEnableVertexAttribArray(0);
   
   // Load and configure Texture
@@ -168,9 +173,16 @@ int main() {
   // Texture texture2("resources/awesomeface.png", true, GL_TEXTURE_2D);
   
   // setting texture uniform for shader usage
-  // ourShader.use();
+  ourShader.use();
   // glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
   // ourShader.setInt("texture2", 1);
+    
+  // Setting light source and object color as a uniform
+  ourShader.setVec3("objectColor",glm::vec3( 1.0f, 0.5f, 0.31f));
+  ourShader.setVec3("lightColor", glm::vec3( 1.0f, 1.0f, 1.0f));
+
+  // Declaring light source pos as uniform for diffuse light calc
+  ourShader.setVec3("lightPos", lightPos);
     
   // render loop
   // -----------
@@ -188,20 +200,11 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Texture binding
-    //texture1.bind(0);
-    //texture2.bind(1);
-
-
     // object shader
     ourShader.use();
-    
-    // Setting light source and object color as a uniform
-    ourShader.setVec3("objectColor",glm::vec3( 1.0f, 0.5f, 0.31f));
-    ourShader.setVec3("lightColor", glm::vec3( 1.0f, 1.0f, 1.0f));
-      
-
-    // Update mouse cursor position for look around
+  
+    // Declaring camera pos or view pos for specular light calc
+    ourShader.setVec3("viewPos", camera.Position);
 
     // Create model, view and projection matrix
     // ----------------------------------------
@@ -217,6 +220,7 @@ int main() {
  
     // Draw  cube in provided cube positions
     glm::mat4 model =  glm::mat4(1.0f);
+    model = glm::scale(model, glm::vec3(0.5));
     ourShader.setMat4("model", model);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
