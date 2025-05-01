@@ -32,8 +32,8 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // Mouse initial position
-float lastX = SCR_WIDTH/2;
-float lastY = SCR_HEIGHT/2;
+float lastX = SCR_WIDTH/2.0;
+float lastY = SCR_HEIGHT/2.0;
 bool firstMouse = true;
 float fov = 45.0f;
 
@@ -226,15 +226,7 @@ int main() {
     // glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
     // ourShader.setInt("diffuse", 0);
     
-    // Setting light source and object color as a uniform
-    // ourShader.setVec3("objectColor",glm::vec3( 1.0f, 0.5f, 0.31f));
-
-    // Ambient light source has same color as object color
-    // ourShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-    // Diffuse light has same color as object
-    // ourShader.setInt("material.diffuse", 0);
-    // specular has reflected color of object surface
-    // ourShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    // Setting object material shininess
     ourShader.setFloat("material.shininess", 32.0f);
 
     // light color strength for ambient/diffuse/specular as uniform
@@ -242,6 +234,11 @@ int main() {
     ourShader.setVec3("light.diffuse", glm::vec3(0.5f));
     ourShader.setVec3("light.specular", glm::vec3(1.0f));
     ourShader.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+
+    // parameters for attenuation in point light
+    ourShader.setFloat("light.constant", 1.0f);
+    ourShader.setFloat("light.linear", 0.09f);
+    ourShader.setFloat("light.quadratic", 0.032);
     
     // Declaring light source pos as uniform for diffuse light calc
     glm::mat4 lightModel = glm::mat4(1.0f);
@@ -282,18 +279,17 @@ int main() {
     }
 
     // light source shader
-    // lightSourceShader.use();
+    lightSourceShader.use();
     
     // Draw light source
-    // model = glm::mat4(1.0f);
-    // model = glm::rotate(model, (float)currentFrame, glm::vec3(0.0f, 1.0f, 0.0f));
-    // model = glm::translate(model, lightPos);
-    // model = glm::scale(model, glm::vec3(0.2f));
-    // lightSourceShader.setMat4("model", model);
-    // lightSourceShader.setMat4("view", view);
-    // lightSourceShader.setMat4("projection", projection);
-    // glBindVertexArray(lightVAO);
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, lightPos);
+    model = glm::scale(model, glm::vec3(0.2f));
+    lightSourceShader.setMat4("model", model);
+    lightSourceShader.setMat4("view", view);
+    lightSourceShader.setMat4("projection", projection);
+    glBindVertexArray(lightVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
     // etc.)
