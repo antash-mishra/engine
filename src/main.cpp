@@ -212,14 +212,6 @@ int main() {
     // ------
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // light color
-    glm::vec3 lightColor;
-    lightColor.x = sin(currentFrame * 2.0f);
-    lightColor.y = sin(currentFrame * 0.7);
-    lightColor.z = sin(currentFrame * 1.3);
-    glm::vec3 ambientColor = lightColor * glm::vec3(0.5);
-    glm::vec3 diffuseColor = ambientColor * glm::vec3(0.2);
     
     // object shader
     ourShader.use();
@@ -233,21 +225,12 @@ int main() {
     ourShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
     ourShader.setVec3("light.diffuse", glm::vec3(0.5f));
     ourShader.setVec3("light.specular", glm::vec3(1.0f));
-    ourShader.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+    ourShader.setVec3("light.position", lightPos);
 
     // parameters for attenuation in point light
     ourShader.setFloat("light.constant", 1.0f);
     ourShader.setFloat("light.linear", 0.09f);
     ourShader.setFloat("light.quadratic", 0.032);
-    
-    // Declaring light source pos as uniform for diffuse light calc
-    glm::mat4 lightModel = glm::mat4(1.0f);
-    lightModel = glm::rotate(lightModel, (float)currentFrame, glm::vec3(0.0f, 1.0f, 0.0f));
-    lightModel = glm::translate(lightModel, lightPos);
-
-    // Extract the actual light position from the matrix
-    // glm::vec3 actualLightPos = glm::vec3(lightModel[3][0], lightModel[3][1], lightModel[3][2]);
-    // ourShader.setVec3("lightPos", lightPos);
   
     // Declaring camera pos or view pos for specular light calc
     ourShader.setVec3("viewPos", camera.Position);
@@ -340,7 +323,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
   }
 
   float xoffset = xpos - lastX;
-  float yoffset = ypos - lastY;
+  float yoffset = lastY - ypos;
   lastX = xpos;
   lastY = ypos;
   
