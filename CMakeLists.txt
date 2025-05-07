@@ -12,6 +12,8 @@ add_executable(game_engine
     src/stb_image.cpp
     src/camera.cpp
     src/texture.cpp
+    src/model.cpp
+    src/mesh.cpp
 )
 
 target_include_directories(game_engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
