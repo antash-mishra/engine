@@ -11,6 +11,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 
+// ImGui includes
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "glm/detail/func_trigonometric.hpp"
 #include "glm/detail/type_vec.hpp"
 #include "shader.h"
@@ -40,6 +45,12 @@ float lastX = SCR_WIDTH/2.0;
 float lastY = SCR_HEIGHT/2.0;
 bool firstMouse = true;
 float fov = 45.0f;
+
+// Model control variables
+glm::vec3 modelPosition(0.0f, 0.0f, 0.0f);
+glm::vec3 modelRotation(0.0f, 0.0f, 0.0f);
+float modelScale = 1.0f;
+glm::vec3 clearColor(0.1f, 0.1f, 0.1f);
 
 // light pos
 // glm::vec3 lightPos(0.5f, 0.0f, 2.0f);
@@ -79,6 +90,21 @@ int main() {
         return -1;
     }
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    const char* glsl_version = "#version 330";
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     stbi_set_flip_vertically_on_load(true);
 
@@ -94,14 +120,14 @@ int main() {
     // -----------
     std::string modelPath = FileSystem::getPath("objects/backpack/backpack.obj");
     std::cout << "Loading model from: " << modelPath << std::endl;
-    
+
     // Debug the directory structure
     std::cout << "Checking if file exists..." << std::endl;
     std::ifstream f(modelPath.c_str());
     bool fileExists = f.good();
     f.close();
     std::cout << "File exists: " << (fileExists ? "Yes" : "No") << std::endl;
-    
+
     // Model loading with error handling
     Model* ourModel = nullptr;
     try {
@@ -131,14 +157,53 @@ int main() {
       deltaTime = currentFrame - lastFrame;
       lastFrame = currentFrame;
 
+      // Start the Dear ImGui frame
+      ImGui_ImplOpenGL3_NewFrame();
+      ImGui_ImplGlfw_NewFrame();
+      ImGui::NewFrame();
+
+      // ImGui demo window - comment this out once you're familiar with ImGui
+      // ImGui::ShowDemoWindow();
+      
+      // Create an ImGui window for model controls
+      {
+          ImGui::Begin("Model Controls");
+          
+          // Background color control
+          ImGui::ColorEdit3("Background Color", (float*)&clearColor);
+          
+          // Model transformation controls
+          if (ImGui::CollapsingHeader("Model Transformations")) {
+              ImGui::SliderFloat3("Position", &modelPosition.x, -5.0f, 5.0f);
+              ImGui::SliderFloat3("Rotation", &modelRotation.x, 0.0f, 360.0f);
+              ImGui::SliderFloat("Scale", &modelScale, 0.1f, 2.0f);
+          }
+          
+          // Light controls
+          if (ImGui::CollapsingHeader("Light Settings")) {
+              ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.0f);
+          }
+          
+          // Camera controls
+          if (ImGui::CollapsingHeader("Camera Settings")) {
+              ImGui::SliderFloat("FOV", &fov, 10.0f, 90.0f);
+              camera.Zoom = fov;
+          }
+          
+          ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 
+                     1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+          
+          ImGui::End();
+      }
+
       // render
       // ------
-      glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+      glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      
+
       // object shader
       ourShader.use();
-      
+
       // view/projection transformations
       glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
       glm::mat4 view = camera.GetViewMatrix();
@@ -147,22 +212,34 @@ int main() {
 
       // render the loaded model
       glm::mat4 model = glm::mat4(1.0f);
-      model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-      model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+      model = glm::translate(model, modelPosition);
+      model = glm::rotate(model, glm::radians(modelRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+      model = glm::rotate(model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+      model = glm::rotate(model, glm::radians(modelRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::scale(model, glm::vec3(modelScale));
       ourShader.setMat4("model", model);
       ourModel->Draw(ourShader);
-      
+
+      // Render ImGui
+      ImGui::Render();
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
       // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
       // etc.)
       // -------------------------------------------------------------------------------
       glfwSwapBuffers(window);
       glfwPollEvents();
     }
-    
+
     // Clean up
     if (ourModel != nullptr) {
       delete ourModel;
     }
+
+    // Cleanup ImGui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
   glfwTerminate();
   return 0;
@@ -172,11 +249,23 @@ int main() {
 // frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window) {
-  
   const float cameraSpeed = 2.5f * deltaTime;
-  
+
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
+
+  // Toggle mouse cursor for ImGui interaction with Tab key
+  static bool mouseCaptured = true;
+  static double lastTabPress = 0.0;
+  if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+    double currentTime = glfwGetTime();
+    if (currentTime - lastTabPress > 0.5) { // Add delay to avoid multiple toggles
+      mouseCaptured = !mouseCaptured;
+      glfwSetInputMode(window, GLFW_CURSOR, 
+                      mouseCaptured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+      lastTabPress = currentTime;
+    }
+  }
 
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -189,6 +278,10 @@ void processInput(GLFWwindow *window) {
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+  // Skip camera movement when ImGui wants to capture mouse
+  ImGuiIO& io = ImGui::GetIO();
+  if (io.WantCaptureMouse)
+    return;
 
   float xpos = static_cast<float>(xposIn);
   float ypos = static_cast<float>(yposIn);
@@ -203,7 +296,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
   float yoffset = lastY - ypos;
   lastX = xpos;
   lastY = ypos;
-  
+
   camera.ProcessMouseMovement(xoffset, yoffset);
 }
 

@@ -4,6 +4,18 @@ project(game_engine VERSION 0.1.0)
 # Find Assimp package
 find_package(assimp REQUIRED)
 
+# ImGui source files
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui)
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
 # Source files
 add_executable(game_engine 
     src/main.cpp 
@@ -14,9 +26,14 @@ add_executable(game_engine
     src/texture.cpp
     src/model.cpp
     src/mesh.cpp
+    ${IMGUI_SOURCES}
 )
 
-target_include_directories(game_engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(game_engine PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
+)
 
 # Copy resources directory to the build directory
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources
