@@ -4,4 +4,4 @@ echo "Building Project"
 cmake --build build
 
 echo "Running Executable"
-./build/game_engine
+cd build && ./game_engine
