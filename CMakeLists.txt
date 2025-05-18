@@ -22,10 +22,11 @@ add_executable(game_engine
     src/glad.c 
     src/shader.cpp
     src/stb_image.cpp
-    src/camera.cpp
     src/texture.cpp
-    src/model.cpp
-    src/mesh.cpp
+    src/VAO.cpp
+    src/VBO.cpp
+    src/EBO.cpp
+    src/camera.cpp
     ${IMGUI_SOURCES}
 )
 

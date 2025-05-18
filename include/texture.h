@@ -3,58 +3,22 @@
 
 #include <glad/glad.h>
 #include <string>
-
+#include "shader.h"
+#include "stb_image.h"
 class Texture {
-public:
-    // Texture ID
-    unsigned int ID;
-    
-    // Texture dimensions
-    int width;
-    int height;
-    int channels;
-    
-    // Texture type
-    GLenum type;
-    GLenum format;
-    
-    // Default constructor
-    Texture();
-    
-    // Constructor with path
-    Texture(const std::string& path, bool flipVertically = false, GLenum type = GL_TEXTURE_2D);
-    
-    // Destructor
-    ~Texture();
-    
-    // Bind texture to a specific texture unit
-    void bind(unsigned int unit = 0) const;
-    
-    // Unbind texture
-    void unbind() const;
-    
-    // Generate texture
-    void generate(unsigned char* data);
-    
-    // Load texture from file
-    bool loadFromFile(const std::string& path, bool flipVertically = false);
-    
-    // Set texture parameters
-    void setParameter(GLenum paramName, GLint param);
-    void setParameter(GLenum paramName, GLfloat param);
-    
-    // Get texture's internal format based on channels
-    GLenum getInternalFormat() const;
-    
-    // Check if texture is loaded
-    bool isLoaded() const;
+    public:
+        GLuint ID;
+        const char* type;
+        GLuint unit;
 
-private:
-    // Delete the texture
-    void cleanup();
-    
-    // Flag to indicate if the texture is loaded
-    bool m_isLoaded = false;
+        Texture(const char* image, const char* texType, GLuint slot, GLenum format, GLenum pixelType);
+
+        void texUnit(Shader& shader, const char* uniform, GLuint unit);
+        void Bind();
+        void Unbind();
+        void Delete();
+
+        
 };
 
-#endif // TEXTURE_H 
+#endif 

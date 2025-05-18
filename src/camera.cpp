@@ -37,9 +37,9 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
     if (direction == BACKWARD)
         Position -= Front * velocity;
     if (direction == LEFT)
-        Position -= Right * velocity;
-    if (direction == RIGHT)
         Position += Right * velocity;
+    if (direction == RIGHT)
+        Position -= Right * velocity;
 }
 
 // Process mouse movement for camera orientation
