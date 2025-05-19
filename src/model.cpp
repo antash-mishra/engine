@@ -24,7 +24,7 @@ Model::Model(std::string const &path, bool gamma) : gammaCorrection(gamma) {
     loadModel(path);
     std::cout << "Model loading completed successfully" << std::endl;
   }
-  catch (const std::exception& e) {
+  catch (const std::exception& e) { 
     std::cerr << "Exception in Model constructor: " << e.what() << std::endl;
     throw; // Re-throw to allow calling code to handle it
   }
@@ -97,75 +97,21 @@ void Model::loadModel(std::string const &path){
   }
 }
 
-void Model::processNode(aiNode *node, const aiScene *scene) {
-  if (!node) {
-    std::cerr << "ERROR::MODEL::Null node pointer in processNode" << std::endl;
-    throw std::runtime_error("Null node pointer in processNode");
-  }
-  
-  if (!scene) {
-    std::cerr << "ERROR::MODEL::Null scene pointer in processNode" << std::endl;
-    throw std::runtime_error("Null scene pointer in processNode");
-  }
-  
-  std::cout << "Processing node with " << node->mNumMeshes << " meshes and " 
-            << node->mNumChildren << " children" << std::endl;
+void Model::processNode(aiNode *node, const aiScene *scene)
+{
+    // process all the node's meshes (if any)
+    for(unsigned int i = 0; i < node->mNumMeshes; i++)
+    {
+        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
+        meshes.push_back(processMesh(mesh, scene));			
+    }
+    // then do the same for each of its children
+    for(unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        Model::processNode(node->mChildren[i], scene);
+    }
+}  
 
-  // process all nodes mesh
-  for(unsigned int i=0; i < node->mNumMeshes; i++) {
-    std::cout << "Processing mesh index " << i << " of " << node->mNumMeshes << std::endl;
-    
-    if (node->mMeshes == nullptr) {
-      std::cerr << "ERROR::MODEL::Null mMeshes pointer in node" << std::endl;
-      throw std::runtime_error("Null mMeshes pointer in node");
-    }
-    
-    unsigned int meshIndex = node->mMeshes[i];
-    std::cout << "Mesh index from node: " << meshIndex << std::endl;
-    
-    if (meshIndex >= scene->mNumMeshes) {
-      std::cerr << "ERROR::MODEL::Invalid mesh index: " << meshIndex 
-                << ", max is " << scene->mNumMeshes - 1 << std::endl;
-      throw std::runtime_error("Invalid mesh index");
-    }
-    
-    if (scene->mMeshes == nullptr) {
-      std::cerr << "ERROR::MODEL::Null mMeshes pointer in scene" << std::endl;
-      throw std::runtime_error("Null mMeshes pointer in scene");
-    }
-    
-    aiMesh* mesh = scene->mMeshes[meshIndex];
-    std::cout << "Retrieved mesh pointer: " << (mesh ? "valid" : "null") << std::endl;
-    
-    if (!mesh) {
-      std::cerr << "ERROR::MODEL::Null mesh pointer retrieved from scene" << std::endl;
-      throw std::runtime_error("Null mesh pointer retrieved from scene");
-    }
-    
-    std::cout << "Processing mesh..." << std::endl;
-    meshes.push_back(processMesh(mesh, scene));
-    std::cout << "Mesh processed and added" << std::endl;
-  }
-
-  // do the same for each of nodes children
-  std::cout << "Processing " << node->mNumChildren << " child nodes" << std::endl;
-  for (unsigned int i=0; i< node->mNumChildren; i++) {
-    std::cout << "Processing child node " << i << std::endl;
-    
-    if (node->mChildren == nullptr) {
-      std::cerr << "ERROR::MODEL::Null mChildren pointer in node" << std::endl;
-      throw std::runtime_error("Null mChildren pointer in node");
-    }
-    
-    if (node->mChildren[i] == nullptr) {
-      std::cerr << "ERROR::MODEL::Null child node pointer at index " << i << std::endl;
-      throw std::runtime_error("Null child node pointer");
-    }
-    
-    processNode(node->mChildren[i], scene);
-    std::cout << "Child node " << i << " processed" << std::endl;
-  }
-}
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
   std::cout << "processMesh: Starting..." << std::endl;
@@ -335,15 +281,6 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
       std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
       textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     
-      std::cout << "processMesh: Loading normal maps..." << std::endl;
-      // 3. normal maps
-      std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-      textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-      
-      std::cout << "processMesh: Loading height maps..." << std::endl;
-      // 4. height maps
-      std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-      textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
     }
     catch (const std::exception& e) {
       std::cout << "WARNING::MODEL::Error loading textures: " << e.what() << std::endl;
@@ -366,7 +303,6 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
   // loads and generates the texture and store info in Vertex struct
   std::vector<Texture> textures;
   unsigned int textureCount = mat->GetTextureCount(type);
-  std::cout << "loadMaterialTextures: Found " << textureCount << " textures of type " << typeName << std::endl;
   
   for (unsigned int i=0; i<textureCount; i++){
     aiString str;
@@ -392,10 +328,15 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
         Texture texture;
         texture.id = TextureFromFile(str.C_Str(), this->directory);
         texture.type = typeName;
+        std::cout << "loadMaterialTextures: Texture ID: " << texture.id << std::endl;
         texture.path = str.C_Str();
+
+        if (!texture.type.empty()) {
+          std::cout << "loadMaterialTextures: Found " << textureCount << " textures of type " << texture.type << std::endl;
+        }
+        
         textures.push_back(texture);
         textures_loaded.push_back(texture);
-        std::cout << "loadMaterialTextures: Successfully loaded texture" << std::endl;
       }
       catch (const std::exception& e) {
         std::cout << "WARNING::MODEL::Failed to load texture: " << str.C_Str() << " - " << e.what() << std::endl;
@@ -439,6 +380,8 @@ unsigned int TextureFromFile(const char *path, const std::string &directory){
   // Load image using stb_image
   std::cout << "TextureFromFile: Loading with stbi_load..." << std::endl;
   stbi_set_flip_vertically_on_load(true);
+
+  std::cout << "TextureFromFile: Loading image: " << fileName << std::endl;
     
   unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &nrComponents, 0);
   std::cout << "TextureFromFile: stbi_load completed" << std::endl;
