@@ -82,7 +82,7 @@ int main() {
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -205,6 +205,8 @@ int main() {
 
       // object shader
       ourShader.use();
+      ourShader.setVec3("viewPos", camera.Position);
+      ourShader.setVec3("lightPos", lightPos);
 
       // view/projection transformations
       glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
