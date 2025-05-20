@@ -58,6 +58,23 @@ glm::vec3 clearColor(0.1f, 0.1f, 0.1f);
 // glm::vec3 lightPos(0.5f, 0.0f, 2.0f);
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
+// Vertices coordinates
+GLfloat vertices[] =
+{ //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
+	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
+	-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+	 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+	 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
+};
+
+// Indices for vertices order
+GLuint indices[] =
+{
+	0, 1, 2,
+	0, 2, 3
+};
+
+
 int main() {
 
   // glfw: initialize and configure
@@ -114,10 +131,101 @@ int main() {
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
+
     // build and compile shaders
     // -------------------------
     Shader ourShader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
 
+
+    // VAO, VBO and EBO for plane geometry
+    GLuint planeVAO, planeVBO, planeEBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glGenBuffers(1, &planeEBO);
+
+    glBindVertexArray(planeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // Color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Texture attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+
+    // Normal attribute
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(3);
+
+    //unbind the VAO and VBO
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Load texture for plane
+    // ----------------------
+    unsigned int texture1, texture2;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Load image, create diffuse texture and generate mipmaps
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    unsigned char *data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
+    if (data) {
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+      std::cout << "Failed to load texture" << std::endl;
+    }
+
+    // Free image data
+    stbi_image_free(data);
+
+    // Load image, create specular texture and generate mipmaps
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Load image, create specular texture and generate mipmaps
+    data = stbi_load("resources/textures/container2_specular.png", &width, &height, &nrChannels, 0);
+    if (data) {
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+      std::cout << "Failed to load texture" << std::endl;
+    }
+
+    // Free image data
+    stbi_image_free(data);
+
+    // Set texture units for the shader
+    ourShader.use();
+    ourShader.setInt("texture1", 0);
+    ourShader.setInt("texture2", 1);
+
+    
     // load models
     // -----------
 	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
@@ -154,6 +262,12 @@ int main() {
       // input
       // -----
       processInput(window);
+
+      // bind textures on corresponding texture units
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, texture1);
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, texture2);
 
       float currentFrame = static_cast<float>(glfwGetTime());
       deltaTime = currentFrame - lastFrame;
@@ -224,6 +338,15 @@ int main() {
       ourShader.setMat4("model", model);
       ourModel->Draw(ourShader);
 
+      // Render plane
+      model = glm::mat4(1.0f);
+      model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+      model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+      ourShader.setMat4("model", model);
+      glBindVertexArray(planeVAO);
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
       // Render ImGui
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -239,6 +362,11 @@ int main() {
     if (ourModel != nullptr) {
       delete ourModel;
     }
+
+    // Cleanup plane geometry
+    glDeleteVertexArrays(1, &planeVAO);
+    glDeleteBuffers(1, &planeVBO);
+    glDeleteBuffers(1, &planeEBO);
 
     // Cleanup ImGui
     ImGui_ImplOpenGL3_Shutdown();
@@ -276,9 +404,9 @@ void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     camera.ProcessKeyboard(BACKWARD, deltaTime);
   if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    camera.ProcessKeyboard(LEFT, deltaTime);
-  if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     camera.ProcessKeyboard(RIGHT, deltaTime);
+  if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    camera.ProcessKeyboard(LEFT, deltaTime);
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
