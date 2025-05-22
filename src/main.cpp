@@ -1,4 +1,4 @@
-#include<filesystem>
+#include <filesystem>
 namespace fs = std::filesystem;
 
 #include <glad/glad.h>
@@ -28,8 +28,8 @@ namespace fs = std::filesystem;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -43,15 +43,15 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // Mouse initial position
-float lastX = SCR_WIDTH/2.0;
-float lastY = SCR_HEIGHT/2.0;
+float lastX = SCR_WIDTH / 2.0;
+float lastY = SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 float fov = 45.0f;
 
 // Model control variables
 glm::vec3 modelPosition(0.0f, 0.0f, 0.0f);
 glm::vec3 modelRotation(0.0f, 0.0f, 0.0f);
-float modelScale = 1.0f;
+float modelScale = 0.5f;
 glm::vec3 clearColor(0.1f, 0.1f, 0.1f);
 
 // light pos
@@ -60,22 +60,20 @@ glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 // Vertices coordinates
 GLfloat vertices[] =
-{ //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
-	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
-	-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-	 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-	 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
-};
+    { //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
+        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
 
 // Indices for vertices order
 GLuint indices[] =
+    {
+        0, 1, 2,
+        0, 2, 3};
+
+int main()
 {
-	0, 1, 2,
-	0, 2, 3
-};
-
-
-int main() {
 
   // glfw: initialize and configure
   // ------------------------------
@@ -84,294 +82,281 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
+  // glfw window creation
+  // --------------------
+  GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+  if (window == NULL)
+  {
+    std::cout << "Failed to create GLFW window" << std::endl;
+    glfwTerminate();
+    return -1;
+  }
+  glfwMakeContextCurrent(window);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glfwSetCursorPosCallback(window, mouse_callback);
+  glfwSetScrollCallback(window, scroll_callback);
+
+  // tell GLFW to capture our mouse
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+  // glad: load all OpenGL function pointers
+  // ---------------------------------------
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
+    std::cout << "Failed to initialize GLAD" << std::endl;
+    return -1;
+  }
+
+  // Setup Dear ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
+  // ImGui::StyleColorsLight();
+
+  // Setup Platform/Renderer backends
+  const char *glsl_version = "#version 330";
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init(glsl_version);
+
+  // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+  stbi_set_flip_vertically_on_load(true);
+
+  // configure global opengl state
+  // -----------------------------
+  glEnable(GL_DEPTH_TEST);
+
+  // build and compile shaders
+  // -------------------------
+  Shader ourShader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
+
+  // VAO, VBO and EBO for plane geometry
+  GLuint planeVAO, planeVBO, planeEBO;
+  glGenVertexArrays(1, &planeVAO);
+  glGenBuffers(1, &planeVBO);
+  glGenBuffers(1, &planeEBO);
+
+  glBindVertexArray(planeVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  // Position attribute
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)0);
+  glEnableVertexAttribArray(0);
+
+  // Color attribute
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(1);
+
+  // Texture attribute
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+
+  // Normal attribute
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)(8 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(3);
+
+  // unbind the VAO and VBO
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  // Load texture for plane
+  // ----------------------
+  unsigned int material_diffuse0, material_specular0;
+  glGenTextures(1, &material_diffuse0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, material_diffuse0);
+
+  // Set texture parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
+
+  // Load image, create diffuse texture and generate mipmaps
+  int width, height, nrChannels;
+  stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+  unsigned char *data = stbi_load((parentDir + "/resources/planks.png").c_str(), &width, &height, &nrChannels, 0);
+  if (data)
+  {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+  else
+  {
+    std::cout << "Failed to load texture" << std::endl;
+  }
+
+  // Free image data
+  stbi_image_free(data);
+
+  // load models
+  // -----------
+  std::string texPath = "/resources/objects/backpack/";
+
+  // Debug the directory structure
+  std::cout << "Checking if file exists..." << std::endl;
+  std::ifstream f((parentDir + texPath + "backpack.obj").c_str());
+  bool fileExists = f.good();
+  f.close();
+  std::cout << "File exists: " << (fileExists ? "Yes" : "No") << std::endl;
+
+  // Model loading with error handling
+  Model *ourModel = nullptr;
+  try
+  {
+    std::cout << "About to create model object..." << std::endl;
+    ourModel = new Model((parentDir + texPath + "backpack.obj").c_str(), false);
+    std::cout << "Model loaded successfully." << std::endl;
+  }
+  catch (const std::exception &e)
+  {
+    std::cerr << "ERROR: Failed to load model: " << e.what() << std::endl;
+    glfwTerminate();
+    return -1;
+  }
+  catch (...)
+  {
+    std::cerr << "ERROR: Unknown exception while loading model." << std::endl;
+    glfwTerminate();
+    return -1;
+  }
+
+  // render loop
+  // -----------
+  while (!glfwWindowShouldClose(window))
+  {
+    // input
+    // -----
+    processInput(window);
+
+    float currentFrame = static_cast<float>(glfwGetTime());
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // ImGui demo window - comment this out once you're familiar with ImGui
+    // ImGui::ShowDemoWindow();
+
+    // Create an ImGui window for model controls
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+      ImGui::Begin("Model Controls");
 
-    // tell GLFW to capture our mouse
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      // Background color control
+      ImGui::ColorEdit3("Background Color", (float *)&clearColor);
 
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
-
-    // Setup Platform/Renderer backends
-    const char* glsl_version = "#version 330";
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
-    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-    stbi_set_flip_vertically_on_load(true);
-
-    // configure global opengl state
-    // -----------------------------
-    glEnable(GL_DEPTH_TEST);
-
-
-    // build and compile shaders
-    // -------------------------
-    Shader ourShader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
-
-
-    // VAO, VBO and EBO for plane geometry
-    GLuint planeVAO, planeVBO, planeEBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-    glGenBuffers(1, &planeEBO);
-
-    glBindVertexArray(planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-
-    // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
-    // Texture attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
-
-    // Normal attribute
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(3);
-
-    //unbind the VAO and VBO
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // Load texture for plane
-    // ----------------------
-    unsigned int texture1, texture2;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-
-    // Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Load image, create diffuse texture and generate mipmaps
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    unsigned char *data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-      glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-      std::cout << "Failed to load texture" << std::endl;
-    }
-
-    // Free image data
-    stbi_image_free(data);
-
-    // Load image, create specular texture and generate mipmaps
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    // Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Load image, create specular texture and generate mipmaps
-    data = stbi_load("resources/textures/container2_specular.png", &width, &height, &nrChannels, 0);
-    if (data) {
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-      glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-      std::cout << "Failed to load texture" << std::endl;
-    }
-
-    // Free image data
-    stbi_image_free(data);
-
-    // Set texture units for the shader
-    ourShader.use();
-    ourShader.setInt("texture1", 0);
-    ourShader.setInt("texture2", 1);
-
-    
-    // load models
-    // -----------
-	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
-	std::string texPath = "/resources/objects/backpack/";
-
-    // Debug the directory structure
-    std::cout << "Checking if file exists..." << std::endl;
-    std::ifstream f((parentDir + texPath + "backpack.obj").c_str());
-    bool fileExists = f.good();
-    f.close();
-    std::cout << "File exists: " << (fileExists ? "Yes" : "No") << std::endl;
-
-    // Model loading with error handling
-    Model* ourModel = nullptr;
-    try {
-      std::cout << "About to create model object..." << std::endl;
-      ourModel = new Model((parentDir + texPath + "backpack.obj").c_str(), false);
-      std::cout << "Model loaded successfully." << std::endl;
-    }
-    catch (const std::exception& e) {
-      std::cerr << "ERROR: Failed to load model: " << e.what() << std::endl;
-      glfwTerminate();
-      return -1;
-    }
-    catch (...) {
-      std::cerr << "ERROR: Unknown exception while loading model." << std::endl;
-      glfwTerminate();
-      return -1;
-    }
-
-    // render loop
-    // -----------
-    while (!glfwWindowShouldClose(window)) {
-      // input
-      // -----
-      processInput(window);
-
-      // bind textures on corresponding texture units
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, texture1);
-      glActiveTexture(GL_TEXTURE1);
-      glBindTexture(GL_TEXTURE_2D, texture2);
-
-      float currentFrame = static_cast<float>(glfwGetTime());
-      deltaTime = currentFrame - lastFrame;
-      lastFrame = currentFrame;
-
-      // Start the Dear ImGui frame
-      ImGui_ImplOpenGL3_NewFrame();
-      ImGui_ImplGlfw_NewFrame();
-      ImGui::NewFrame();
-
-      // ImGui demo window - comment this out once you're familiar with ImGui
-      // ImGui::ShowDemoWindow();
-      
-      // Create an ImGui window for model controls
+      // Model transformation controls
+      if (ImGui::CollapsingHeader("Model Transformations"))
       {
-          ImGui::Begin("Model Controls");
-          
-          // Background color control
-          ImGui::ColorEdit3("Background Color", (float*)&clearColor);
-          
-          // Model transformation controls
-          if (ImGui::CollapsingHeader("Model Transformations")) {
-              ImGui::SliderFloat3("Position", &modelPosition.x, -5.0f, 5.0f);
-              ImGui::SliderFloat3("Rotation", &modelRotation.x, 0.0f, 360.0f);
-              ImGui::SliderFloat("Scale", &modelScale, 0.1f, 2.0f);
-          }
-          
-          // Light controls
-          if (ImGui::CollapsingHeader("Light Settings")) {
-              ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.0f);
-          }
-          
-          // Camera controls
-          if (ImGui::CollapsingHeader("Camera Settings")) {
-              ImGui::SliderFloat("FOV", &fov, 10.0f, 90.0f);
-              camera.Zoom = fov;
-          }
-          
-          ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 
-                     1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-          
-          ImGui::End();
+        ImGui::SliderFloat3("Position", &modelPosition.x, -5.0f, 5.0f);
+        ImGui::SliderFloat3("Rotation", &modelRotation.x, 0.0f, 360.0f);
+        ImGui::SliderFloat("Scale", &modelScale, 0.1f, 2.0f);
       }
 
-      // render
-      // ------
-      glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // Light controls
+      if (ImGui::CollapsingHeader("Light Settings"))
+      {
+        ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.0f);
+      }
 
-      // object shader
-      ourShader.use();
-      ourShader.setVec3("viewPos", camera.Position);
-      ourShader.setVec3("lightPos", lightPos);
+      // Camera controls
+      if (ImGui::CollapsingHeader("Camera Settings"))
+      {
+        ImGui::SliderFloat("FOV", &fov, 10.0f, 90.0f);
+        camera.Zoom = fov;
+      }
 
-      // view/projection transformations
-      glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-      glm::mat4 view = camera.GetViewMatrix();
-      ourShader.setMat4("projection", projection);
-      ourShader.setMat4("view", view);
+      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                  1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-      // render the loaded model
-      glm::mat4 model = glm::mat4(1.0f);
-      model = glm::translate(model, modelPosition);
-      model = glm::rotate(model, glm::radians(modelRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-      model = glm::rotate(model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-      model = glm::rotate(model, glm::radians(modelRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-      model = glm::scale(model, glm::vec3(modelScale));
-      ourShader.setMat4("model", model);
-      ourModel->Draw(ourShader);
-
-      // Render plane
-      model = glm::mat4(1.0f);
-      model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-      model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
-      ourShader.setMat4("model", model);
-      glBindVertexArray(planeVAO);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-      // Render ImGui
-      ImGui::Render();
-      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-      // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
-      // etc.)
-      // -------------------------------------------------------------------------------
-      glfwSwapBuffers(window);
-      glfwPollEvents();
+      ImGui::End();
     }
 
-    // Clean up
-    if (ourModel != nullptr) {
-      delete ourModel;
-    }
+    // render
+    // ------
+    glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Cleanup plane geometry
-    glDeleteVertexArrays(1, &planeVAO);
-    glDeleteBuffers(1, &planeVBO);
-    glDeleteBuffers(1, &planeEBO);
+    // object shader
+    ourShader.use();
+    ourShader.setVec3("viewPos", camera.Position);
+    ourShader.setVec3("lightPos", lightPos);
 
-    // Cleanup ImGui
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    // view/projection transformations
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = camera.GetViewMatrix();
+    ourShader.setMat4("projection", projection);
+    ourShader.setMat4("view", view);
+
+    // render the loaded model
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, modelPosition);
+    model = glm::rotate(model, glm::radians(modelRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(modelRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::scale(model, glm::vec3(modelScale));
+    ourShader.setMat4("model", model);
+    ourModel->Draw(ourShader);
+
+    // Render plane
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(2.5f, 2.5f, 2.5f));
+    ourShader.setMat4("model", model);
+
+    ourShader.setInt("texture_diffuse0", 0);
+    ourShader.setInt("texture_specular0", 1);
+
+    // bind textures on corresponding texture units
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, material_diffuse0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, material_specular0);
+
+    glBindVertexArray(planeVAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Render ImGui
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
+    // etc.)
+    // -------------------------------------------------------------------------------
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
+
+  // Clean up
+  if (ourModel != nullptr)
+  {
+    delete ourModel;
+  }
+
+  // Cleanup plane geometry
+  glDeleteVertexArrays(1, &planeVAO);
+  glDeleteBuffers(1, &planeVBO);
+  glDeleteBuffers(1, &planeEBO);
+  glDeleteTextures(1, &material_diffuse0);
+  glDeleteTextures(1, &material_specular0);
+
+  // Cleanup ImGui
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
 
   glfwTerminate();
   return 0;
@@ -380,7 +365,8 @@ int main() {
 // process all input: query GLFW whether relevant keys are pressed/released this
 // frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window) {
+void processInput(GLFWwindow *window)
+{
   const float cameraSpeed = 2.5f * deltaTime;
 
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -389,12 +375,14 @@ void processInput(GLFWwindow *window) {
   // Toggle mouse cursor for ImGui interaction with Tab key
   static bool mouseCaptured = true;
   static double lastTabPress = 0.0;
-  if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+  if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+  {
     double currentTime = glfwGetTime();
-    if (currentTime - lastTabPress > 0.5) { // Add delay to avoid multiple toggles
+    if (currentTime - lastTabPress > 0.5)
+    { // Add delay to avoid multiple toggles
       mouseCaptured = !mouseCaptured;
-      glfwSetInputMode(window, GLFW_CURSOR, 
-                      mouseCaptured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+      glfwSetInputMode(window, GLFW_CURSOR,
+                       mouseCaptured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
       lastTabPress = currentTime;
     }
   }
@@ -403,22 +391,24 @@ void processInput(GLFWwindow *window) {
     camera.ProcessKeyboard(FORWARD, deltaTime);
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     camera.ProcessKeyboard(BACKWARD, deltaTime);
-  if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     camera.ProcessKeyboard(RIGHT, deltaTime);
-  if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     camera.ProcessKeyboard(LEFT, deltaTime);
 }
 
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
+{
   // Skip camera movement when ImGui wants to capture mouse
-  ImGuiIO& io = ImGui::GetIO();
+  ImGuiIO &io = ImGui::GetIO();
   if (io.WantCaptureMouse)
     return;
 
   float xpos = static_cast<float>(xposIn);
   float ypos = static_cast<float>(yposIn);
 
-  if(firstMouse) {
+  if (firstMouse)
+  {
     lastX = xpos;
     lastY = ypos;
     firstMouse = false;
@@ -434,14 +424,16 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 
 // Zoom callback
 // -------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
   camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
 // function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
   // make sure the viewport matches the new window dimensions; note that width
   // and height will be significantly larger than specified on retina displays.
   glViewport(0, 0, width, height);
