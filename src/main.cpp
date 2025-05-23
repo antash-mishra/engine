@@ -60,17 +60,64 @@ glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 // Vertices coordinates
 GLfloat vertices[] =
-    { //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
-        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-        -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+    { //     COORDINATES    /    TexCoord
+        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+        1.0f, 0.0f, 1.0f, 1.0f, 0.0f};
 
 // Indices for vertices order
 GLuint indices[] =
     {
         0, 1, 2,
-        0, 2, 3};
+        0, 2, 3
+    };
+
+float cubeVertices[] = {
+    // positions          // texture Coords
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
+
 
 int main()
 {
@@ -129,13 +176,20 @@ int main()
   // configure global opengl state
   // -----------------------------
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_STENCIL_TEST);
+  glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
+
 
   // build and compile shaders
   // -------------------------
   Shader ourShader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
+  Shader outlineShader("resources/shaders/vertexShader.vs", "resources/shaders/outlineShader.fs");
+
 
   // VAO, VBO and EBO for plane geometry
-  GLuint planeVAO, planeVBO, planeEBO;
+  GLuint planeVAO, planeVBO, planeEBO, cubeVAO, cubeVBO;
   glGenVertexArrays(1, &planeVAO);
   glGenBuffers(1, &planeVBO);
   glGenBuffers(1, &planeEBO);
@@ -148,28 +202,38 @@ int main()
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   // Position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)0);
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)0);
 
   // Color attribute
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
   glEnableVertexAttribArray(1);
-
-  // Texture attribute
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(2);
-
-  // Normal attribute
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid *)(8 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
 
   // unbind the VAO and VBO
   glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  // Cube set VAO and VBO
+  glGenVertexArrays(1, &cubeVAO);
+  glGenBuffers(1, &cubeVBO);
+
+  glBindVertexArray(cubeVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+  // Position attribute
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)0);
+
+  // Texture attribute
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+
+  // unbind the VAO and VBO
+  glBindVertexArray(0);
 
   // Load texture for plane
   // ----------------------
-  unsigned int material_diffuse0, material_specular0;
+  unsigned int material_diffuse0;
   glGenTextures(1, &material_diffuse0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, material_diffuse0);
@@ -181,15 +245,19 @@ int main()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
+  std::cout << "Parent directory: " << parentDir << std::endl;
 
   // Load image, create diffuse texture and generate mipmaps
   int width, height, nrChannels;
   stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-  unsigned char *data = stbi_load((parentDir + "/resources/planks.png").c_str(), &width, &height, &nrChannels, 0);
+  
+  unsigned char *data = stbi_load((parentDir + "/resources/metal.png").c_str(), &width, &height, &nrChannels, 0);
+
   if (data)
   {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
+    std::cout << "Texture loaded successfully" << std::endl;
   }
   else
   {
@@ -199,37 +267,40 @@ int main()
   // Free image data
   stbi_image_free(data);
 
-  // load models
-  // -----------
-  std::string texPath = "/resources/objects/backpack/";
 
-  // Debug the directory structure
-  std::cout << "Checking if file exists..." << std::endl;
-  std::ifstream f((parentDir + texPath + "backpack.obj").c_str());
-  bool fileExists = f.good();
-  f.close();
-  std::cout << "File exists: " << (fileExists ? "Yes" : "No") << std::endl;
+  // Texture for cube
+  unsigned int cubeTexture;
+  glGenTextures(1, &cubeTexture);
+  glBindTexture(GL_TEXTURE_2D, cubeTexture);
 
-  // Model loading with error handling
-  Model *ourModel = nullptr;
-  try
+  // Set texture parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // Load image, create diffuse texture and generate mipmaps
+  data = stbi_load((parentDir + "/resources/marble.jpg").c_str(), &width, &height, &nrChannels, 0);
+
+  if (data)
   {
-    std::cout << "About to create model object..." << std::endl;
-    ourModel = new Model((parentDir + texPath + "backpack.obj").c_str(), false);
-    std::cout << "Model loaded successfully." << std::endl;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    std::cout << "Texture loaded successfully" << std::endl;
   }
-  catch (const std::exception &e)
+  else
   {
-    std::cerr << "ERROR: Failed to load model: " << e.what() << std::endl;
-    glfwTerminate();
-    return -1;
+    std::cout << "Failed to load texture" << std::endl;
   }
-  catch (...)
-  {
-    std::cerr << "ERROR: Unknown exception while loading model." << std::endl;
-    glfwTerminate();
-    return -1;
-  }
+
+  // Free image data
+  stbi_image_free(data);
+
+  // shader configuration
+  // --------------------
+  ourShader.use();
+  ourShader.setInt("texture_diffuse0", 0);
+
 
   // render loop
   // -----------
@@ -243,73 +314,26 @@ int main()
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // ImGui demo window - comment this out once you're familiar with ImGui
-    // ImGui::ShowDemoWindow();
-
-    // Create an ImGui window for model controls
-    {
-      ImGui::Begin("Model Controls");
-
-      // Background color control
-      ImGui::ColorEdit3("Background Color", (float *)&clearColor);
-
-      // Model transformation controls
-      if (ImGui::CollapsingHeader("Model Transformations"))
-      {
-        ImGui::SliderFloat3("Position", &modelPosition.x, -5.0f, 5.0f);
-        ImGui::SliderFloat3("Rotation", &modelRotation.x, 0.0f, 360.0f);
-        ImGui::SliderFloat("Scale", &modelScale, 0.1f, 2.0f);
-      }
-
-      // Light controls
-      if (ImGui::CollapsingHeader("Light Settings"))
-      {
-        ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.0f);
-      }
-
-      // Camera controls
-      if (ImGui::CollapsingHeader("Camera Settings"))
-      {
-        ImGui::SliderFloat("FOV", &fov, 10.0f, 90.0f);
-        camera.Zoom = fov;
-      }
-
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                  1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-      ImGui::End();
-    }
-
     // render
     // ------
     glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // object shader
-    ourShader.use();
-    ourShader.setVec3("viewPos", camera.Position);
-    ourShader.setVec3("lightPos", lightPos);
-
-    // view/projection transformations
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    outlineShader.use();
+    glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    outlineShader.setMat4("view", view);
+    outlineShader.setMat4("projection", projection);
+
+    ourShader.use();
+    // view/projection transformations
+    projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    view = camera.GetViewMatrix();
     ourShader.setMat4("projection", projection);
     ourShader.setMat4("view", view);
 
-    // render the loaded model
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, modelPosition);
-    model = glm::rotate(model, glm::radians(modelRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(modelRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::scale(model, glm::vec3(modelScale));
-    ourShader.setMat4("model", model);
-    ourModel->Draw(ourShader);
+    glStencilMask(0x00);
 
     // Render plane
     model = glm::mat4(1.0f);
@@ -317,21 +341,55 @@ int main()
     model = glm::scale(model, glm::vec3(2.5f, 2.5f, 2.5f));
     ourShader.setMat4("model", model);
 
-    ourShader.setInt("texture_diffuse0", 0);
-    ourShader.setInt("texture_specular0", 1);
-
     // bind textures on corresponding texture units
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, material_diffuse0);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, material_specular0);
-
     glBindVertexArray(planeVAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 
-    // Render ImGui
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    
+    glStencilFunc(GL_ALWAYS, 1, 0xFF); 
+    glStencilMask(0xFF); 
+
+    // Render cube
+    glBindVertexArray(cubeVAO);
+    glBindTexture(GL_TEXTURE_2D, cubeTexture);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+    ourShader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+    ourShader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF); 
+    glStencilMask(0x00); 
+    glDisable(GL_DEPTH_TEST);
+    
+    outlineShader.use();
+
+    // Render scaled up cube
+    glBindVertexArray(cubeVAO);
+    glBindTexture(GL_TEXTURE_2D, cubeTexture);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+    model = glm::scale(model, glm::vec3(1.1f));
+    outlineShader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(1.1f));
+    outlineShader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+
+    glStencilMask(0xFF);
+    glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    glEnable(GL_DEPTH_TEST);
+
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
     // etc.)
@@ -340,23 +398,11 @@ int main()
     glfwPollEvents();
   }
 
-  // Clean up
-  if (ourModel != nullptr)
-  {
-    delete ourModel;
-  }
-
   // Cleanup plane geometry
   glDeleteVertexArrays(1, &planeVAO);
   glDeleteBuffers(1, &planeVBO);
   glDeleteBuffers(1, &planeEBO);
-  glDeleteTextures(1, &material_diffuse0);
-  glDeleteTextures(1, &material_specular0);
-
-  // Cleanup ImGui
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
+  glDeleteTextures(1, &material_diffuse0);  
 
   glfwTerminate();
   return 0;
