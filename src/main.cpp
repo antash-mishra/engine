@@ -86,14 +86,17 @@ GLuint indices[] =
     };
 
 float cubeVertices[] = {
-    // positions          // texture Coords
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    // Face 1 (Front, -Z), Corrected to CCW
+    // Triangle 1: Original V0, V1, V2 -> Corrected V0, V2, V1
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Original V0
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // Original V2
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // Original V1
+    // Triangle 2: Original V3, V4, V5 -> Corrected V3, V5, V4
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // Original V3
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Original V5
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // Original V4
 
+    // Face 2 (Back, +Z), Already CCW - NO CHANGE
     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
@@ -101,6 +104,7 @@ float cubeVertices[] = {
     -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
+    // Face 3 (Left, -X), Already CCW - NO CHANGE
     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
@@ -108,13 +112,17 @@ float cubeVertices[] = {
     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    // Face 4 (Right, +X), Corrected to CCW
+    // Triangle 1: Original V18, V19, V20 -> Corrected V18, V20, V19
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // Original V18
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // Original V20
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // Original V19
+    // Triangle 2: Original V21, V22, V23 -> Corrected V21, V23, V22
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // Original V21
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // Original V23
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // Original V22
 
+    // Face 5 (Bottom, -Y), Already CCW - NO CHANGE
     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
@@ -122,13 +130,17 @@ float cubeVertices[] = {
     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    // Face 6 (Top, +Y), Corrected to CCW
+    // Triangle 1: Original V30, V31, V32 -> Corrected V30, V32, V31
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // Original V30
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // Original V32
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // Original V31
+    // Triangle 2: Original V33, V34, V35 -> Corrected V33, V35, V34
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // Original V33
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // Original V35
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // Original V34
 };
+
 
 
 int main()
@@ -205,20 +217,23 @@ int main()
   // -----------------------------
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-  glEnable(GL_STENCIL_TEST);
-  glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // glEnable(GL_STENCIL_TEST);
+  // glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+  // glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
+  // glEnable(GL_BLEND);
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_FRONT);
+  glFrontFace(GL_CCW);
 
   // build and compile shaders
   // -------------------------
   Shader ourShader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
-  Shader outlineShader("resources/shaders/vertexShader.vs", "resources/shaders/outlineShader.fs");
+  // Shader outlineShader("resources/shaders/vertexShader.vs", "resources/shaders/outlineShader.fs");
 
 
   // VAO, VBO and EBO for plane geometry
-  GLuint planeVAO, planeVBO, planeEBO, cubeVAO, cubeVBO, grassVAO, grassVBO, transparentVAO, transparentVBO;
+  GLuint planeVAO, planeVBO, planeEBO, cubeVAO, cubeVBO;
   glGenVertexArrays(1, &planeVAO);
   glGenBuffers(1, &planeVBO);
   glGenBuffers(1, &planeEBO);
@@ -259,43 +274,6 @@ int main()
 
   // unbind the VAO and VBO
   glBindVertexArray(0);
-
-  // Grass VAO, VBO and using same EBO as plane
-  glGenVertexArrays(1, &grassVAO);
-  glGenBuffers(1, &grassVBO);
-
-  glBindVertexArray(grassVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, grassVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(grassVertices), grassVertices, GL_STATIC_DRAW);
-  
-  // Position attribute
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)0);
-
-  // Texture attribute
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
-
-  // unbind the VAO and VBO
-  glBindVertexArray(0);
-
-  // Transparent VAO, VBO same as grass
-  glGenVertexArrays(1, &transparentVAO);
-  glGenBuffers(1, &transparentVBO);
-  
-  glBindVertexArray(transparentVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(grassVertices), grassVertices, GL_STATIC_DRAW);
-
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)0);
-
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
-
-  // unbind the VAO and VBO
-  glBindVertexArray(0);
-
 
   // Load texture for plane
   // ----------------------
@@ -363,64 +341,6 @@ int main()
   // Free image data
   stbi_image_free(data);
 
-  // Load texture for grass
-  unsigned int grassTexture;
-  glGenTextures(1, &grassTexture);
-  glBindTexture(GL_TEXTURE_2D, grassTexture);
-
-  // Set texture parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  // Load image, create diffuse texture and generate mipmaps
-  stbi_set_flip_vertically_on_load(false);
-  data = stbi_load((parentDir + "/resources/grass.png").c_str(), &width, &height, &nrChannels, 0);
-
-  if (data)
-  {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    std::cout << "Texture loaded successfully" << std::endl;
-  }
-  else
-  {
-    std::cout << "Failed to load texture" << std::endl;
-  }
-
-  // Free image data
-  stbi_image_free(data);
-
-  // Load texture for transparent glass
-  unsigned int glassTexture;
-  glGenTextures(1, &glassTexture);
-  glBindTexture(GL_TEXTURE_2D, glassTexture);
-
-  // Set texture parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  stbi_set_flip_vertically_on_load(true);
-  data = stbi_load((parentDir + "/resources/blending_transparent_window.png").c_str(), &width, &height, &nrChannels, 0);
-
-  if (data)
-  {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    std::cout << "Texture loaded successfully" << std::endl;
-  }
-  else
-  {
-    std::cout << "Failed to load texture" << std::endl;
-  }
-
-  // Free image data
-  stbi_image_free(data);
-
-
   // shader configuration
   // --------------------
   ourShader.use();
@@ -444,22 +364,18 @@ int main()
     glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    outlineShader.use();
+    ourShader.use();
+
+    //  glStencilMask(0x00);
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    outlineShader.setMat4("view", view);
-    outlineShader.setMat4("projection", projection);
 
     ourShader.use();
     // view/projection transformations
-    projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    view = camera.GetViewMatrix();
     ourShader.setMat4("projection", projection);
     ourShader.setMat4("view", view);
-
-    glStencilMask(0x00);
-
+    
     // Render plane
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, -0.6f, 0.0f));
@@ -475,8 +391,8 @@ int main()
 
 
     
-    glStencilFunc(GL_ALWAYS, 1, 0xFF); 
-    glStencilMask(0xFF); 
+    // glStencilFunc(GL_ALWAYS, 1, 0xFF); 
+    // glStencilMask(0xFF); 
 
     // Render cube
     glBindVertexArray(cubeVAO);
@@ -490,65 +406,10 @@ int main()
     ourShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF); 
-    glStencilMask(0x00); 
-    glDisable(GL_DEPTH_TEST);
+    // glStencilFunc(GL_NOTEQUAL, 1, 0xFF); 
+    // glStencilMask(0x00); 
+    // glDisable(GL_DEPTH_TEST);
     
-    outlineShader.use();
-
-    // Render scaled up cube
-    glBindVertexArray(cubeVAO);
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-    model = glm::scale(model, glm::vec3(1.1f));
-    outlineShader.setMat4("model", model);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.1f));
-    outlineShader.setMat4("model", model);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
-
-    glStencilMask(0xFF);
-    glStencilFunc(GL_ALWAYS, 0, 0xFF);
-    glEnable(GL_DEPTH_TEST);
-    // Render grass
-    ourShader.use();
-    glBindVertexArray(grassVAO);
-    glBindTexture(GL_TEXTURE_2D, grassTexture);
-    model = glm::mat4(1.0f);
-    // Create multiple grass blades
-    for (int i=0; i< vegetation.size(); i++) {
-      model = glm::mat4(1.0f);
-      model = glm::translate(model, glm::vec3(vegetation[i].x, -0.1, vegetation[i].z));
-      
-      ourShader.setMat4("model", model);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-      
-    }
-    glBindVertexArray(0);
-
-    // Render transparent glass
-    std::map<float, glm::vec3> sorted;
-    for (unsigned int i = 0; i < windows.size(); i++)
-    {
-        float distance = glm::length(camera.Position - windows[i]);
-        sorted[distance] = windows[i];
-    }
-
-    ourShader.use();
-    glBindVertexArray(transparentVAO);
-    glBindTexture(GL_TEXTURE_2D, glassTexture);
-    model = glm::mat4(1.0f);
-    for(std::map<float,glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it) {
-      model = glm::mat4(1.0f);
-      model = glm::translate(model, it->second);
-      ourShader.setMat4("model", model);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-    glBindVertexArray(0);
     
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
@@ -562,16 +423,10 @@ int main()
   glDeleteVertexArrays(1, &planeVAO);
   glDeleteBuffers(1, &planeVBO);
   glDeleteBuffers(1, &planeEBO);
-  glDeleteVertexArrays(1, &transparentVAO);
-  glDeleteBuffers(1, &transparentVBO);
-  glDeleteTextures(1, &material_diffuse0);  
-  glDeleteVertexArrays(1, &grassVAO);
-  glDeleteBuffers(1, &grassVBO);
+  glDeleteTextures(1, &material_diffuse0);
   glDeleteVertexArrays(1, &cubeVAO);
   glDeleteBuffers(1, &cubeVBO);
   glDeleteTextures(1, &cubeTexture);
-  glDeleteTextures(1, &grassTexture);
-  glDeleteTextures(1, &glassTexture);
   glfwTerminate();
   return 0;
 }
