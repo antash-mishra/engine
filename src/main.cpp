@@ -30,6 +30,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+unsigned int loadCubeMap(vector<std::string> faces);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -151,6 +152,51 @@ float quadVertices[] = { // vertex attributes for a quad that fills the entire s
      1.0f,  1.0f,  1.0f, 1.0f
 };
 
+float skyboxVertices[] = {
+    // positions          
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
+
 
 
 int main()
@@ -213,14 +259,14 @@ int main()
   vegetation.push_back(glm::vec3( 0.5f,  0.0f, -0.6f));
 
 
-    vector<glm::vec3> windows
-    {
-        glm::vec3(-1.5f, 0.0f, -0.48f),
-        glm::vec3( 1.5f, 0.0f, 0.51f),
-        glm::vec3( 0.0f, 0.0f, 0.7f),
-        glm::vec3(-0.3f, 0.0f, -2.3f),
-        glm::vec3( 0.5f, 0.0f, -0.6f)
-    };
+  vector<glm::vec3> windows
+  {
+      glm::vec3(-1.5f, 0.0f, -0.48f),
+      glm::vec3( 1.5f, 0.0f, 0.51f),
+      glm::vec3( 0.0f, 0.0f, 0.7f),
+      glm::vec3(-0.3f, 0.0f, -2.3f),
+      glm::vec3( 0.5f, 0.0f, -0.6f)
+  };
 
 
   // configure global opengl state
@@ -241,8 +287,9 @@ int main()
   Shader ourShader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
   // Shader outlineShader("resources/shaders/vertexShader.vs", "resources/shaders/outlineShader.fs");
   Shader screenShader("resources/shaders/framebuffer.vs", "resources/shaders/framebuffer.fs");
+  Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
-  // VAO, VBO and EBO for plane geometry
+  // VAO, VBO and EBO for plane geometry  
   GLuint planeVAO, planeVBO, planeEBO, cubeVAO, cubeVBO;
   glGenVertexArrays(1, &planeVAO);
   glGenBuffers(1, &planeVBO);
@@ -284,6 +331,16 @@ int main()
 
   // unbind the VAO and VBO
   glBindVertexArray(0);
+
+  // Cube map VAO
+  unsigned int skyboxVAO, skyboxVBO;
+  glGenVertexArrays(1, &skyboxVAO);
+  glGenBuffers(1, &skyboxVBO);
+  glBindVertexArray(skyboxVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
   // screen quad VAO
   unsigned int quadVAO, quadVBO;
@@ -346,7 +403,6 @@ int main()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  stbi_set_flip_vertically_on_load(true);
   // Load image, create diffuse texture and generate mipmaps
   data = stbi_load((parentDir + "/resources/marble.jpg").c_str(), &width, &height, &nrChannels, 0);
 
@@ -363,6 +419,21 @@ int main()
 
   // Free image data
   stbi_image_free(data);
+
+  // Load cube map
+  stbi_set_flip_vertically_on_load(false);
+  vector<std::string> faces
+  {
+    parentDir + "/resources/skybox/right.jpg",
+    parentDir + "/resources/skybox/left.jpg",
+    parentDir + "/resources/skybox/top.jpg",
+    parentDir + "/resources/skybox/bottom.jpg",
+    parentDir + "/resources/skybox/front.jpg",
+    parentDir + "/resources/skybox/back.jpg"
+  };
+  unsigned int cubemapTexture = loadCubeMap(faces);
+
+
 
   // Framebuffer
   // ------------
@@ -401,6 +472,9 @@ int main()
 
   screenShader.use();
   screenShader.setInt("screenTexture", 0);
+
+  skyboxShader.use();
+  skyboxShader.setInt("skybox", 0);
 
   // render loop
   // -----------
@@ -466,6 +540,19 @@ int main()
     model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
     ourShader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glDepthFunc(GL_LEQUAL);
+    skyboxShader.use();
+    projection = glm::perspective(glm::radians(90.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+    skyboxShader.setMat4("projection", projection);
+    skyboxShader.setMat4("view", view);
+    glBindVertexArray(skyboxVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    glDepthFunc(GL_LESS);
     
     // now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -496,6 +583,8 @@ int main()
   glDeleteBuffers(1, &planeEBO);
   glDeleteVertexArrays(1, &quadVAO);
   glDeleteBuffers(1, &quadVBO);
+  glDeleteVertexArrays(1, &skyboxVAO);
+  glDeleteBuffers(1, &skyboxVBO);
   glDeleteTextures(1, &material_diffuse0);
   glDeleteVertexArrays(1, &cubeVAO);
   glDeleteBuffers(1, &cubeVBO);
@@ -503,8 +592,35 @@ int main()
   glDeleteTextures(1, &textureColorbuffer);
   glDeleteRenderbuffers(1, &rbo);
   glDeleteFramebuffers(1, &fbo);
+  glDeleteTextures(1, &cubemapTexture);
   glfwTerminate();
   return 0;
+}
+
+unsigned int loadCubeMap(vector<std::string> faces) {
+  unsigned int textureID;
+  glGenTextures(1, &textureID);
+
+  glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+  int width, height, nrChannels;
+  for (unsigned int i = 0; i < faces.size(); i++) {
+    unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+    if (data) {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      stbi_image_free(data);
+    } else {
+      std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+      stbi_image_free(data);
+    }
+  }
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+  return textureID;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this
