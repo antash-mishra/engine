@@ -31,8 +31,6 @@ float fov = 45.0f;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-
 // Vertices coordinates
 GLfloat vertices[] =
 {
@@ -45,6 +43,24 @@ GLfloat vertices[] =
   -10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
    10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f
 };
+
+
+// lighting info
+// -------------
+glm::vec3 lightPositions[] = {
+    glm::vec3(-3.0f, 0.0f, 0.0f),
+    glm::vec3(-1.0f, 0.0f, 0.0f),
+    glm::vec3 (1.0f, 0.0f, 0.0f),
+    glm::vec3 (3.0f, 0.0f, 0.0f)
+};
+glm::vec3 lightColors[] = {
+    glm::vec3(0.25),
+    glm::vec3(0.50),
+    glm::vec3(0.75),
+    glm::vec3(1.00)
+};
+
+
 
 int main() {
   glfwInit();
@@ -74,6 +90,9 @@ int main() {
   }
 
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
   std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
   Shader shader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
@@ -108,10 +127,6 @@ int main() {
   shader.use();
   shader.setInt("texture_diffuse0", 0);
 
-  // lighting info
-  // -------------
-  glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-
   while (!glfwWindowShouldClose(window)) {
 
     processInput(window);
@@ -139,7 +154,9 @@ int main() {
     shader.setMat4("view", view);
     shader.setMat4("projection", projection);
     shader.setVec3("viewPos", camera.Position);
-    shader.setVec3("lightPos", lightPos);
+
+    glUniform3fv(glGetUniformLocation(shader.ID, "lightPositions"), 4, &lightPositions[0][0]);
+    glUniform3fv(glGetUniformLocation(shader.ID, "lightColors"), 4, &lightColors[0][0]);
 
     // Render Plane
     glBindVertexArray(planeVAO);
