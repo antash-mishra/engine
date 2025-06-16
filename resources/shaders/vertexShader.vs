@@ -6,19 +6,21 @@ layout (location = 2) in vec2 aTexCoords;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 model;
-uniform mat4 lightSpaceMatrix;
 
 out vec2 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
-out vec4 FragPosLightSpace;
+
+uniform bool reverse_normals;
 
 void main()
 {
 
-    FragPos = vec3(model * vec4(aPos, 1.0));;
-    Normal = mat3(transpose(inverse(model))) * aNormal;
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    if(reverse_normals)
+        Normal = transpose(inverse(mat3(model))) * (-1.0 * aNormal);
+    else
+        Normal = transpose(inverse(mat3(model))) * aNormal;
     TexCoords = aTexCoords;
-    FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
-    gl_Position = projection * view * model * vec4(aPos, 1.0f);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
 }  
