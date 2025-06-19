@@ -15,7 +15,6 @@ uniform bool reverse_normals;
 
 void main()
 {
-
     FragPos = vec3(model * vec4(aPos, 1.0));
     if(reverse_normals)
         Normal = transpose(inverse(mat3(model))) * (-1.0 * aNormal);

@@ -5,46 +5,15 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
+struct Light {
+    vec3 Position;
+    vec3 Color;
+};
+
+uniform Light lights[16];
 uniform sampler2D texture_diffuse0;
-uniform samplerCube shadowMap;
-
-uniform vec3 lightPos;
 uniform vec3 viewPos;
-uniform float far_plane;
 
-// array of offset direction for sampling
-vec3 gridSamplingDisk[20] = vec3[]
-(
-   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
-   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-);
-
-
-float ShadowCalculation(vec3 fragPos)
-{
-    // perform perspective divide
-    vec3 fragToLight = fragPos - lightPos;
-    
-    float currentDepth = length(fragToLight);
-    float shadow = 0.0;
-    float bias = 0.15;
-    int samples = 20;
-    float viewDistance = length(viewPos - fragPos);
-    float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
-    for(int i = 0; i < samples; ++i)
-    {
-        float closestDepth = texture(shadowMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
-        closestDepth *= far_plane;   // undo mapping [0;1]
-        if(currentDepth - bias > closestDepth)
-            shadow += 1.0;
-    }
-    shadow /= float(samples);
-
-    return shadow;
-}
 
 void main()
 {
@@ -52,22 +21,27 @@ void main()
     vec3 normal = normalize(Normal);
     vec3 lightColor = vec3(0.3);
     // ambient
-    vec3 ambient = 0.3 * lightColor;
-    // diffuse
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(lightDir, normal), 0.0);  
-    vec3 diffuse = diff * lightColor;
-    // specular
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = 0.0;
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
-    vec3 specular = spec * lightColor;
-    // calculate shadow
-    float shadow = ShadowCalculation(FragPos);
+    vec3 ambient = 0.0 * color;
+    
+    // lighting
+    vec3 lighting = vec3(0.0);
 
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
+    for(int i = 0; i < 16; i++)
+    {
+        // diffuse
+        vec3 lightDir = normalize(lights[i].Position - FragPos);
+        float diff = max(dot(lightDir, normal), 0.0);
+        vec3 diffuse = lights[i].Color * diff * color;
+        vec3 result = diffuse;
 
-    FragColor = vec4(lighting, 1.0);
+        // attenuation (use quadratic as we have gamma correction)
+        float distance = length(FragPos - lights[i].Position);
+        result *= 1.0 / (distance * distance);
+        lighting += result;
+    }
+
+    vec3 lightingResult = ambient + lighting;
+    // // also gamma correct while we're at it
+    // lightingResult = pow(lightingResult, vec3(1.0 / 2.2));
+    FragColor = vec4(lightingResult, 1.0);
 }
