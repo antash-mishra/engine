@@ -106,7 +106,7 @@ int main()
   std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
   Shader shader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
   Shader lightShader("resources/shaders/vertexShader.vs", "resources/shaders/lightFragmentShader.fs");
-  Shader blurShader("resources/shaders/blur.vs", "resources/shaders/blur.fs");
+  Shader blurShader("resources/shaders/debugDepthQuad.vs", "resources/shaders/blur.fs");
   // Shader depthShader("resources/shaders/depthVertexShader.vs", "resources/shaders/depthFragmentShader.fs", "resources/shaders/depthGeometryShader.gs");
   Shader hdrShader("resources/shaders/debugDepthQuad.vs", "resources/shaders/debugDepthQuad.fs");
 
@@ -132,6 +132,51 @@ int main()
   unsigned int planeTexture = loadTexture((parentDir + "/resources/wood.png").c_str(), true);
   unsigned int cubeTexture = loadTexture((parentDir + "/resources/container2.png").c_str(), true);
   // unsigned int normalMap = loadTexture((parentDir + "/resources/brickwall_normal.jpg").c_str(), true);
+
+
+  // Geometry Buffers framebuffer
+  // ---------------------------------------------------
+  unsigned int gBuffer;
+  glGenFramebuffers(1, &gBuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+  unsigned int gPosition, gNormal, gColorSpec;
+
+  // position color buffer;
+  glGenTextures(1, &gPosition);
+  glBindTexture(GL_TEXTURE_2D, gPosition);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+  // normal color buffer;
+  glGenTextures(1, &gNormal);
+  glBindTexture(GL_TEXTURE_2D, gNormal);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+
+  // color + specular color buffer;
+  glGenTextures(1, &gColorSpec);
+  glBindTexture(GL_TEXTURE_2D, gColorSpec);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
+
+  unsigned int attachments[3]  = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+  glDrawBuffers(3, attachments);
+
+  // Add rbo as depth buffer to check completeness
+  unsigned int grboDepth;
+  glGenRenderbuffers(1, &grboDepth);
+  glBindRenderbuffer(GL_RENDERBUFFER, grboDepth);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, grboDepth);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "Framebuffer not complete!" << std::endl;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
   // HDR framebuffer
@@ -270,7 +315,7 @@ int main()
         renderQuad();
         horizontal = !horizontal;
         if (first_iteration)
-        first_iteration = false;
+          first_iteration = false;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

@@ -18,7 +18,7 @@ set(IMGUI_SOURCES
 
 # Source files
 add_executable(game_engine 
-    src/hdr.cpp 
+    src/deffered_rendering.cpp 
     src/glad.c 
     src/shader.cpp
     src/stb_image.cpp

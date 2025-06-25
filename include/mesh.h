@@ -76,7 +76,7 @@ public:
             else if(name == "texture_specular")
                 number = std::to_string(specularNr++); // transfer unsigned int to string
 
-            cout << "Setting texture name: " <<  (name + number).c_str() << " with shader ID: " << shader.ID << endl;
+            // cout << "Setting texture name: " <<  (name + number).c_str() << " with shader ID: " << shader.ID << endl;
             
             // now set the sampler to the correct texture unit
             glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);

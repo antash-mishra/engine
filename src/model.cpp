@@ -114,14 +114,14 @@ void Model::processNode(aiNode *node, const aiScene *scene)
 
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
-  std::cout << "processMesh: Starting..." << std::endl;
+  // std::cout << "processMesh: Starting..." << std::endl;
   
   if (!mesh) {
     throw std::runtime_error("ERROR::MODEL::Null mesh pointer");
   }
 
-  std::cout << "processMesh: Mesh pointer is valid" << std::endl;
-  std::cout << "processMesh: Mesh has " << mesh->mNumVertices << " vertices" << std::endl;
+  // std::cout << "processMesh: Mesh pointer is valid" << std::endl;
+  // std::cout << "processMesh: Mesh has " << mesh->mNumVertices << " vertices" << std::endl;
   
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
@@ -133,7 +133,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::cout << warning << std::endl;
   }
 
-  std::cout << "processMesh: Processing vertices..." << std::endl;
+  // std::cout << "processMesh: Processing vertices..." << std::endl;
   
   // process vertices from assimp to openGL
   for (unsigned int i=0; i< mesh->mNumVertices; i++) {
@@ -211,8 +211,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     vertices.push_back(vertex);
   }
 
-  std::cout << "processMesh: Finished processing vertices" << std::endl;
-  std::cout << "processMesh: Processing indices..." << std::endl;
+  // std::cout << "processMesh: Finished processing vertices" << std::endl;
+  // std::cout << "processMesh: Processing indices..." << std::endl;
 
   // Check if the mesh has any faces
   if (mesh->mNumFaces == 0) {
@@ -228,7 +228,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
   // process indices from assimp to openGL format
   for (unsigned int i=0; i<mesh->mNumFaces; i++) {
     if (i % 1000 == 0) {
-      std::cout << "processMesh: Processing face " << i << " of " << mesh->mNumFaces << std::endl;
+      // std::cout << "processMesh: Processing face " << i << " of " << mesh->mNumFaces << std::endl;
     }
     
     aiFace face = mesh->mFaces[i];
@@ -247,12 +247,12 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     }
   }
 
-  std::cout << "processMesh: Finished processing indices" << std::endl;
-  std::cout << "processMesh: Processing materials..." << std::endl;
+  // std::cout << "processMesh: Finished processing indices" << std::endl;
+  // std::cout << "processMesh: Processing materials..." << std::endl;
 
   // process material from assimp data struct to our defined OpenGL data structure
   if(mesh->mMaterialIndex >= 0){
-    std::cout << "processMesh: Material index: " << mesh->mMaterialIndex << std::endl;
+    // std::cout << "processMesh: Material index: " << mesh->mMaterialIndex << std::endl;
     
     try {
       // Check if materials are valid
@@ -271,15 +271,16 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         throw std::runtime_error("ERROR::MODEL::Invalid material pointer");
       }
       
-      std::cout << "processMesh: Loading diffuse textures..." << std::endl;
+      // std::cout << "processMesh: Loading diffuse textures..." << std::endl;
       // load diffuse map texture
       std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE,"texture_diffuse");
       textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
       
-      std::cout << "processMesh: Loading specular textures..." << std::endl;
+      // std::cout << "processMesh: Loading specular textures..." << std::endl;
       // load specular map texture
       std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
       textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
     
     }
     catch (const std::exception& e) {
@@ -287,14 +288,14 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     }
   }
 
-  std::cout << "processMesh: Creating and returning mesh..." << std::endl;
-  std::cout << "processMesh: Vertices: " << vertices.size() << ", Indices: " << indices.size() << ", Textures: " << textures.size() << std::endl;
+  // std::cout << "processMesh: Creating and returning mesh..." << std::endl;
+  // std::cout << "processMesh: Vertices: " << vertices.size() << ", Indices: " << indices.size() << ", Textures: " << textures.size() << std::endl;
   
   return Mesh(vertices, indices, textures);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName) {
-  std::cout << "loadMaterialTextures: starting for type " << typeName << std::endl;
+  // std::cout << "loadMaterialTextures: starting for type " << typeName << std::endl;
   
   if (!mat) {
     throw std::runtime_error("ERROR::MODEL::Invalid material pointer in loadMaterialTextures");
@@ -316,7 +317,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
 
     for (unsigned int j=0; j<textures_loaded.size(); j++) {
       if(std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0) {
-        std::cout << "loadMaterialTextures: Reusing already loaded texture" << std::endl;
+        // std::cout << "loadMaterialTextures: Reusing already loaded texture" << std::endl;
         textures.push_back(textures_loaded[j]);
         skip=true;
         break;
@@ -324,15 +325,15 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
     }
     if (!skip) {
       try {
-        std::cout << "loadMaterialTextures: Loading new texture from " << directory << "/" << str.C_Str() << std::endl;
+        // std::cout << "loadMaterialTextures: Loading new texture from " << directory << "/" << str.C_Str() << std::endl;
         Texture texture;
         texture.id = TextureFromFile(str.C_Str(), this->directory);
         texture.type = typeName;
-        std::cout << "loadMaterialTextures: Texture ID: " << texture.id << std::endl;
+        // std::cout << "loadMaterialTextures: Texture ID: " << texture.id << std::endl;
         texture.path = str.C_Str();
 
         if (!texture.type.empty()) {
-          std::cout << "loadMaterialTextures: Found " << textureCount << " textures of type " << texture.type << std::endl;
+          // std::cout << "loadMaterialTextures: Found " << textureCount << " textures of type " << texture.type << std::endl;
         }
         
         textures.push_back(texture);
@@ -344,7 +345,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
     }
   }
   
-  std::cout << "loadMaterialTextures: Completed for type " << typeName << std::endl;
+  // std::cout << "loadMaterialTextures: Completed for type " << typeName << std::endl;
   return textures; 
 }
 
@@ -378,32 +379,26 @@ unsigned int TextureFromFile(const char *path, const std::string &directory){
   int width, height, nrComponents;
   
   // Load image using stb_image
-  std::cout << "TextureFromFile: Loading with stbi_load..." << std::endl;
+  // std::cout << "TextureFromFile: Loading with stbi_load..." << std::endl;
   stbi_set_flip_vertically_on_load(true);
 
-  std::cout << "TextureFromFile: Loading image: " << fileName << std::endl;
+  // std::cout << "TextureFromFile: Loading image: " << fileName << std::endl;
     
   unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &nrComponents, 0);
-  std::cout << "TextureFromFile: stbi_load completed" << std::endl;
+  // std::cout << "TextureFromFile: stbi_load completed" << std::endl;
     
   if (data) {
-    std::cout << "TextureFromFile: Successfully loaded image: " << width << "x" << height << " with " << nrComponents << " components" << std::endl;
+    // std::cout << "TextureFromFile: Successfully loaded image: " << width << "x" << height << " with " << nrComponents << " components" << std::endl;
     
     GLenum format;
-    
-    // Set format based on channels
-    if (nrComponents == 1)
-      format = GL_RED;
-    else if (nrComponents == 3)
-      format = GL_RGB;
-    else if (nrComponents == 4)
-      format = GL_RGBA;
-    else {
-      stbi_image_free(data);
-      throw std::runtime_error("ERROR::TEXTURE::Unsupported number of components: " + std::to_string(nrComponents));
-    }
 
-    std::cout << "TextureFromFile: Uploading to GPU..." << std::endl;
+    if (nrComponents == 1)
+        format = GL_RED;
+    else if (nrComponents == 3)
+        format = GL_RGB;
+    else if (nrComponents == 4)
+        format = GL_RGBA;
+    // std::cout << "TextureFromFile: Uploading to GPU..." << std::endl;
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -413,7 +408,7 @@ unsigned int TextureFromFile(const char *path, const std::string &directory){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    std::cout << "TextureFromFile: Texture uploaded successfully" << std::endl;
+    // std::cout << "TextureFromFile: Texture uploaded successfully" << std::endl;
 
     stbi_image_free(data);
   } else {
