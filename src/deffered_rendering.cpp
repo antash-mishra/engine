@@ -253,10 +253,16 @@ int main()
             lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
             lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
             // // update attenuation parameters and calculate radius
-            // const float linear = 0.7f;
-            // const float quadratic = 1.8f;
-            // lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
-            // lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+            const float linear = 0.7f;
+            const float quadratic = 1.8f;
+            lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
+            lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+            // radius of light Source
+            float constant  = 1.0; 
+            const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
+            float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
+            lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Radius", radius);
+
         }
         lightingPassShader.setVec3("viewPos", camera.Position);
         renderQuad();

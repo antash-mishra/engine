@@ -10,6 +10,10 @@ uniform sampler2D gColorSpec;
 struct Light {
     vec3 Position;
     vec3 Color;
+    
+    float Linear;
+    float Quadratic;
+    float Radius;
 };
 
 const int NR_LIGHTS = 32;
@@ -31,21 +35,26 @@ void main() {
         // light direction & distance
         vec3 lightDir = lights[i].Position - FragPos;
         float distance = length(lightDir);
-        lightDir = normalize(lightDir);
 
-        // diffuse term
-        float diff = max(dot(Normal, lightDir), 0.0);
-        vec3 diffuse = diff * Albedo * lights[i].Color;
+        if (distance < lights[i].Radius) {
+            lightDir = normalize(lightDir);
+            
+            // diffuse term
+            float diff = max(dot(Normal, lightDir), 0.0);
+            vec3 diffuse = diff * Albedo * lights[i].Color;
 
-        // specular term (Blinn-Phong)
-        vec3 halfwayDir = normalize(lightDir + viewDir);
-        float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
-        vec3 specular = spec * SpecularStrength * lights[i].Color;
+            // specular term (Blinn-Phong)
+            vec3 halfwayDir = normalize(lightDir + viewDir);
+            float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+            vec3 specular = spec * SpecularStrength * lights[i].Color;
 
-        // attenuation (quadratic fall-off)
-        float attenuation = 1.0 / (1.0 + 0.7 * distance + 1.8 * distance * distance);
+            // attenuation (quadratic fall-off)
+            float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
 
-        lighting += (diffuse + specular) * attenuation;
+            diffuse *= attenuation;
+            specular *= attenuation;
+            lighting += diffuse + specular;
+        }
     }
 
     // gamma correction for display
