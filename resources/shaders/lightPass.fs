@@ -13,51 +13,48 @@ struct Light {
     
     float Linear;
     float Quadratic;
-    float Radius;
 };
 
-const int NR_LIGHTS = 32;
-uniform Light lights[NR_LIGHTS];
+uniform Light light;
 uniform vec3 viewPos;
+uniform vec2 screenSize;
 
 void main() {
-    vec3 FragPos = texture(gPosition, TexCoords).rgb;
-    vec3 Normal  = texture(gNormal, TexCoords).rgb;
-    vec3 Albedo  = texture(gColorSpec, TexCoords).rgb;
-    float SpecularStrength = texture(gColorSpec, TexCoords).a;
-
-    // Ambient
-    vec3 lighting = Albedo * 0.1; // lowered ambient
-
-    vec3 viewDir = normalize(viewPos - FragPos);
-    for(int i = 0; i < NR_LIGHTS; ++i)
-    {
-        // light direction & distance
-        vec3 lightDir = lights[i].Position - FragPos;
-        float distance = length(lightDir);
-
-        if (distance < lights[i].Radius) {
-            lightDir = normalize(lightDir);
-            
-            // diffuse term
-            float diff = max(dot(Normal, lightDir), 0.0);
-            vec3 diffuse = diff * Albedo * lights[i].Color;
-
-            // specular term (Blinn-Phong)
-            vec3 halfwayDir = normalize(lightDir + viewDir);
-            float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
-            vec3 specular = spec * SpecularStrength * lights[i].Color;
-
-            // attenuation (quadratic fall-off)
-            float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
-
-            diffuse *= attenuation;
-            specular *= attenuation;
-            lighting += diffuse + specular;
-        }
+    vec2 uv = TexCoords;
+    if (uv == vec2(0.0)) {
+        uv = gl_FragCoord.xy / screenSize;
     }
+    vec3 FragPos = texture(gPosition, uv).rgb;
+    vec3 Normal  = texture(gNormal, uv).rgb;
+    vec3 Albedo  = texture(gColorSpec, uv).rgb;
+    float SpecularStrength = texture(gColorSpec, uv).a;
 
-    // gamma correction for display
+
+    // Calculate lighting for this single point light
+    vec3 lightDir = light.Position - FragPos;
+    float distance = length(lightDir);
+    lightDir = normalize(lightDir);
+    
+    // Diffuse term
+    float diff = max(dot(Normal, lightDir), 0.0);
+    vec3 diffuse = diff * Albedo * light.Color;
+
+    // Specular term (Blinn-Phong)
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+    vec3 specular = spec * SpecularStrength * light.Color;
+
+    // Attenuation (quadratic fall-off)
+    float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
+
+    diffuse *= attenuation;
+    specular *= attenuation;
+    
+    vec3 lighting = diffuse + specular;
+    // Gamma correction (clamp to avoid NaN)
+    lighting = max(lighting, vec3(0.0));
     vec3 gammaCorrected = pow(lighting, vec3(1.0/2.2));
-    FragColor = vec4(gammaCorrected, 1.0);
+
+    FragColor = vec4(lighting, 1.0);
 }

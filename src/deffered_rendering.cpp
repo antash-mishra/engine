@@ -11,15 +11,19 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
+// Global pointer to stencil pass shader so helper functions can access it
+Shader* gStencilShader = nullptr;
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 unsigned int loadTexture(const char *path, bool gammaCorrection = true);
 void renderScene(const Shader &shader, unsigned int roomTexture, unsigned int cubesTexture);
+void renderSphere();
 void renderCube();
 void renderQuad();
-
+void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &view, const glm::mat4 &projection);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -69,6 +73,10 @@ unsigned int cubeVAO, cubeVBO = 0;
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 
+unsigned int sphereVAO = 0, sphereVBO = 0;
+
+
+
 int main()
 {
     glfwInit();
@@ -105,6 +113,9 @@ int main()
     Shader modelShader("resources/shaders/model.vs", "resources/shaders/model.fs");
     Shader lightingPassShader("resources/shaders/lightPass.vs", "resources/shaders/lightPass.fs");
     Shader lightSourceShader("resources/shaders/lightSource.vs", "resources/shaders/lightSource.fs");
+    gStencilShader = new Shader("resources/shaders/stencilPass.vs", "resources/shaders/stencilPass.fs");
+    Shader debugSphereShader("resources/shaders/debugSphere.vs", "resources/shaders/debugSphere.fs");
+    Shader ambientLightPassShader("resources/shaders/ambientLightPass.vs", "resources/shaders/ambientLightPass.fs");
 
     GLuint planeVBO;
     glGenVertexArrays(1, &planeVAO);
@@ -174,8 +185,8 @@ int main()
     unsigned int grboDepth;
     glGenRenderbuffers(1, &grboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, grboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, grboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, grboDepth);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -208,6 +219,12 @@ int main()
     lightingPassShader.setInt("gPosition", 0);
     lightingPassShader.setInt("gNormal", 1);
     lightingPassShader.setInt("gColorSpec", 2);
+    lightingPassShader.setVec2("screenSize", glm::vec2(SCR_WIDTH, SCR_HEIGHT));
+
+    ambientLightPassShader.use();
+    ambientLightPassShader.setInt("gPosition", 0);
+    ambientLightPassShader.setInt("gNormal", 1);
+    ambientLightPassShader.setInt("gColorSpec", 2);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -219,9 +236,13 @@ int main()
 
         processInput(window);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+        // Implementing geometry pass
+        // --------------------------------------------------
+        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer); 
+        glDepthMask(GL_TRUE); // Only geometry pass writes to depth buffer
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         modelShader.use();
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -236,10 +257,24 @@ int main()
             modelShader.setMat4("model", model);
             player->Draw(modelShader);
         }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDepthMask(GL_FALSE); // Disable depth writing for the lighting pass
         
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        lightingPassShader.use();
+        // Implementing lighting pass
+        // --------------------------------------------------
+        // glEnable(GL_BLEND);
+        // glBlendEquation(GL_FUNC_ADD);
+        // glBlendFunc(GL_ONE, GL_ONE);
+
+        // We need stencil to be enabled in the stencil pass to get the stencil buffer
+        // updated and we also need it in the light pass because we render the light
+        // only if the stencil passes.
+        glEnable(GL_STENCIL_TEST);
+
+        // Switch to default framebuffer to accumulate lighting results on screen
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        
+        // Bind G-buffer textures for lighting passes
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
         glActiveTexture(GL_TEXTURE1);
@@ -247,45 +282,120 @@ int main()
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, gColorSpec);
 
-        // send light relevant uniforms
+        // --------------------------------------------------
+        // Point lights pass
+        // --------------------------------------------------
         for (unsigned int i = 0; i < lightPositions.size(); i++)
         {
-            lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
-            lightingPassShader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
-            // // update attenuation parameters and calculate radius
+            // Calculate light radius
             const float linear = 0.7f;
             const float quadratic = 1.8f;
-            lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
-            lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
-            // radius of light Source
-            float constant  = 1.0; 
+            float constant = 1.0f; 
             const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
             float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-            lightingPassShader.setFloat("lights[" + std::to_string(i) + "].Radius", radius);
 
+            // Stencil pass for this light
+            stencilPassTest(lightPositions[i], radius, view, projection);
+            
+            // Point light pass for this light
+
+            lightingPassShader.use();
+            lightingPassShader.setBool("useQuadRendering", false);
+            lightingPassShader.setVec3("light.Position", lightPositions[i]);
+            lightingPassShader.setVec3("light.Color", lightColors[i]);
+            lightingPassShader.setFloat("light.Linear", linear);
+            lightingPassShader.setFloat("light.Quadratic", quadratic);
+            lightingPassShader.setVec3("viewPos", camera.Position);
+
+            // Set up stencil test to only render where light volume affects geometry
+            // must disable the draw buffers
+            glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+            glDisable(GL_DEPTH_TEST);
+            
+            glEnable(GL_BLEND);
+            glBlendEquation(GL_FUNC_ADD);
+            glBlendFunc(GL_ONE, GL_ONE);
+
+            // Render back faces of light sphere to avoid issues when camera is inside
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
+            
+            // Render the light volume sphere
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPositions[i]);
+            model = glm::scale(model, glm::vec3(radius));
+            lightingPassShader.setMat4("model", model);
+            lightingPassShader.setMat4("view", view);
+            lightingPassShader.setMat4("projection", projection);
+            
+            renderSphere();
+            
+            // Reset culling
+            glCullFace(GL_BACK);
+            glDisable(GL_BLEND);
         }
-        lightingPassShader.setVec3("viewPos", camera.Position);
+
+        // --------------------------------------------------
+        // After all point lights rendered: run ambient/directional pass
+        // --------------------------------------------------
+        glDisable(GL_STENCIL_TEST);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendEquation(GL_FUNC_ADD);
+        glBlendFunc(GL_ONE, GL_ONE);
+        glDrawBuffer(GL_BACK);
+
+        ambientLightPassShader.use();
+        ambientLightPassShader.setVec3("lightColor", glm::vec3(1.0f));
         renderQuad();
 
-        // copy depth info from gpass into the defause framebuffer depth buffer
+        // Restore depth test and disable blend for any subsequent passes
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+
+        // copy depth info from gpass into the default framebuffer depth buffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  // write to default buffer
         glBlitFramebuffer(
             0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST
         );
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // rendering light cubes
-        lightSourceShader.use();
-        lightSourceShader.setMat4("projection", projection);
-        lightSourceShader.setMat4("view", view);
-        for (unsigned int j=0; j<lightPositions.size(); j++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, lightPositions[j]);
-            model = glm::scale(model, glm::vec3(0.25f));
-            lightSourceShader.setMat4("model", model);
-            lightSourceShader.setVec3("lightColor", lightColors[j]);
-            renderCube();
-        }
+
+        // if (!lightPositions.empty()) {
+        //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //     glDisable(GL_CULL_FACE);
+        //     glUseProgram(0); // Use fixed-function pipeline for color
+        //     glColor3f(0.0f, 1.0f, 0.0f); // Green wireframe
+        //     glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPositions[0]);
+        //     float linear = 0.7f;
+        //     float quadratic = 1.8f;
+        //     float constant = 1.0f;
+        //     float maxBrightness = std::fmaxf(std::fmaxf(lightColors[0].r, lightColors[0].g), lightColors[0].b);
+        //     float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
+        //     model = glm::scale(model, glm::vec3(radius));
+        //     // Use your debugSphereShader if available
+        //     debugSphereShader.use();
+        //     debugSphereShader.setMat4("model", model);
+        //     debugSphereShader.setMat4("view", view);
+        //     debugSphereShader.setMat4("projection", projection);
+        //     debugSphereShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
+        //     renderSphere();
+        //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        // }
+
+        // // rendering light cubes
+        // lightSourceShader.use();
+        // lightSourceShader.setMat4("projection", projection);
+        // lightSourceShader.setMat4("view", view);
+        // for (unsigned int j=0; j<lightPositions.size(); j++) {
+        //     glm::mat4 model = glm::mat4(1.0f);
+        //     model = glm::translate(model, lightPositions[j]);
+        //     model = glm::scale(model, glm::vec3(0.25f));
+        //     lightSourceShader.setMat4("model", model);
+        //     lightSourceShader.setVec3("lightColor", lightColors[j]);
+        //     renderCube();
+        // }
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -301,6 +411,33 @@ int main()
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
     return 0;
+}
+
+void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &view, const glm::mat4 &projection) {
+
+    // Disable colour writes, don't update depth
+    // must disable the draw buffers
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
+    glDisable(GL_CULL_FACE);
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+    // Increment stencil on back-faces, decrement on front-faces
+    glStencilFunc(GL_ALWAYS, 0, 0);
+    glStencilOpSeparate(GL_BACK,  GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+
+    // Render bounding sphere with minimal shader
+    gStencilShader->use();
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPos);
+    model = glm::scale(model, glm::vec3(radius));
+    glm::mat4 mvp = projection * view * model;
+    gStencilShader->setMat4("MVP", mvp);
+
+    // Actually draw the sphere!
+    renderSphere();
+
 }
 
 void renderCube()
@@ -379,10 +516,11 @@ void renderQuad()
     if (quadVAO == 0)
     {
         float QuadVertices[] = {
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // top left
+            // positions    // texCoords
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // bottom right
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, // top left
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+            1.0f,  1.0f, 0.0f, 1.0f, 1.0f  // top right
         };
         // setup plane VAO
         glGenVertexArrays(1, &quadVAO);
@@ -397,6 +535,77 @@ void renderQuad()
     }
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+
+void renderSphere()
+{
+    // segment constants need to stay in scope for the whole function
+    static const unsigned int X_SEGMENTS = 32;
+    static const unsigned int Y_SEGMENTS = 16;
+    static unsigned int indexCount = 0; // will be filled once
+
+    if (sphereVAO == 0)
+    {
+        std::vector<glm::vec3> positions;
+        std::vector<unsigned int> indices;
+        for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
+        {
+            for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+            {
+                float xSegment = (float)x / X_SEGMENTS;
+                float ySegment = (float)y / Y_SEGMENTS;
+                float xPos = std::cos(xSegment * 2.0f * M_PI) * std::sin(ySegment * M_PI);
+                float yPos = std::cos(ySegment * M_PI);
+                float zPos = std::sin(xSegment * 2.0f * M_PI) * std::sin(ySegment * M_PI);
+                positions.emplace_back(xPos, yPos, zPos);
+            }
+        }
+        bool oddRow = false;
+        for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
+        {
+            if (!oddRow) // even rows: y == 0, y == 2; and so on
+            {
+                for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+                {
+                    indices.push_back(y       * (X_SEGMENTS + 1) + x);
+                    indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+                }
+            }
+            else
+            {
+                for (int x = X_SEGMENTS; x >= 0; --x)
+                {
+                    indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+                    indices.push_back(y       * (X_SEGMENTS + 1) + x);
+                }
+            }
+            oddRow = !oddRow;
+        }
+
+        glGenVertexArrays(1, &sphereVAO);
+        glGenBuffers(1, &sphereVBO);
+        glBindVertexArray(sphereVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+        glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3),
+                     positions.data(), GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+
+        unsigned int EBO;
+        glGenBuffers(1, &EBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
+                     indices.data(), GL_STATIC_DRAW);
+
+        indexCount = static_cast<unsigned int>(indices.size());
+
+        glBindVertexArray(0);
+    }
+
+    glBindVertexArray(sphereVAO);
+    // draw all indices generated earlier
+    glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
