@@ -7,7 +7,7 @@ struct Cluster {
     vec4 maxPoint;
     uint count;
     uint lightIndices[100];
-}
+};
 
 layout(std430, binding=1) restrict buffer clusterSSBO {
     Cluster cluster[];
@@ -39,7 +39,7 @@ void main() {
     vec3 maxTile_viewspace = screenToView(maxTile_screenspace);
 
     //  Near and far values of the cluster in view space
-    float planeNear = zNear * pow(zFar / zNear, gl_WorkGroupID.z / float(gridSize.z))
+    float planeNear = zNear * pow(zFar / zNear, gl_WorkGroupID.z / float(gridSize.z));
     float planeFar = zNear * pow(zFar / zNear, (gl_WorkGroupID.z + 1) / float(gridSize.z));
 
     // Finding 4 intersection points made from min and max tile corners

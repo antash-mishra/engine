@@ -2,6 +2,8 @@
 #include <cstddef>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "shader.h"
 #include "camera.h"
@@ -12,7 +14,7 @@
 namespace fs = std::filesystem;
 
 // Global pointer to stencil pass shader so helper functions can access it
-Shader* gStencilShader = nullptr;
+// Shader* gStencilShader = nullptr;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -23,8 +25,9 @@ void renderScene(const Shader &shader, unsigned int roomTexture, unsigned int cu
 void renderSphere();
 void renderCube();
 void renderQuad();
-void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &view, const glm::mat4 &projection);
+// void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &view, const glm::mat4 &projection);
 void init_ssbo();
+void showFPS(GLFWwindow* window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -65,6 +68,12 @@ unsigned int quadVBO;
 
 unsigned int sphereVAO = 0, sphereVBO = 0;
 
+
+// attenuation constants
+const float linear = 0.7f;
+const float quadratic = 1.8f;
+float constant = 1.0f; 
+
 // cluster sizes and other variables
 const unsigned int gridSizeX = 16;
 const unsigned int gridSizeY =  9;
@@ -77,8 +86,16 @@ struct alignas(16) Cluster
 {
   glm::vec4 minPoint;
   glm::vec4 maxPoint;
-  unsigned int count;
-  unsigned int lightIndices[100];
+  unsigned int count; // number of lights in this cluster
+  unsigned int lightIndices[100];  // lights visible in this cluster
+};
+
+struct alignas(16) PointLight
+{
+  glm::vec4 position;
+  glm::vec4 color;
+  float intensity;
+  float radius;
 };
 
 
@@ -118,10 +135,11 @@ int main()
     Shader modelShader("resources/shaders/model.vs", "resources/shaders/model.fs");
     Shader lightingPassShader("resources/shaders/lightPass.vs", "resources/shaders/lightPass.fs");
     Shader lightSourceShader("resources/shaders/lightSource.vs", "resources/shaders/lightSource.fs");
-    gStencilShader = new Shader("resources/shaders/stencilPass.vs", "resources/shaders/stencilPass.fs");
-    Shader debugSphereShader("resources/shaders/debugSphere.vs", "resources/shaders/debugSphere.fs");
-    Shader ambientLightPassShader("resources/shaders/ambientLightPass.vs", "resources/shaders/ambientLightPass.fs");
-    Shader clusterComp("resources/shaders/clusterShader.comp");
+    // Shader* gStencilShader = new Shader("resources/shaders/stencilPass.vs", "resources/shaders/stencilPass.fs");
+    // Shader debugSphereShader("resources/shaders/debugSphere.vs", "resources/shaders/debugSphere.fs");
+    // Shader ambientLightPassShader("resources/shaders/ambientLightPass.vs", "resources/shaders/ambientLightPass.fs");
+    Shader clusterComp("resources/shaders/clusterShader.glsl");
+    Shader clusterLightCullComp("resources/shaders/lightCulling.glsl");
 
     GLuint planeVBO;
     glGenVertexArrays(1, &planeVAO);
@@ -199,12 +217,18 @@ int main()
 
     // lighting info
     // -------------
-    const unsigned int NR_LIGHTS = 32;
+    const unsigned int NR_LIGHTS = 10000;
     std::vector<glm::vec3> lightPositions;
     std::vector<glm::vec3> lightColors;
+    std::vector<float> lightIntensity;
+    std::vector<float> lightRadius;
+    std::vector<PointLight> pointLights;
     srand(13);
     for (unsigned int i = 0; i < NR_LIGHTS; i++)
     {
+        // Create a pointlight
+        PointLight pointLight;
+
         // calculate slightly random offsets
         float xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
         float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
@@ -215,7 +239,33 @@ int main()
         float gColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
         float bColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
         lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+
+        // calculate light intensity
+        float intensity = std::fmaxf(std::fmaxf(rColor, gColor), bColor);
+
+        // calculate light radius
+
+        float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * intensity))) / (2.0f * quadratic);
+        
+        pointLight.position = glm::vec4(lightPositions[i], 1.0f);
+        pointLight.color = glm::vec4(rColor, gColor, bColor, 1.0f);
+        pointLight.intensity = intensity;
+        pointLight.radius = radius;
+        pointLights.push_back(pointLight);
     }
+
+    std::cout << "Number of point lights: " << pointLights.size() << std::endl;
+    std::cout << "Grid size: " << gridSizeX << "x" << gridSizeY << "x" << gridSizeZ << std::endl;
+
+    // Create a SSBO for the cluster grid
+    init_ssbo();
+    // Create a SSBO for the point lights
+    unsigned int lightSSBO;
+    glGenBuffers(1, &lightSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, pointLights.size() * sizeof(PointLight), pointLights.data(), GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, lightSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
     modelShader.use();
     modelShader.setInt("texture_diffuse1", 0);
@@ -227,13 +277,15 @@ int main()
     lightingPassShader.setInt("gColorSpec", 2);
     lightingPassShader.setVec2("screenSize", glm::vec2(SCR_WIDTH, SCR_HEIGHT));
 
-    ambientLightPassShader.use();
-    ambientLightPassShader.setInt("gPosition", 0);
-    ambientLightPassShader.setInt("gNormal", 1);
-    ambientLightPassShader.setInt("gColorSpec", 2);
+    // ambientLightPassShader.use();
+    // ambientLightPassShader.setInt("gPosition", 0);
+    // ambientLightPassShader.setInt("gNormal", 1);
+    // ambientLightPassShader.setInt("gColorSpec", 2);
 
     while (!glfwWindowShouldClose(window))
     {
+        // Update window title with FPS information
+        showFPS(window);
 
         // calcualte delta Time
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -242,12 +294,16 @@ int main()
 
         processInput(window);
 
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, camera.near, camera.far);
+
         // Building cluster grid
         // --------------------------------------------------
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, clusterGridSSBO);
         clusterComp.use();
         clusterComp.setFloat("zNear", camera.near);
         clusterComp.setFloat("zFar", camera.far);
-        clusterComp.setMat4("inverseProjection", glm::inverse(camera.GetViewMatrix()));
+        clusterComp.setMat4("inverseProjection", glm::inverse(projection));
         clusterComp.setUvec3("gridSize", gridSizeX, gridSizeY, gridSizeZ);
         clusterComp.setUvec2("screenDimension", SCR_WIDTH, SCR_HEIGHT);
 
@@ -256,17 +312,29 @@ int main()
         // ensures the writes to the SSBO are visible to the next shader.
         // make sure writing to the cluster grid is finished before using it
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+        // Build cluster light culling
+        // --------------------------------------------------
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightSSBO);
+        clusterLightCullComp.use();
+        clusterLightCullComp.setMat4("viewMatrix", view);
+
+        // The compute shader uses a 1-D dispatch with LOCAL_SIZE 128 threads.
+        const unsigned int LOCAL_SIZE = 128;
+        unsigned int numGroups = (numClusters + LOCAL_SIZE - 1) / LOCAL_SIZE; // ceil division
+        glDispatchCompute(numGroups, 1, 1);
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);   
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);   
 
         // Implementing geometry pass
         // --------------------------------------------------
         glBindFramebuffer(GL_FRAMEBUFFER, gBuffer); 
-        glDepthMask(GL_TRUE); // Only geometry pass writes to depth buffer
+        // glDepthMask(GL_TRUE); // Only geometry pass writes to depth buffer
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         modelShader.use();
-        glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, camera.near, camera.far);
         modelShader.setMat4("view", view);
         modelShader.setMat4("projection", projection);
 
@@ -278,24 +346,15 @@ int main()
             modelShader.setMat4("model", model);
             player->Draw(modelShader);
         }
-        glDepthMask(GL_FALSE); // Disable depth writing for the lighting pass
-        
+        // glDepthMask(GL_FALSE); // Disable depth writing for the lighting pass
+
+
         // Implementing lighting pass
         // --------------------------------------------------
-        // glEnable(GL_BLEND);
-        // glBlendEquation(GL_FUNC_ADD);
-        // glBlendFunc(GL_ONE, GL_ONE);
-
-        // We need stencil to be enabled in the stencil pass to get the stencil buffer
-        // updated and we also need it in the light pass because we render the light
-        // only if the stencil passes.
-        glEnable(GL_STENCIL_TEST);
-
-        // Switch to default framebuffer to accumulate lighting results on screen
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        
-        // Bind G-buffer textures for lighting passes
+        glBindFramebuffer(GL_FRAMEBUFFER, 0); // Bind default framebuffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        lightingPassShader.use();
+        lightingPassShader.setBool("useQuadRendering", true); // tell the shader we are rendering a full-screen quad
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
         glActiveTexture(GL_TEXTURE1);
@@ -303,76 +362,12 @@ int main()
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, gColorSpec);
 
-        // --------------------------------------------------
-        // Point lights pass
-        // --------------------------------------------------
-        for (unsigned int i = 0; i < lightPositions.size(); i++)
-        {
-            // Calculate light radius
-            const float linear = 0.7f;
-            const float quadratic = 1.8f;
-            float constant = 1.0f; 
-            const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
-            float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-
-            // Stencil pass for this light
-            stencilPassTest(lightPositions[i], radius, view, projection);
-            
-            // Point light pass for this light
-
-            lightingPassShader.use();
-            lightingPassShader.setBool("useQuadRendering", false);
-            lightingPassShader.setVec3("light.Position", lightPositions[i]);
-            lightingPassShader.setVec3("light.Color", lightColors[i]);
-            lightingPassShader.setFloat("light.Linear", linear);
-            lightingPassShader.setFloat("light.Quadratic", quadratic);
-            lightingPassShader.setVec3("viewPos", camera.Position);
-
-            // Set up stencil test to only render where light volume affects geometry
-            // must disable the draw buffers
-            glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-            glDisable(GL_DEPTH_TEST);
-            
-            glEnable(GL_BLEND);
-            glBlendEquation(GL_FUNC_ADD);
-            glBlendFunc(GL_ONE, GL_ONE);
-
-            // Render back faces of light sphere to avoid issues when camera is inside
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_FRONT);
-            
-            // Render the light volume sphere
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPositions[i]);
-            model = glm::scale(model, glm::vec3(radius));
-            lightingPassShader.setMat4("model", model);
-            lightingPassShader.setMat4("view", view);
-            lightingPassShader.setMat4("projection", projection);
-            
-            renderSphere();
-            
-            // Reset culling
-            glCullFace(GL_BACK);
-            glDisable(GL_BLEND);
-        }
-
-        // --------------------------------------------------
-        // After all point lights rendered: run ambient/directional pass
-        // --------------------------------------------------
-        glDisable(GL_STENCIL_TEST);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glBlendEquation(GL_FUNC_ADD);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glDrawBuffer(GL_BACK);
-
-        ambientLightPassShader.use();
-        ambientLightPassShader.setVec3("lightColor", glm::vec3(1.0f));
+        lightingPassShader.setVec3("viewPos", camera.Position);
+        lightingPassShader.setFloat("zNear", camera.near);
+        lightingPassShader.setFloat("zFar", camera.far);
+        lightingPassShader.setUvec3("gridSize", gridSizeX, gridSizeY, gridSizeZ);
+        lightingPassShader.setUvec2("screenDimension", SCR_WIDTH, SCR_HEIGHT);
         renderQuad();
-
-        // Restore depth test and disable blend for any subsequent passes
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
 
         // copy depth info from gpass into the default framebuffer depth buffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
@@ -381,28 +376,6 @@ int main()
             0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST
         );
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        // if (!lightPositions.empty()) {
-        //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        //     glDisable(GL_CULL_FACE);
-        //     glUseProgram(0); // Use fixed-function pipeline for color
-        //     glColor3f(0.0f, 1.0f, 0.0f); // Green wireframe
-        //     glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPositions[0]);
-        //     float linear = 0.7f;
-        //     float quadratic = 1.8f;
-        //     float constant = 1.0f;
-        //     float maxBrightness = std::fmaxf(std::fmaxf(lightColors[0].r, lightColors[0].g), lightColors[0].b);
-        //     float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-        //     model = glm::scale(model, glm::vec3(radius));
-        //     // Use your debugSphereShader if available
-        //     debugSphereShader.use();
-        //     debugSphereShader.setMat4("model", model);
-        //     debugSphereShader.setMat4("view", view);
-        //     debugSphereShader.setMat4("projection", projection);
-        //     debugSphereShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-        //     renderSphere();
-        //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        // }
 
         // // rendering light cubes
         // lightSourceShader.use();
@@ -432,33 +405,6 @@ int main()
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
     return 0;
-}
-
-void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &view, const glm::mat4 &projection) {
-
-    // Disable colour writes, don't update depth
-    // must disable the draw buffers
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);
-    glDisable(GL_CULL_FACE);
-    glClear(GL_STENCIL_BUFFER_BIT);
-
-    // Increment stencil on back-faces, decrement on front-faces
-    glStencilFunc(GL_ALWAYS, 0, 0);
-    glStencilOpSeparate(GL_BACK,  GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-
-    // Render bounding sphere with minimal shader
-    gStencilShader->use();
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPos);
-    model = glm::scale(model, glm::vec3(radius));
-    glm::mat4 mvp = projection * view * model;
-    gStencilShader->setMat4("MVP", mvp);
-
-    // Actually draw the sphere!
-    renderSphere();
-
 }
 
 void renderCube()
@@ -814,4 +760,32 @@ void init_ssbo() {
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, clusterGridSSBO);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
+}
+
+// ----------------------------------------------------------------------------
+// Calculate and display FPS in the window title every ~0.25 s
+// ----------------------------------------------------------------------------
+void showFPS(GLFWwindow* window)
+{
+    static double previousSeconds = 0.0;
+    static int frameCount = 0;
+
+    double currentSeconds = glfwGetTime();
+    double elapsedSeconds = currentSeconds - previousSeconds;
+
+    // Update the title at most four times a second to avoid spamming
+    if (elapsedSeconds > 0.25)
+    {
+        double fps = static_cast<double>(frameCount) / elapsedSeconds;
+
+        std::stringstream ss;
+        ss << "Lighting Example - " << std::fixed << std::setprecision(2) << fps << " FPS";
+
+        glfwSetWindowTitle(window, ss.str().c_str());
+
+        frameCount = 0;
+        previousSeconds = currentSeconds;
+    }
+
+    frameCount++;
 }
