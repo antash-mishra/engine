@@ -2,6 +2,8 @@
 #include <cstddef>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "shader.h"
 #include "camera.h"
@@ -24,6 +26,7 @@ void renderSphere();
 void renderCube();
 void renderQuad();
 void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &view, const glm::mat4 &projection);
+void showFPS(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -80,7 +83,7 @@ unsigned int sphereVAO = 0, sphereVBO = 0;
 int main()
 {
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -193,7 +196,7 @@ int main()
 
     // lighting info
     // -------------
-    const unsigned int NR_LIGHTS = 32;
+    const unsigned int NR_LIGHTS = 1000;
     std::vector<glm::vec3> lightPositions;
     std::vector<glm::vec3> lightColors;
     srand(13);
@@ -228,6 +231,9 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+
+        // Update window title with FPS information
+        showFPS(window);
 
         // calcualte delta Time
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -298,7 +304,6 @@ int main()
             stencilPassTest(lightPositions[i], radius, view, projection);
             
             // Point light pass for this light
-
             lightingPassShader.use();
             lightingPassShader.setBool("useQuadRendering", false);
             lightingPassShader.setVec3("light.Position", lightPositions[i]);
@@ -782,4 +787,32 @@ unsigned int loadTexture(char const *path, bool gammaCorrection)
     }
 
     return textureID;
+}
+
+// ----------------------------------------------------------------------------
+// Calculate and display FPS in the window title every ~0.25 s
+// ----------------------------------------------------------------------------
+void showFPS(GLFWwindow* window)
+{
+    static double previousSeconds = 0.0;
+    static int frameCount = 0;
+
+    double currentSeconds = glfwGetTime();
+    double elapsedSeconds = currentSeconds - previousSeconds;
+
+    // Update the title at most four times a second to avoid spamming
+    if (elapsedSeconds > 0.25)
+    {
+        double fps = static_cast<double>(frameCount) / elapsedSeconds;
+
+        std::stringstream ss;
+        ss << "Lighting Example - " << std::fixed << std::setprecision(2) << fps << " FPS";
+
+        glfwSetWindowTitle(window, ss.str().c_str());
+
+        frameCount = 0;
+        previousSeconds = currentSeconds;
+    }
+
+    frameCount++;
 }
