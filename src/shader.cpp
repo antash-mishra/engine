@@ -92,6 +92,41 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geo
 
 }
 
+Shader::Shader(const char* computePath) {
+  // retrieve compute shader code
+  std::string computeCode;
+  std::ifstream cShaderFile;
+  cShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  
+  try {
+    // open file
+    cShaderFile.open(computePath);
+    std::stringstream computeShaderStream;
+    computeShaderStream << cShaderFile.rdbuf();
+    cShaderFile.close();
+    // convert stream to string
+    computeCode = computeShaderStream.str();
+  }
+  catch (std::ifstream::failure& e) {
+    std::cout << "ERROR::SHADER::FILE_NOT_FOUND_SUCCESSFULLY_READ: " << e.what() << std::endl;
+  }
+  const char* computeShaderCode = computeCode.c_str();
+  // compile shader
+  unsigned int compute;
+  // compute shader
+  compute = glCreateShader(GL_COMPUTE_SHADER);
+  glShaderSource(compute, 1, &computeShaderCode, NULL);
+  glCompileShader(compute);
+  checkCompileErrors(compute, "COMPUTE");
+
+  // shader progarm
+  ID = glCreateProgram();
+  glAttachShader(ID, compute);
+  glLinkProgram(ID);
+  checkCompileErrors(ID, "PROGRAM");
+
+}
+
 void Shader::use() {
   glUseProgram(ID);
 }
@@ -115,6 +150,15 @@ void Shader::setVec2(const std::string &name,const glm::vec2 &value) const {
 void Shader::setVec2(const std::string &name, float x, float y) const {
   glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
 }
+
+void Shader::setUvec2(const std::string &name, const glm::uvec2 &value) const {
+  glUniform2ui(glGetUniformLocation(ID, name.c_str()), value.x, value.y);
+}
+
+void Shader::setUvec2(const std::string &name, unsigned int x, unsigned int y) const {
+  glUniform2ui(glGetUniformLocation(ID, name.c_str()), x, y);
+}
+
 void Shader::setVec3(const std::string &name,const glm::vec3 &value) const {
   glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 }
@@ -122,6 +166,15 @@ void Shader::setVec3(const std::string &name,const glm::vec3 &value) const {
 void Shader::setVec3(const std::string &name, float x, float y, float z) const {
   glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 }
+
+void Shader::setUvec3(const std::string &name, const glm::uvec3 &value) const {
+  glUniform3ui(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
+}
+
+void Shader::setUvec3(const std::string &name, unsigned int x, unsigned int y, unsigned int z) const {
+  glUniform3ui(glGetUniformLocation(ID, name.c_str()), x, y, z);
+}
+
 void Shader::setVec4(const std::string &name,const glm::vec4 &value) const {
   glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 }
