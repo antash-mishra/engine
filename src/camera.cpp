@@ -9,6 +9,8 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     Yaw = yaw;
     Pitch = pitch;
     updateCameraVectors();
+    near = NEAR;
+    far  = FAR;
 }
 
 // Constructor with scalar values
@@ -20,6 +22,8 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
     Yaw = yaw;
     Pitch = pitch;
     updateCameraVectors();
+    near = NEAR;
+    far  = FAR;
 }
 
 // Returns the view matrix using the LookAt function
