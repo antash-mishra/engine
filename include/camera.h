@@ -21,6 +21,8 @@ const float PITCH       =  0.0f;
 const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.05f;
 const float ZOOM        =  35.0f;
+const float NEAR = 0.1f;
+const float FAR = 100.0f;
 
 // An abstract camera class that processes input and calculates the corresponding 
 // Euler Angles, Vectors and Matrices for use in OpenGL
@@ -40,6 +42,9 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
+    // Near and Far planes for perspective projection
+    float near;
+    float far;
 
     // Constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
