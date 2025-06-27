@@ -12,7 +12,10 @@
 Deferred shading already solved one headache of forward rendering—**overdraw**—by drawing geometry
 once, storing its attributes in a G-buffer, and applying lights later in a full-screen pass.  That
 works nicely until the light count itself explodes.  A vanilla deferred fragment shader loops over
-*every* light every pixel; performance tanks linearly.
+*every* light every pixel; performance tanks linearly.  Our own reference
+implementation ([`src/deffered_rendering.cpp`](../src/deffered_rendering.cpp)) mitigates overdraw
+slightly by rendering a stencil-bounded sphere per light before shading, but the fragment shader
+still executes once per light, per pixel, so scalability is limited.
 
 ```
 // pseudo-frag-shader (classic)
@@ -104,7 +107,8 @@ demo the limit is 100.
 | Renderer                          | Lights | 1080p FPS |
 |-----------------------------------|--------|-----------|
 | *Clustered deferred*              | 10 000 | **60 → 60** |
-| *Plain deferred* (no culling)     | 1 000  | 60 → **30** |
+| *Classic deferred*  \[`src/deffered_rendering.cpp`\] | 1 000  | 60 → **30** |
+| Fragment shader loops 1 000 lights per pixel—despite a small optimisation (per-light stencil volume) it remains ALU-bound. |
 
 The compute stage pays ~5 ms to classify 10 000 lights; the fragment stage is untouched.  The naïve
 shader, instead, blows its ALU budget on 1 000 iterations per pixel.
