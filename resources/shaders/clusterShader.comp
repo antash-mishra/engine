@@ -1,0 +1,83 @@
+#version 430 core
+layout(local_size_x=1, local_size_y=1, local_size_z=1) in;
+
+//Output
+struct Cluster {
+    vec4 minPoint;
+    vec4 maxPoint;
+    uint count;
+    uint lightIndices[100];
+}
+
+layout(std430, binding=1) restrict buffer clusterSSBO {
+    Cluster cluster[];
+};
+
+uniform float zNear;
+uniform float zFar;
+
+uniform mat4 inverseProjection;
+uniform uvec3 gridSize;
+uniform uvec2 screenDimension;
+
+vec3 screenToView(vec2 screenCoord);
+vec3 lineIntersectionWithZPlane(vec3 startPoint, vec3 endPoint, float zDistance);
+
+void main() {
+    // Eye position is 0 in view space
+    vec3 eyePos = vec3(0.0);
+
+    uint tileIndex = gl_WorkGroupID.x + (gl_WorkGroupID.y * gridSize.x) + (gl_WorkGroupID.z * gridSize.x * gridSize.y);
+    vec2 tileSize = screenDimension / gridSize.xy;
+
+    // tile in screen-space  
+    vec2 minTile_screenspace = gl_WorkGroupID.xy * tileSize;
+    vec2 maxTile_screenspace = (gl_WorkGroupID.xy + 1) * tileSize;
+    
+    // tile in view-space
+    vec3 minTile_viewspace = screenToView(minTile_screenspace);
+    vec3 maxTile_viewspace = screenToView(maxTile_screenspace);
+
+    //  Near and far values of the cluster in view space
+    float planeNear = zNear * pow(zFar / zNear, gl_WorkGroupID.z / float(gridSize.z))
+    float planeFar = zNear * pow(zFar / zNear, (gl_WorkGroupID.z + 1) / float(gridSize.z));
+
+    // Finding 4 intersection points made from min and max tile corners
+    // These points are in view space
+    // the line goes from the eye position in view space (0, 0, 0)
+    // through the min/max points of a tile to intersect with a given cluster's near-far planes
+    vec3 minNear = lineIntersectionWithZPlane(eyePos, minTile_viewspace, planeNear);
+    vec3 minFar = lineIntersectionWithZPlane(eyePos, minTile_viewspace, planeFar);
+    vec3 maxNear = lineIntersectionWithZPlane(eyePos, maxTile_viewspace, planeNear);
+    vec3 maxFar = lineIntersectionWithZPlane(eyePos, maxTile_viewspace, planeFar);
+
+
+    vec3 minPointAABB = min(min(minNear, minFar), min(maxNear, maxFar));
+    vec3 maxPointAABB = max(max(minNear, minFar), max(maxNear, maxFar));
+
+    // Store the cluster in the SSBO
+    cluster[tileIndex].minPoint = vec4(minPointAABB, 1.0);
+    cluster[tileIndex].maxPoint = vec4(maxPointAABB, 1.0);
+
+}
+
+vec3 lineIntersectionWithZPlane(vec3 startPoint, vec3 endPoint, float zDistance) {
+    // Calculate direction vector from start to end point
+    vec3 direction = endPoint - startPoint;
+
+    vec3 normal = vec3(0.0, 0.0, -1.0); // Normal of the Z plane
+
+    //Computing the intersection length for the line and the plane
+    float t = (zDistance - dot(normal, startPoint)) / dot(normal, direction);
+    return startPoint + t * direction; // the parametric form of the line equation
+}
+
+vec3 screenToView(vec2 screenCoord) {
+    // Convert screen coordinates to normalized device coordinates (NDC)
+    vec2 ndc = (screenCoord / screenDimension) * 2.0 - 1.0;
+    ndc.y *= -1.0; // Invert Y coordinate for OpenGL NDC
+
+    // Convert NDC to view space using the inverse projection matrix
+    vec4 viewSpace = inverseProjection * vec4(ndc, -1.0, 1.0);
+    return viewSpace.xyz / viewSpace.w; // Perspective divide
+}
