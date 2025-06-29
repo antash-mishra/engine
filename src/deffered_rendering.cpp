@@ -11,6 +11,7 @@
 #include "model.h"
 
 #include <filesystem>
+#include <random>
 namespace fs = std::filesystem;
 
 // Global pointer to stencil pass shader so helper functions can access it
@@ -117,6 +118,7 @@ int main()
     Shader lightingPassShader("resources/shaders/lightPass.vs", "resources/shaders/lightPass.fs");
     Shader lightSourceShader("resources/shaders/lightSource.vs", "resources/shaders/lightSource.fs");
     gStencilShader = new Shader("resources/shaders/stencilPass.vs", "resources/shaders/stencilPass.fs");
+    Shader shaderSSAO("resources/shaders/ssao.vs", "resources/shaders/ssao.fs");
     Shader debugSphereShader("resources/shaders/debugSphere.vs", "resources/shaders/debugSphere.fs");
     Shader ambientLightPassShader("resources/shaders/ambientLightPass.vs", "resources/shaders/ambientLightPass.fs");
 
@@ -150,6 +152,35 @@ int main()
     objectPositions.push_back(glm::vec3(0.0, -0.5, 3.0));
     objectPositions.push_back(glm::vec3(3.0, -0.5, 3.0));
 
+    // Generating random sample kernel with 64 sample values
+    std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
+    std::default_random_engine generator;
+    std::vector<glm::vec3> ssaoKernel;
+    for (unsigned int i=0; i<64; i++) {
+        glm::vec3 sample(
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator)
+        );
+        sample = glm::normalize(sample);
+        // sample *= randomFloats(generator);
+        float scale = (float)i / 64.0;
+        scale = lerp(0.1f, 1.0f, scale * scale);
+        ssaoKernel.push_back(sample);
+    }
+
+    // Generating noise Texture
+    // used to rotate sample kernel
+    std::vector<glm::vec3> ssaoNoise;
+    for (unsigned int i=0; i<16; i++) {
+        glm::vec3 noise(
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) * 2.0 - 1.0,
+            0.0
+        );
+        ssaoNoise.push_back(noise);
+    }
+
     // Geometry Buffers framebuffer
     // ---------------------------------------------------
     unsigned int gBuffer;
@@ -160,15 +191,17 @@ int main()
     // position color buffer;
     glGenTextures(1, &gPosition);
     glBindTexture(GL_TEXTURE_2D, gPosition);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
 
     // normal color buffer;
     glGenTextures(1, &gNormal);
     glBindTexture(GL_TEXTURE_2D, gNormal);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
@@ -176,12 +209,12 @@ int main()
     // color + specular color buffer;
     glGenTextures(1, &gColorSpec);
     glBindTexture(GL_TEXTURE_2D, gColorSpec);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
 
-    unsigned int attachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+    constexpr unsigned int attachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     glDrawBuffers(3, attachments);
 
     // Add rbo as depth buffer to check completeness
@@ -194,16 +227,55 @@ int main()
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // Kernel Noise (Rotation) Buffer
+    // -----------------------------------------------------
+    unsigned int noiseTexture;
+    glGenTextures(1, &noiseTexture);
+    glBindTexture(GL_TEXTURE_2D, noiseTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, ssaoNoise.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // framebuffer to store render output of ssao shader
+    // -----------------------------------------------------
+    unsigned int ssaoFBO;
+    glGenFramebuffers(1, &ssaoFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+
+    // ambient occlusion color buffer
+    unsigned int ssaoColorBuffer;
+    glGenTextures(1, &ssaoColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+
+    // blur fbo
+    unsigned int ssaoBlurFBO, ssaoColorBufferBlur;
+    glGenFramebuffers(1, &ssaoBlurFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+    glGenTextures(1, &ssaoColorBufferBlur);
+    glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
+
+
+
+
     // lighting info
     // -------------
-    const unsigned int NR_LIGHTS = 1000;
+    constexpr unsigned int NR_LIGHTS = 1000;
     std::vector<glm::vec3> lightPositions;
     std::vector<glm::vec3> lightColors;
     srand(13);
-    for (unsigned int i = 0; i < NR_LIGHTS; i++)
-    {
+    for (unsigned int i = 0; i < NR_LIGHTS; i++) {
         // calculate slightly random offsets
-        float xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
+        auto xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
         float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
         float zPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
         lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
@@ -280,13 +352,25 @@ int main()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
-        // Bind G-buffer textures for lighting passes
+        // Bind G-buffer textures for rendering ssao and lighting passes
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, gNormal);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, gColorSpec);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, noiseTexture);
+        // render SSAO texture
+        // -------------------------------------------------
+        shaderSSAO.use();
+        for (unsigned int i = 0; i < ssaoKernel.size(); i++) {
+            shaderSSAO.setVec3("sample[" + std::to_string(i) + "]", ssaoKernel[i]);
+        }
+        shaderSSAO.setMat4("projection", projection);
+        renderQuad();
+
+
 
         // --------------------------------------------------
         // Point lights pass
