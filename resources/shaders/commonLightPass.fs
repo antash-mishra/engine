@@ -27,7 +27,6 @@ void main() {
     vec3 FragPos = texture(gPosition, uv).rgb;
     vec3 Normal  = texture(gNormal, uv).rgb;
     vec3 Albedo  = texture(gColorSpec, uv).rgb;
-    float SpecularStrength = texture(gColorSpec, uv).a;
 
 
     // Calculate lighting for this single point light
@@ -40,10 +39,10 @@ void main() {
     vec3 diffuse = diff * Albedo * light.Color;
 
     // Specular term (Blinn-Phong)
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 viewDir = normalize(-FragPos); // FragPos is in view-space so viewPos will be (0.0, 0.0)
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
-    vec3 specular = spec * SpecularStrength * light.Color;
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 8.0);
+    vec3 specular = spec * light.Color;
 
     // Attenuation (quadratic fall-off)
     float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);

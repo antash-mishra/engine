@@ -17,12 +17,15 @@ namespace fs = std::filesystem;
 // Global pointer to stencil pass shader so helper functions can access it
 Shader* gStencilShader = nullptr;
 
+// Debug toggle to visualise SSAO texture
+bool gShowSSAO = false;
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 unsigned int loadTexture(const char *path, bool gammaCorrection = true);
-void renderScene(const Shader &shader, unsigned int roomTexture, unsigned int cubesTexture);
+void renderScene(const Shader &shader);
 void renderSphere();
 void renderCube();
 void renderQuad();
@@ -79,6 +82,9 @@ unsigned int quadVBO;
 
 unsigned int sphereVAO = 0, sphereVBO = 0;
 
+float lerp(float a, float b, float t) {
+    return a + (b - a) * t;
+}
 
 
 int main()
@@ -105,7 +111,7 @@ int main()
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
@@ -115,12 +121,15 @@ int main()
 
     std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
     Shader modelShader("resources/shaders/model.vs", "resources/shaders/model.fs");
-    Shader lightingPassShader("resources/shaders/lightPass.vs", "resources/shaders/lightPass.fs");
+    Shader lightingPassShader("resources/shaders/lightPass.vs", "resources/shaders/commonLightPass.fs");
     Shader lightSourceShader("resources/shaders/lightSource.vs", "resources/shaders/lightSource.fs");
     gStencilShader = new Shader("resources/shaders/stencilPass.vs", "resources/shaders/stencilPass.fs");
     Shader shaderSSAO("resources/shaders/ssao.vs", "resources/shaders/ssao.fs");
+    Shader shaderSSAOBlur("resources/shaders/ssao.vs", "resources/shaders/ssaoBlur.fs");
     Shader debugSphereShader("resources/shaders/debugSphere.vs", "resources/shaders/debugSphere.fs");
     Shader ambientLightPassShader("resources/shaders/ambientLightPass.vs", "resources/shaders/ambientLightPass.fs");
+    // Shader to display raw SSAO texture for debugging
+    Shader ssaoDebugShader("resources/shaders/ambientLightPass.vs", "resources/shaders/showSSAO.fs");
 
     GLuint planeVBO;
     glGenVertexArrays(1, &planeVAO);
@@ -140,23 +149,23 @@ int main()
 
     // Load Models
     // --------------------------------------------------
-    Model *player = new Model(parentDir + "/resources/objects/backpack/backpack.obj");
+    auto *player = new Model(parentDir + "/resources/objects/backpack/backpack.obj");
     std::vector<glm::vec3> objectPositions;
-    objectPositions.push_back(glm::vec3(-3.0, -0.5, -3.0));
-    objectPositions.push_back(glm::vec3(0.0, -0.5, -3.0));
-    objectPositions.push_back(glm::vec3(3.0, -0.5, -3.0));
-    objectPositions.push_back(glm::vec3(-3.0, -0.5, 0.0));
-    objectPositions.push_back(glm::vec3(0.0, -0.5, 0.0));
-    objectPositions.push_back(glm::vec3(3.0, -0.5, 0.0));
-    objectPositions.push_back(glm::vec3(-3.0, -0.5, 3.0));
-    objectPositions.push_back(glm::vec3(0.0, -0.5, 3.0));
+    objectPositions.emplace_back(-3.0, -0.5, -3.0);
+    objectPositions.emplace_back(0.0, -0.5, -3.0);
+    objectPositions.emplace_back(3.0, -0.5, -3.0);
+    objectPositions.emplace_back(-3.0, -0.5, 0.0);
+    objectPositions.emplace_back(0.0, -0.5, 0.0);
+    objectPositions.emplace_back(3.0, -0.5, 0.0);
+    objectPositions.emplace_back(-3.0, -0.5, 3.0);
+    objectPositions.emplace_back(0.0, -0.5, 3.0);
     objectPositions.push_back(glm::vec3(3.0, -0.5, 3.0));
 
     // Generating random sample kernel with 64 sample values
     std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
     std::default_random_engine generator;
     std::vector<glm::vec3> ssaoKernel;
-    for (unsigned int i=0; i<64; i++) {
+    for (unsigned int i=0; i<64; ++i) {
         glm::vec3 sample(
             randomFloats(generator) * 2.0 - 1.0,
             randomFloats(generator) * 2.0 - 1.0,
@@ -164,8 +173,9 @@ int main()
         );
         sample = glm::normalize(sample);
         // sample *= randomFloats(generator);
-        float scale = (float)i / 64.0;
+        float scale = (float)i / 64.0f;
         scale = lerp(0.1f, 1.0f, scale * scale);
+        sample *= scale;
         ssaoKernel.push_back(sample);
     }
 
@@ -176,7 +186,7 @@ int main()
         glm::vec3 noise(
             randomFloats(generator) * 2.0 - 1.0,
             randomFloats(generator) * 2.0 - 1.0,
-            0.0
+            0.0f
         );
         ssaoNoise.push_back(noise);
     }
@@ -209,7 +219,7 @@ int main()
     // color + specular color buffer;
     glGenTextures(1, &gColorSpec);
     glBindTexture(GL_TEXTURE_2D, gColorSpec);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
@@ -227,12 +237,14 @@ int main()
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // Kernel Noise (Rotation) Buffer
+    // Kernel Noise (Rotation) Buffer (4×4 tileable noise)
     // -----------------------------------------------------
+    const unsigned int noiseDim = 4;
     unsigned int noiseTexture;
     glGenTextures(1, &noiseTexture);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, ssaoNoise.data());
+    // Store as RGB; alpha channel not needed
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, noiseDim, noiseDim, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -248,10 +260,12 @@ int main()
     unsigned int ssaoColorBuffer;
     glGenTextures(1, &ssaoColorBuffer);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SSAO Framebuffer not complete!" << std::endl;
 
     // blur fbo
     unsigned int ssaoBlurFBO, ssaoColorBufferBlur;
@@ -259,31 +273,31 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
     glGenTextures(1, &ssaoColorBufferBlur);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
-
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 
     // lighting info
     // -------------
-    constexpr unsigned int NR_LIGHTS = 1000;
+    constexpr unsigned int NR_LIGHTS = 1;
     std::vector<glm::vec3> lightPositions;
     std::vector<glm::vec3> lightColors;
     srand(13);
     for (unsigned int i = 0; i < NR_LIGHTS; i++) {
         // calculate slightly random offsets
-        auto xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
-        float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
-        float zPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
-        lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
+        auto lightPos = glm::vec3(2.0, 4.0, -2.0);
+        lightPositions.push_back(lightPos);
         // also calculate random color
         float rColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
         float gColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
         float bColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
-        lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+        lightColors.push_back(glm::vec3(0.2, 0.2, 0.7));
     }
 
     modelShader.use();
@@ -296,10 +310,22 @@ int main()
     lightingPassShader.setInt("gColorSpec", 2);
     lightingPassShader.setVec2("screenSize", glm::vec2(SCR_WIDTH, SCR_HEIGHT));
 
+    shaderSSAO.use();
+    shaderSSAO.setInt("gPosition", 0);
+    shaderSSAO.setInt("gNormal", 1);
+    shaderSSAO.setInt("texNoise", 2);
+
+    shaderSSAOBlur.use();
+    shaderSSAOBlur.setInt("ssaoInput", 0);
+
     ambientLightPassShader.use();
     ambientLightPassShader.setInt("gPosition", 0);
     ambientLightPassShader.setInt("gNormal", 1);
     ambientLightPassShader.setInt("gColorSpec", 2);
+    ambientLightPassShader.setInt("ssao", 3);
+
+    ssaoDebugShader.use();
+    ssaoDebugShader.setInt("ssaoTex", 0);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -307,7 +333,7 @@ int main()
         // Update window title with FPS information
         showFPS(window);
 
-        // calcualte delta Time
+        // calculate delta Time
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -323,19 +349,13 @@ int main()
 
         modelShader.use();
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 50.0f);
         modelShader.setMat4("view", view);
         modelShader.setMat4("projection", projection);
 
-        for (int i = 0; i < objectPositions.size(); i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, objectPositions[i]);
-            model = glm::scale(model, glm::vec3(0.125f));
-            modelShader.setMat4("model", model);
-            player->Draw(modelShader);
-        }
-        glDepthMask(GL_FALSE); // Disable depth writing for the lighting pass
+        renderScene(modelShader);
+        player->Draw(modelShader);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         // Implementing lighting pass
         // --------------------------------------------------
@@ -343,45 +363,72 @@ int main()
         // glBlendEquation(GL_FUNC_ADD);
         // glBlendFunc(GL_ONE, GL_ONE);
 
-        // We need stencil to be enabled in the stencil pass to get the stencil buffer
-        // updated and we also need it in the light pass because we render the light
-        // only if the stencil passes.
-        glEnable(GL_STENCIL_TEST);
-
         // Switch to default framebuffer to accumulate lighting results on screen
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        
+        glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+        glClear(GL_COLOR_BUFFER_BIT);
+        shaderSSAO.use();
         // Bind G-buffer textures for rendering ssao and lighting passes
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, gNormal);
         glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, gColorSpec);
-        glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, noiseTexture);
         // render SSAO texture
         // -------------------------------------------------
-        shaderSSAO.use();
-        for (unsigned int i = 0; i < ssaoKernel.size(); i++) {
-            shaderSSAO.setVec3("sample[" + std::to_string(i) + "]", ssaoKernel[i]);
+        
+        for (unsigned int i = 0; i < ssaoKernel.size(); ++i) {
+            shaderSSAO.setVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
         }
         shaderSSAO.setMat4("projection", projection);
+        shaderSSAO.setVec2("noiseScale", glm::vec2(SCR_WIDTH / 4.0f, SCR_HEIGHT / 4.0f));
+        renderQuad();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+        // Ambient Occlusion blur to remove the repeated pattern
+        // -----------------------------------------------------
+        glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+        glClear(GL_COLOR_BUFFER_BIT);
+        shaderSSAOBlur.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
         renderQuad();
 
+        // // If debug mode is active, output SSAO texture directly and skip further passes
+        // if (gShowSSAO) {
+        //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //     glClear(GL_COLOR_BUFFER_BIT);
+        //     ssaoDebugShader.use();
+        //     glActiveTexture(GL_TEXTURE0);
+        //     glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+        //     renderQuad();
 
+        //     glfwSwapBuffers(window);
+        //     glfwPollEvents();
+        //     continue; // skip rest of loop so only SSAO is shown
+        // }
 
+        glDepthMask(GL_FALSE); // Disable depth writing for the lighting pass
         // --------------------------------------------------
         // Point lights pass
         // --------------------------------------------------
+        // We need stencil to be enabled in the stencil pass to get the stencil buffer
+        // updated and we also need it in the light pass because we render the light
+        // only if the stencil passes.
+        glEnable(GL_STENCIL_TEST);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
         for (unsigned int i = 0; i < lightPositions.size(); i++)
         {
             // Calculate light radius
-            const float linear = 0.7f;
-            const float quadratic = 1.8f;
+            constexpr float linear = 0.09f;
+            constexpr float quadratic = 0.032f;
             float constant = 1.0f; 
-            const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
+            const float maxBrightness = std::fmaxf( std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
             float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
 
             // Stencil pass for this light
@@ -389,12 +436,19 @@ int main()
             
             // Point light pass for this light
             lightingPassShader.use();
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, gPosition);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, gNormal);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, gColorSpec);
             lightingPassShader.setBool("useQuadRendering", false);
-            lightingPassShader.setVec3("light.Position", lightPositions[i]);
+            lightingPassShader.setVec3("light.Position", glm::vec3(view * glm::vec4(lightPositions[i], 1.0f)));
             lightingPassShader.setVec3("light.Color", lightColors[i]);
             lightingPassShader.setFloat("light.Linear", linear);
             lightingPassShader.setFloat("light.Quadratic", quadratic);
-            lightingPassShader.setVec3("viewPos", camera.Position);
+            // as FragPos is in view-space and calculation is done in view space
+            lightingPassShader.setVec3("viewPos", glm::vec3(0.0f));
 
             // Set up stencil test to only render where light volume affects geometry
             // must disable the draw buffers
@@ -435,6 +489,14 @@ int main()
         glDrawBuffer(GL_BACK);
 
         ambientLightPassShader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gPosition);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, gColorSpec);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
         ambientLightPassShader.setVec3("lightColor", glm::vec3(1.0f));
         renderQuad();
 
@@ -450,40 +512,6 @@ int main()
         );
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // if (!lightPositions.empty()) {
-        //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        //     glDisable(GL_CULL_FACE);
-        //     glUseProgram(0); // Use fixed-function pipeline for color
-        //     glColor3f(0.0f, 1.0f, 0.0f); // Green wireframe
-        //     glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPositions[0]);
-        //     float linear = 0.7f;
-        //     float quadratic = 1.8f;
-        //     float constant = 1.0f;
-        //     float maxBrightness = std::fmaxf(std::fmaxf(lightColors[0].r, lightColors[0].g), lightColors[0].b);
-        //     float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-        //     model = glm::scale(model, glm::vec3(radius));
-        //     // Use your debugSphereShader if available
-        //     debugSphereShader.use();
-        //     debugSphereShader.setMat4("model", model);
-        //     debugSphereShader.setMat4("view", view);
-        //     debugSphereShader.setMat4("projection", projection);
-        //     debugSphereShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-        //     renderSphere();
-        //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        // }
-
-        // // rendering light cubes
-        // lightSourceShader.use();
-        // lightSourceShader.setMat4("projection", projection);
-        // lightSourceShader.setMat4("view", view);
-        // for (unsigned int j=0; j<lightPositions.size(); j++) {
-        //     glm::mat4 model = glm::mat4(1.0f);
-        //     model = glm::translate(model, lightPositions[j]);
-        //     model = glm::scale(model, glm::vec3(0.25f));
-        //     lightSourceShader.setMat4("model", model);
-        //     lightSourceShader.setVec3("lightColor", lightColors[j]);
-        //     renderCube();
-        // }
 
 
         glfwSwapBuffers(window);
@@ -503,6 +531,12 @@ int main()
 }
 
 void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &view, const glm::mat4 &projection) {
+
+    // Disable colour writes and depth writes; we only want to update the stencil buffer
+    // Disable colour writes so the bounding sphere is not drawn to the colour buffer
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    // Disable depth writes so we keep the geometry pass depth intact
+    glDepthMask(GL_FALSE);
 
     // Disable colour writes, don't update depth
     // must disable the draw buffers
@@ -526,6 +560,10 @@ void stencilPassTest(const glm::vec3 &lightPos, float radius, const glm::mat4 &v
 
     // Actually draw the sphere!
     renderSphere();
+
+    // Restore default write masks after stencil pass
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glDepthMask(GL_TRUE);
 
 }
 
@@ -699,63 +737,21 @@ void renderSphere()
 }
 
 // render the scene with the given shader
-void renderScene(const Shader &shader, unsigned int roomTexture, unsigned int cubesTexture)
+void renderScene(const Shader &shader)
 {
     // floor
-    if (roomTexture)
-    {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, roomTexture);
-    }
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0));
-    model = glm::scale(model, glm::vec3(12.5f, 0.5f, 12.5f));
-
+    model = glm::translate(model, glm::vec3(0.0f, 7.0f, 0.0));
+    model = glm::scale(model, glm::vec3(7.5f, 7.5f, 7.5f));
     shader.setMat4("model", model);
+    shader.setInt("invertedNormals", 1);
     renderCube();
-
-    // cubes
-    if (cubesTexture)
-    {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, cubesTexture);
-    }
+    shader.setInt("invertedNormals", 0);
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
-    model = glm::scale(model, glm::vec3(0.5f));
+    model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0));
+    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+    model = glm::scale(model, glm::vec3(1.0f));
     shader.setMat4("model", model);
-    renderCube();
-
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
-    model = glm::scale(model, glm::vec3(0.5f));
-    shader.setMat4("model", model);
-    renderCube();
-
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-1.0f, -1.0f, 2.0));
-    model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    shader.setMat4("model", model);
-    renderCube();
-
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 2.7f, 4.0));
-    model = glm::rotate(model, glm::radians(23.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    model = glm::scale(model, glm::vec3(1.25));
-    shader.setMat4("model", model);
-    renderCube();
-
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -3.0));
-    model = glm::rotate(model, glm::radians(124.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    shader.setMat4("model", model);
-    renderCube();
-
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-3.0f, 0.0f, 0.0));
-    model = glm::scale(model, glm::vec3(0.25f));
-    shader.setMat4("model", model);
-    renderCube();
 }
 // process all input: query GLFW whether relevant keys are pressed/released this
 // frame and react accordingly
@@ -790,6 +786,14 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(LEFT, deltaTime);
+
+    // Toggle SSAO debug view with key 'O'
+    static bool oPressedLastFrame = false;
+    bool oPressedNow = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
+    if (oPressedNow && !oPressedLastFrame) {
+        gShowSSAO = !gShowSSAO;
+    }
+    oPressedLastFrame = oPressedNow;
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
