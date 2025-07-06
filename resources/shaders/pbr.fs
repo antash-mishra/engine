@@ -11,6 +11,7 @@ uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D normalMap;
 uniform sampler2D aoMap;
+uniform samplerCube irradianceMap;
 
 // lights
 uniform vec3 lightPositions[4];
@@ -37,6 +38,10 @@ vec3 getNormalFromNormalMap()
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
+    return F0 + (max(vec3(1.0-roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
 float distributionGGX(vec3 N, vec3 H, float roughness) {
@@ -80,10 +85,17 @@ void main() {
     float roughness = texture(roughnessMap, TexCoords).r;
     float ao        = texture(aoMap, TexCoords).r;
 
+
+
     vec3 N = getNormalFromNormalMap();
+
     // viewPos
     vec3 V = normalize(camPosition - WorldPos);
     vec3 Lo = vec3(0.0);
+
+     // base reflectivity of surface
+     vec3 F0 = vec3(0.04);
+     F0 = mix(F0, albedo, metallic);
 
     for(int i=0; i<4; i++) {
         // light Direction
@@ -100,8 +112,7 @@ void main() {
 
         // BRDF Eq
         // ----------------------------------------------
-        vec3 F0 = vec3(0.04);
-        F0 = mix(F0, albedo, metallic);
+        // Reflectance ratio
         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
         // Normal Distribution
@@ -125,7 +136,17 @@ void main() {
         Lo  +=  ((kD * albedo / PI) + specular) * radiance * nDotL;
     }
 
-    vec3 ambient = vec3(0.03) * albedo * ao;
+     // vec3 ambient = vec3(0.03) * albedo * ao;
+
+    // irradiance (indirect lighting)
+    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
+    vec3 kD = 1.0 - kS;
+    kD *= (1.0 - metallic);
+    vec3 diffuse = irradiance * albedo;
+    vec3 ambient = (kD * diffuse) * ao;
+
+
     vec3 color = ambient + Lo;
 
     // reinhard tone mapping (As Lo can go very high to preserve the high dynamic range)
