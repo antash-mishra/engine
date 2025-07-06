@@ -82,6 +82,7 @@ int main() {
   Shader cubeMapShader("resources/shaders/cube.vs", "resources/shaders/cube.fs");
   Shader backgroundShader("resources/shaders/background.vs", "resources/shaders/background.fs");
   Shader irradianceShader("resources/shaders/cube.vs", "resources/shaders/irradiance.fs");
+  Shader prefilterShader("resources/shaders/prefilter.vs", "resources/shaders/prefilter.fs");
 
   // Load Texture
   unsigned int albedoTexture = loadTexture((parentDir + "/resources/iron_pbr/albedo.png").c_str(), true);
@@ -190,6 +191,55 @@ int main() {
     renderCube();
   }
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+  // Pre-filter hdr env map (specular)
+  unsigned int prefilterMap;
+  glGenTextures(1, &prefilterMap);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+  for (unsigned int i = 0; i < 6; i++) {
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 128, 128, 0, GL_RGB, GL_FLOAT, NULL);
+  }
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // enable trilinear filtering [for smooth transiting and less artifact between mipmaps]
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+  glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+  prefilterShader.use();
+  prefilterShader.setInt("environmentMap", 0);
+  prefilterShader.setMat4("projection", captureProjection);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, envCubeMap);
+
+  // glViewport(0, 0, 128, 128);
+  glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+
+  unsigned int maxMipLevels = 5;
+  for (unsigned int mip = 0; mip < maxMipLevels; mip++) {
+    // resize frame buffer mip-size
+    unsigned int mipWidth = 128 * std::pow(0.5, mip);
+    unsigned int mipHeight = 128 * std::pow(0.5, mip);
+    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+    glViewport(0, 0, mipWidth, mipHeight);
+
+    float roughness = (float)mip / (float)(maxMipLevels - 1);
+    prefilterShader.setFloat("roughness", roughness);
+    for (unsigned int i=0; i<6; ++i) {
+      prefilterShader.setMat4("view", captureViews[i]);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, 0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      renderCube();
+    }
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+
+
 
 
 
