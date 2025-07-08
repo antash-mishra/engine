@@ -12,6 +12,8 @@ uniform sampler2D roughnessMap;
 uniform sampler2D normalMap;
 uniform sampler2D aoMap;
 uniform samplerCube irradianceMap;
+uniform sampler2D brdfLUT;
+uniform samplerCube prefilterMap;
 
 // lights
 uniform vec3 lightPositions[4];
@@ -97,6 +99,7 @@ void main() {
      vec3 F0 = vec3(0.04);
      F0 = mix(F0, albedo, metallic);
 
+
     for(int i=0; i<4; i++) {
         // light Direction
         vec3 L = normalize(lightPositions[i] - WorldPos);
@@ -138,14 +141,21 @@ void main() {
 
      // vec3 ambient = vec3(0.03) * albedo * ao;
 
+
     // irradiance (indirect lighting)
     vec3 irradiance = texture(irradianceMap, N).rgb;
     vec3 kS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
     vec3 kD = 1.0 - kS;
     kD *= (1.0 - metallic);
     vec3 diffuse = irradiance * albedo;
-    vec3 ambient = (kD * diffuse) * ao;
 
+    // Indirect specular reflection
+    vec3 R = reflect(-V, N);
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilteredColor= textureLod(prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
+    vec2 envBRDF = texture(brdfLUT, vec2(max(dot(N,V), 0.0), roughness)).rg;
+    vec3 specular = prefilteredColor * (kS * envBRDF.x + envBRDF.y);
+    vec3 ambient = (kD * diffuse * specular) * ao;
 
     vec3 color = ambient + Lo;
 
