@@ -4,6 +4,9 @@ project(game_engine VERSION 0.1.0)
 # Find Assimp package
 find_package(assimp REQUIRED)
 
+# Find draco package (optional, for glTF support)
+find_package(draco QUIET)
+
 # ImGui source files
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui)
 set(IMGUI_SOURCES
@@ -18,13 +21,11 @@ set(IMGUI_SOURCES
 
 # Source files
 add_executable(game_engine 
-    src/pbr.cpp
+    src/sponza.cpp
     src/glad.c 
     src/shader.cpp
     src/stb_image.cpp
     src/camera.cpp
-    src/model.cpp
-    ${IMGUI_SOURCES}
 )
 
 target_include_directories(game_engine PRIVATE 
@@ -42,3 +43,14 @@ target_link_libraries(game_engine
     glfw
     assimp::assimp  # Link Assimp using the target provided by find_package
 )
+
+# Link draco if found, otherwise try system library
+if(draco_FOUND)
+    target_link_libraries(game_engine draco)
+else()
+    # Try to link system draco library
+    find_library(DRACO_LIB draco)
+    if(DRACO_LIB)
+        target_link_libraries(game_engine ${DRACO_LIB})
+    endif()
+endif()

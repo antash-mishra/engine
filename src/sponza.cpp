@@ -31,10 +31,12 @@ void renderCube();
 void renderQuad();
 void showFPS(GLFWwindow* window);
 
-// settings
+// settings (initial)
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+unsigned int gWindowWidth  = SCR_WIDTH;
+unsigned int gWindowHeight = SCR_HEIGHT;
 
 // Time
 float deltaTime = 0.0f;
@@ -48,6 +50,9 @@ float fov = 45.0f;
 float exposure = 5.0f;
 
 Camera camera(glm::vec3(13.0f, 5.0f, 0.0f));
+
+// Global loader for light cube toggle
+GLTFLoader loader;
 
 // Vertices coordinates
 GLfloat vertices[] =
@@ -103,7 +108,9 @@ int main() {
     camera.far  = 60.0f;
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_DEPTH_CLAMP);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
     std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
     // Shader shader(
@@ -112,14 +119,63 @@ int main() {
     Shader modelSponza (
         (parentDir + "/resources/sponza/modelSponza.vs").c_str(),
         (parentDir + "/resources/sponza/modelSponza.fs").c_str());
+    Shader depthShader((parentDir + "/resources/sponza/depthMap.vs").c_str(), (parentDir + "/resources/sponza/depthMap.fs").c_str());
+    Shader debugDepthQuadShader((parentDir + "/resources/sponza/debugDepthQuad.vs").c_str(), (parentDir + "/resources/sponza/debugDepthQuad.fs").c_str());
 
     // Use GLTFLoader class
-    GLTFLoader loader;
-    std::string gltfPath = parentDir + "/resources/main_sponza/Sponza.gltf";
+    // GLTFLoader loader; // This line is moved to global scope
+    std::string gltfPath = parentDir + "/resources/main-sponza/main_sponza/NewSponza_Main_glTF_003.gltf";
     if (!loader.loadModel(gltfPath)) {
         std::cout << "Failed to load model" << std::endl;
         return -1;
     }
+
+    // framebuffer for depth map
+    unsigned int depthMapFBO;
+    glGenFramebuffers(1, &depthMapFBO);
+
+    const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024 ;
+    unsigned int depthMap;
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT,0,GL_DEPTH_COMPONENT,GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    // attach depth map texture to framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    glDrawBuffer(GL_NONE); // No color buffer is drawn to
+    glReadBuffer(GL_NONE); // No color buffer is read from
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // ------------------------------------------------------------
+    //   Extract first enabled directional light for shadow mapping
+    // ------------------------------------------------------------
+    glm::vec3 sunPosWS, sunDirWS;
+    if (!loader.getFirstDirectionalLight(sunPosWS, sunDirWS)) {
+        std::cerr << "No active directional light found. Shadows disabled." << std::endl;
+        sunDirWS = glm::vec3(0.0f, -1.0f, 0.0f); // fallback
+    }
+
+    // Choose a point along -sunDir so the ortho volume encloses the scene
+    glm::vec3 sceneCenter(0.0f);        // tweak if scene is offset
+    float     sceneRadius = 20.0f;      // tweak to fit whole scene
+    glm::vec3 lightPos = sceneCenter - sunDirWS * sceneRadius;
+
+    // Keep these for reuse each frame
+    glm::vec3 cachedLightPos = lightPos;
+    glm::vec3 cachedSunDir   = sunDirWS;
+
+    modelSponza.use();
+    loader.setupLighting(modelSponza);
+
+    debugDepthQuadShader.use();
+    debugDepthQuadShader.setInt("depthMap", 0);
 
     while (!glfwWindowShouldClose(window)) {
         // Update window title with FPS information
@@ -133,18 +189,54 @@ int main() {
         processInput(window);
 
         // Clear the screen
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.9999999, 0.9999998, 1.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        depthShader.use();
+        float near_plane = 1.0f, far_plane = sceneRadius * 2.0f;
+        // Build light-space matrices using cached light position & direction
+        float orthoHalf = sceneRadius;
+        glm::mat4 lightProjection = glm::ortho(-orthoHalf, orthoHalf,
+                                               -orthoHalf, orthoHalf,
+                                               near_plane, far_plane);
+        glm::mat4 lightView = glm::lookAt(cachedLightPos,
+                                          sceneCenter,
+                                          glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glCullFace(GL_FRONT);
+        loader.Render(depthShader, lightView, lightProjection);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // reset viewport
+        glViewport(0, 0, gWindowWidth, gWindowHeight);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glCullFace(GL_BACK);
+
+        // render scene with depth map
         glm::mat4 viewMatrix = camera.GetViewMatrix();
-        glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, camera.near, camera.far);
-
+        glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)gWindowWidth / (float)gWindowHeight, camera.near, camera.far);
         modelSponza.use();
-        // modelSponza.setMat4("view", viewMatrix);
-        // modelSponza.setMat4("projection", projectionMatrix);
-        // The model matrix will be set per-node in the loader.Render() call
-
+        
+        // Set camera position for specular lighting (must be after shader.use())
+        // modelSponza.setVec3("viewPos", camera.Position);
+        modelSponza.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, depthMap);   // depthMap was generated earlier
+        modelSponza.setInt("shadowMap", 2);
         loader.Render(modelSponza, viewMatrix, projectionMatrix);
+
+        // render Depth map to quad for visual debugging
+        // ---------------------------------------------
+        debugDepthQuadShader.use();
+        debugDepthQuadShader.setFloat("near_plane", near_plane);
+        debugDepthQuadShader.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        // renderQuad();
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -361,6 +453,15 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(LEFT, deltaTime);
 
+    // Toggle light cube visualization with 'L' key
+    static bool lPressedLastFrame = false;
+    bool lPressedNow = glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS;
+    if (lPressedNow && !lPressedLastFrame) {
+        loader.showLightCubes = !loader.showLightCubes;
+        std::cout << "Light cubes " << (loader.showLightCubes ? "enabled" : "disabled") << std::endl;
+    }
+    lPressedLastFrame = lPressedNow;
+
     // Toggle SSAO debug view with key 'O'
     // static bool oPressedLastFrame = false;
     // bool oPressedNow = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
@@ -404,6 +505,8 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width
     // and height will be significantly larger than specified on retina displays.
+    gWindowWidth  = width;
+    gWindowHeight = height;
     glViewport(0, 0, width, height);
 }
 

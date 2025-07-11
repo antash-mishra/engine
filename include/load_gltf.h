@@ -27,16 +27,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <chrono>
 
 #define GLT_BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 
 
 // --------------------------------------------------------------------------------
+enum lightType {
+    POINT,
+    DIRECTIONAL
+};
+
+
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
-    glm::vec2 texCoords;
+    glm::vec2 texCoords_0;
+    glm::vec2 texCoords_1;
     glm::vec3 tangent;
 };
 
@@ -45,6 +53,12 @@ struct Mesh {
     std::vector<unsigned int> indices;
     int materialIndex;
     unsigned int VAO, VBO, EBO;
+};
+
+struct Light {
+    glm::vec3 color;
+    float intensity;
+    enum lightType  type;
 };
 
 struct Material {
@@ -64,9 +78,11 @@ struct Texture {
 
 struct Node {
     std::vector<int> meshIndices;
-    // std::vector<int> children;
+    std::vector<int> children;
     glm::mat4 transform;
     glm::mat4 worldTransform;
+    Light light;
+    bool hasLight = false;
 };
 
 
@@ -77,12 +93,18 @@ class GLTFLoader {
         std::vector<Material> materials;
         std::vector<Texture> textures;
         std::vector<Node> nodes;
+        std::vector<Light> lights;
         tinygltf::Model model;
+        
+        // Debug visualization options
+        bool showLightCubes = true;
 
         // Load a glTF/GLB file into the provided tinygltf::Model.
         // Returns true on success.
         bool loadModel(const std::string &filename) {
             std::cout << "loadModel" << std::endl;
+            auto start = std::chrono::high_resolution_clock::now();
+            
             tinygltf::TinyGLTF loader;
             std::string err;
             std::string warn;
@@ -100,16 +122,160 @@ class GLTFLoader {
                 std::cout << "Failed to load glTF: " << filename << std::endl;
                 return false;
             }
-            std::cout << "Loaded glTF: " << filename << std::endl;
+            
+            auto loadTime = std::chrono::high_resolution_clock::now();
+            std::cout << "File loaded in " << std::chrono::duration_cast<std::chrono::milliseconds>(loadTime - start).count() << "ms" << std::endl;
 
+            auto processStart = std::chrono::high_resolution_clock::now();
             ProcessTextures();
+            auto textureTime = std::chrono::high_resolution_clock::now();
+            std::cout << "Textures processed in " << std::chrono::duration_cast<std::chrono::milliseconds>(textureTime - processStart).count() << "ms" << std::endl;
+            
             ProcessMaterials();
+            auto materialTime = std::chrono::high_resolution_clock::now();
+            std::cout << "Materials processed in " << std::chrono::duration_cast<std::chrono::milliseconds>(materialTime - textureTime).count() << "ms" << std::endl;
+
+            ProcessLights();
+            auto lightTime = std::chrono::high_resolution_clock::now();
+            std::cout << "Lights processed in " << std::chrono::duration_cast<std::chrono::milliseconds>(lightTime - materialTime).count() << "ms" << std::endl;
+
             ProcessMeshes();
+            auto meshTime = std::chrono::high_resolution_clock::now();
+            std::cout << "Meshes processed in " << std::chrono::duration_cast<std::chrono::milliseconds>(meshTime - lightTime).count() << "ms" << std::endl;
+            
             ProcessNodes();
+            auto nodeTime = std::chrono::high_resolution_clock::now();
+            std::cout << "Nodes processed in " << std::chrono::duration_cast<std::chrono::milliseconds>(nodeTime - meshTime).count() << "ms" << std::endl;
+            
+            auto totalTime = std::chrono::high_resolution_clock::now();
+            std::cout << "Total loading time: " << std::chrono::duration_cast<std::chrono::milliseconds>(totalTime - start).count() << "ms" << std::endl;
+            
             return true;
         }
 
     private:
+        // Debug cube for light visualization
+        unsigned int lightCubeVAO = 0, lightCubeVBO = 0;
+        
+        void createLightCube() {
+            if (lightCubeVAO == 0) {
+                float cubeVertices[] = {
+                    // positions
+                    -0.5f, -0.5f, -0.5f,
+                     0.5f, -0.5f, -0.5f,
+                     0.5f,  0.5f, -0.5f,
+                     0.5f,  0.5f, -0.5f,
+                    -0.5f,  0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
+
+                    -0.5f, -0.5f,  0.5f,
+                     0.5f, -0.5f,  0.5f,
+                     0.5f,  0.5f,  0.5f,
+                     0.5f,  0.5f,  0.5f,
+                    -0.5f,  0.5f,  0.5f,
+                    -0.5f, -0.5f,  0.5f,
+
+                    -0.5f,  0.5f,  0.5f,
+                    -0.5f,  0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
+                    -0.5f, -0.5f,  0.5f,
+                    -0.5f,  0.5f,  0.5f,
+
+                     0.5f,  0.5f,  0.5f,
+                     0.5f,  0.5f, -0.5f,
+                     0.5f, -0.5f, -0.5f,
+                     0.5f, -0.5f, -0.5f,
+                     0.5f, -0.5f,  0.5f,
+                     0.5f,  0.5f,  0.5f,
+
+                    -0.5f, -0.5f, -0.5f,
+                     0.5f, -0.5f, -0.5f,
+                     0.5f, -0.5f,  0.5f,
+                     0.5f, -0.5f,  0.5f,
+                    -0.5f, -0.5f,  0.5f,
+                    -0.5f, -0.5f, -0.5f,
+
+                    -0.5f,  0.5f, -0.5f,
+                     0.5f,  0.5f, -0.5f,
+                     0.5f,  0.5f,  0.5f,
+                     0.5f,  0.5f,  0.5f,
+                    -0.5f,  0.5f,  0.5f,
+                    -0.5f,  0.5f, -0.5f
+                };
+
+                glGenVertexArrays(1, &lightCubeVAO);
+                glGenBuffers(1, &lightCubeVBO);
+
+                glBindBuffer(GL_ARRAY_BUFFER, lightCubeVBO);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+                glBindVertexArray(lightCubeVAO);
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+                glEnableVertexAttribArray(0);
+
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                glBindVertexArray(0);
+            }
+        }
+
+        void renderLightCube(const glm::mat4& lightTransform, Shader& shader, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& lightColor) {
+            createLightCube();
+            
+            // Create a small cube at light position
+            glm::mat4 cubeModel = lightTransform;
+            cubeModel = glm::scale(cubeModel, glm::vec3(0.5f)); // Make it smaller (0.5x0.5x0.5 units)
+            
+            glm::mat4 MVP = projection * view * cubeModel;
+            shader.setMat4("MVP", MVP);
+            
+            // Bind a 1x1 white texture so baseColorTexture sample returns white (avoid black cube)
+            static unsigned int whiteTex = 0;
+            if (whiteTex == 0) {
+                unsigned char whitePixel[3] = {255, 255, 255};
+                glGenTextures(1, &whiteTex);
+                glBindTexture(GL_TEXTURE_2D, whiteTex);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            }
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, whiteTex);
+            shader.setInt("baseColorTexture", 0);
+
+            // Set light[0] properties to illuminate the cube with its own color
+            shader.setVec3("light[0].direction", glm::vec3(0.0f, -1.0f, 0.0f));
+            shader.setVec3("light[0].color", lightColor);
+            shader.setFloat("light[0].intensity", 1.0f);
+            shader.setBool("light[0].isPointLight", false);
+            
+            glBindVertexArray(lightCubeVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(0);
+        }
+
+        std::vector<glm::vec4> GetVec4Data(const tinygltf::Accessor& accessor) {
+            std::vector<glm::vec4> data;
+
+            const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
+            const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+
+            const float *ptr = reinterpret_cast<const float*>(
+                buffer.data.data() + bufferView.byteOffset + accessor.byteOffset
+            );
+
+            size_t stride = bufferView.byteStride;
+            size_t byteStride = stride? stride : sizeof(float) * 4;
+
+            for (size_t i = 0; i < accessor.count; i++) {
+                const float *vertexPtr = reinterpret_cast<const float*>(
+                    reinterpret_cast<const char*>(ptr) + i * byteStride
+                );
+                data.push_back(glm::vec4(vertexPtr[0], vertexPtr[1], vertexPtr[2], vertexPtr[3]));
+            }
+
+            return data;
+        }
 
         std::vector<glm::vec3> GetVec3Data(const tinygltf::Accessor& accessor) {
             std::vector<glm::vec3> data;
@@ -210,14 +376,22 @@ class GLTFLoader {
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
+            // Normal
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
+            // TexCoords_0 (primary texture coordinates)
             glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords_0));
 
+            // TexCoords_1 (secondary texture coordinates)
             glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+            glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords_1));
+
+            // Tangent
+            glEnableVertexAttribArray(4);
+            glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+
 
             glBindVertexArray(0);
         }
@@ -225,8 +399,9 @@ class GLTFLoader {
         void ProcessPrimitive(const tinygltf::Primitive& primitive, Mesh& mesh) {
             std::vector<glm::vec3> positions;
             std::vector<glm::vec3> normals;
-            std::vector<glm::vec2> texCoords;
-            std::vector<glm::vec3> tangents;
+            std::vector<glm::vec2> texCoords_0;
+            std::vector<glm::vec2> texCoords_1;
+            std::vector<glm::vec4> tangents;
 
             // Extract position
             if (primitive.attributes.find("POSITION") != primitive.attributes.end()) {
@@ -237,7 +412,13 @@ class GLTFLoader {
             // Extract texCoords
             if (primitive.attributes.find("TEXCOORD_0") != primitive.attributes.end()) {
                 const tinygltf::Accessor& accessor = model.accessors[primitive.attributes.at("TEXCOORD_0")];
-                texCoords = GetVec2Data(accessor);
+                texCoords_0 = GetVec2Data(accessor);
+            }
+
+            // Extract texCoords
+            if (primitive.attributes.find("TEXCOORD_1") != primitive.attributes.end()) {
+                const tinygltf::Accessor& accessor = model.accessors[primitive.attributes.at("TEXCOORD_1")];
+                texCoords_1 = GetVec2Data(accessor);
             }
 
             // Extract Normal
@@ -249,7 +430,7 @@ class GLTFLoader {
             // Extract Tangent
             if (primitive.attributes.find("TANGENT") != primitive.attributes.end()) {
                 const tinygltf::Accessor& accessor = model.accessors[primitive.attributes.at("TANGENT")];
-                tangents = GetVec3Data(accessor);
+                tangents = GetVec4Data(accessor);
             }
 
             // Build vertex Array
@@ -259,7 +440,8 @@ class GLTFLoader {
             for (size_t v = 0; v < vertexCount; v++) {
                 mesh.vertices[v].position = positions[v];
                 mesh.vertices[v].normal = (v < normals.size()) ? normals[v] : glm::vec3(0.0f);
-                mesh.vertices[v].texCoords = (v < texCoords.size()) ? texCoords[v] : glm::vec2(0.0f);
+                mesh.vertices[v].texCoords_0 = (v < texCoords_0.size()) ? texCoords_0[v] : glm::vec2(0.0f);
+                mesh.vertices[v].texCoords_1 = (v < texCoords_1.size()) ? texCoords_1[v] : glm::vec2(0.0f);
                 mesh.vertices[v].tangent = (v < tangents.size()) ? tangents[v] : glm::vec3(0.0f);
             }
 
@@ -278,9 +460,10 @@ class GLTFLoader {
 
 
         void ProcessTextures() {
-            std::cout << "Processing textures" << std::endl;
+            std::cout << "Processing " << model.textures.size() << " textures..." << std::endl;
             textures.resize(model.textures.size());
-
+            
+            int loadedCount = 0;
             for (size_t t = 0; t < model.textures.size(); t++) {
                 const tinygltf::Texture& gltfTexture = model.textures[t];
 
@@ -306,8 +489,8 @@ class GLTFLoader {
                         const tinygltf::Sampler& sampler = model.samplers[gltfTexture.sampler];
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                     } else {
                         // Default parameters
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -318,8 +501,18 @@ class GLTFLoader {
 
                     textures[t].textureID = texID;
                     textures[t].samplerIndex = gltfTexture.sampler;
+                    
+                    // Check for OpenGL errors (only for first few textures)
+                    if (t < 3) {
+                        GLenum error = glGetError();
+                        if (error != GL_NO_ERROR) {
+                            std::cout << "OpenGL error loading texture " << t << ": " << error << std::endl;
+                        }
+                    }
+                    loadedCount++;
                 }
             }
+            std::cout << "Successfully loaded " << loadedCount << "/" << textures.size() << " textures" << std::endl;
         }
 
         void ProcessMaterials() {
@@ -353,11 +546,76 @@ class GLTFLoader {
             }
         }
 
+        void ProcessLights() {
+            
+            // Check if the KHR_lights_punctual extension exists
+            if (model.extensions.find("KHR_lights_punctual") == model.extensions.end()) {
+                std::cout << "No KHR_lights_punctual extension found" << std::endl;
+                return;
+            }
+            
+            const tinygltf::Value& lightsExt = model.extensions.at("KHR_lights_punctual");
+            if (!lightsExt.Has("lights")) {
+                std::cout << "No lights array found in extension" << std::endl;
+                return;
+            }
+            
+            const tinygltf::Value& lightsArray = lightsExt.Get("lights");
+            if (!lightsArray.IsArray()) {
+                std::cout << "Lights is not an array" << std::endl;
+                return;
+            }
+            
+            lights.resize(lightsArray.Size());
+            
+            for (size_t i = 0; i < lightsArray.Size(); i++) {
+                const tinygltf::Value& lightValue = lightsArray.Get(i);
+                Light& light = lights[i];
+                
+                // Parse color (default to white if not present)
+                if (lightValue.Has("color") && lightValue.Get("color").IsArray() && lightValue.Get("color").Size() >= 3) {
+
+                    const tinygltf::Value& colorArray = lightValue.Get("color");
+                    light.color = glm::vec3(
+                        colorArray.Get(0).GetNumberAsDouble(),
+                        colorArray.Get(1).GetNumberAsDouble(),
+                        colorArray.Get(2).GetNumberAsDouble()
+                    );
+                } else {
+                    light.color = glm::vec3(1.0f, 1.0f, 1.0f); // Default white
+                }
+                
+                // Parse intensity (default to 1.0 if not present)
+                if (lightValue.Has("intensity")) {
+                    light.intensity = lightValue.Get("intensity").GetNumberAsDouble();
+                } else {
+                    light.intensity = 1.0f;
+                }
+
+                // Parse type (default to point if not present)
+                if (lightValue.Has("type") && lightValue.Get("type").IsString()) {
+                    std::string typeStr = lightValue.Get("type").Get<std::string>();
+                    light.type = (typeStr == "directional") ? DIRECTIONAL : POINT;
+                } else {
+                    light.type = POINT;
+                }                
+            }
+            
+            std::cout << "Processed " << lights.size() << " lights" << std::endl;
+        }
+
 
         void ProcessMeshes() {
             std::cout << "Processing meshes" << std::endl;
             // Don't resize based on model.meshes.size() since we need one Mesh per primitive
             meshes.clear();
+            
+            // Reserve capacity to avoid frequent reallocations
+            size_t totalPrimitives = 0;
+            for (size_t i = 0; i < model.meshes.size(); i++) {
+                totalPrimitives += model.meshes[i].primitives.size();
+            }
+            meshes.reserve(totalPrimitives);
             
             for (size_t i = 0; i < model.meshes.size(); i++) {
                 const tinygltf::Mesh& gltfMesh = model.meshes[i];
@@ -366,7 +624,7 @@ class GLTFLoader {
                 for (size_t j = 0; j < gltfMesh.primitives.size(); j++) {
                     Mesh newMesh;
                     ProcessPrimitive(gltfMesh.primitives[j], newMesh);
-                    meshes.push_back(newMesh);
+                    meshes.push_back(std::move(newMesh));
                 }
             }
             std::cout << "Created " << meshes.size() << " mesh objects from primitives" << std::endl;
@@ -414,6 +672,22 @@ class GLTFLoader {
                 // Get transform matrix
                 node.transform = GetTransformMatrix(gltfNode);
 
+                // check light source
+                if (gltfNode.extensions.find("KHR_lights_punctual") != gltfNode.extensions.end()) {
+                    const tinygltf::Value& lightsExt = gltfNode.extensions.at("KHR_lights_punctual");
+                    if (lightsExt.Has("light")) {
+                        const tinygltf::Value& lightIndex = lightsExt.Get("light");
+                        if (lightIndex.IsNumber()) {
+                            int lightIdx = lightIndex.GetNumberAsInt();
+                            if (lightIdx >= 0 && lightIdx < lights.size()) {
+                                node.light = lights[lightIdx];
+                                node.hasLight = true;
+                                std::cout << "Node " << i << " (" << gltfNode.name << ") has light " << lightIdx << std::endl;
+                            }
+                        }
+                    }
+                }
+
                 // Store mesh indices - need to map to flattened primitive array
                 if (gltfNode.mesh >= 0) {
                     // Calculate the starting index for this mesh's primitives
@@ -427,6 +701,11 @@ class GLTFLoader {
                     for (size_t p = 0; p < gltfMesh.primitives.size(); p++) {
                         node.meshIndices.push_back(primitiveStartIndex + p);
                     }
+                }
+
+                // Store children
+                if (gltfNode.children.size() > 0) {
+                    node.children = gltfNode.children;
                 }
             }
         }
@@ -443,18 +722,26 @@ class GLTFLoader {
             glm::mat4 model = parentTransform * node.transform;
             glm::mat4 MVP   = projection * view * model;
             shaderProgram.setMat4("MVP", MVP);
+            shaderProgram.setMat4("model", model);
+
+            // Set camera position for specular lighting - handled in main loop
 
             // Render all meshes referenced by this node
             for (int meshIndex : node.meshIndices) {
                 const Mesh &mesh = meshes[meshIndex];
 
-                // Bind material (only base color for now)
+                // Bind material for base color texture and normal texture
                 if (mesh.materialIndex >= 0) {
                     const Material &material = materials[mesh.materialIndex];
                     if (material.baseColorTexture >= 0) {
                         glActiveTexture(GL_TEXTURE0);
                         glBindTexture(GL_TEXTURE_2D, textures[material.baseColorTexture].textureID);
                         shaderProgram.setInt("baseColorTexture", 0);
+                    }
+                    if (material.normalTexture >= 0) {
+                        glActiveTexture(GL_TEXTURE1);
+                        glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture].textureID);
+                        shaderProgram.setInt("normalTexture", 1);
                     }
                 }
 
@@ -463,14 +750,112 @@ class GLTFLoader {
             }
 
             // TODO: if the model had child nodes, we would recurse here
+            for (int childIndex : node.children) {
+                RenderNodes(childIndex, shaderProgram, view, projection, model);
+            }
         }
 
     public:
+        // Retrieve the first directional light found in the scene.
+        // Returns true if one exists, false otherwise.
+        bool getFirstDirectionalLight(glm::vec3 &outPosition, glm::vec3 &outDirection) const {
+            for (const Node &node : nodes) {
+                if (!node.hasLight) continue;
+                if (node.light.type != DIRECTIONAL) continue;
+                // If the author left intensity at 0 treat it as disabled
+
+                glm::mat4 model = node.transform;
+                outPosition  = glm::vec3(model[3]);
+                outDirection = glm::normalize(glm::mat3(model) * glm::vec3(0.0f, 0.0f, -1.0f));
+                return true;
+            }
+            return false; // none found
+        }
+
+        void setupLighting(Shader shaderProgram) {
+            // Find first light node and get its transform
+            std::vector<Node> lightNodes;
+            for (int i = 0; i < nodes.size(); i++) {
+                const Node &node = nodes[i];
+
+                if (node.hasLight) {
+                    lightNodes.push_back(node);
+                }
+            }
+
+            // Initialize all lights to inactive first
+            const int MAX_LIGHTS = 2; // Must match NR_LIGHTS in shader
+            for (int i = 0; i < MAX_LIGHTS; i++) {
+                shaderProgram.setBool("light[" + std::to_string(i) + "].isPointLight", false);
+                shaderProgram.setVec3("light[" + std::to_string(i) + "].color", glm::vec3(0.0f));
+                shaderProgram.setFloat("light[" + std::to_string(i) + "].intensity", 0.0f);
+            }
+
+            // Set up actual lights (limit to MAX_LIGHTS)
+            int numLights = std::min((int)lightNodes.size(), MAX_LIGHTS);
+            int directionalLightCount = 0;
+            int pointLightCount = 0;
+
+            for (int i = 0; i < numLights; i++) {
+                const Node &node = lightNodes[i];
+                const Light &light = node.light;
+                glm::mat4 model = node.transform; // Use node's transform matrix
+                std::string lightType = light.type == POINT ? "point" : "directional";
+
+                std::cout << "Light Type: " << lightType << std::endl;
+
+                if (light.type == POINT) {
+                    // Calculate light direction from node's rotation (forward is +Z)
+                    glm::vec3 lightDir = glm::mat3(model) * glm::vec3(0.0f, 0.0f, -1.0f);
+                    lightDir = glm::normalize(lightDir);
+
+                    std::cout << " Light Type: " << light.type << " Light Color: " << light.color.x << ", " << light.color.y << ", " << light.color.z << std::endl;
+
+                    shaderProgram.setVec3("light[" + std::to_string(pointLightCount) + "].direction", lightDir);
+                    shaderProgram.setVec3("light["+ std::to_string(pointLightCount) + "].color", light.color);
+                    shaderProgram.setFloat("light["+ std::to_string(pointLightCount) + "].intensity", light.intensity);
+                    shaderProgram.setBool("light["+ std::to_string(pointLightCount) +"].isPointLight", true);
+
+                    // Set light position from transform matrix
+                    glm::vec3 lightPos = glm::vec3(model[3]);
+                    shaderProgram.setVec3("light["+ std::to_string(pointLightCount) +"].lightPos", lightPos);
+
+                    pointLightCount++;
+                } else {
+                    // DIRECTIONAL light - calculate direction from node's rotation (forward is -Z)
+                    glm::vec3 lightDir = glm::mat3(model) * glm::vec3(0.0f, 0.0f, -1.0f);
+                    lightDir = glm::normalize(lightDir);
+
+                    // std::cout << " Light Type: " << light.type << " Light Direction: " << lightDir.x << ", " << lightDir.y << ", " << lightDir.z << std::endl;
+                    shaderProgram.setVec3("dirLight[" + std::to_string(directionalLightCount)+ "].direction", lightDir);
+                    shaderProgram.setVec3("dirLight[" + std::to_string(directionalLightCount) + "].color", light.color);
+                    shaderProgram.setFloat("dirLight[" + std::to_string(directionalLightCount) + "].intensity", light.intensity);
+                    shaderProgram.setBool("dirLight[" + std::to_string(directionalLightCount) + "].isPointLight", false);
+                    shaderProgram.setVec3("dirLight["+ std::to_string(directionalLightCount) + "].lightPos", glm::vec3(0.0f)); // unused for directional
+
+                    directionalLightCount++;
+                }
+            }
+        }
+
+        
+
+
         void Render(Shader shaderProgram, const glm::mat4& view, const glm::mat4& projection) {
             glm::mat4 identity = glm::mat4(1.0f);
             for (const auto &scene : model.scenes) {
+                int lightIndex = 0; // only render first light
                 for (const auto &nodeIndex : scene.nodes) {
                     RenderNodes(nodeIndex, shaderProgram, view, projection, identity);
+
+                    // Debug: render a cube at light positions if enabled and show first light
+                    if (showLightCubes && nodes[nodeIndex].hasLight && lightIndex < 2) {
+                        // render only one light cube
+                        glm::mat4 lightTransform = nodes[nodeIndex].transform;
+                        renderLightCube(lightTransform, shaderProgram, view, projection, nodes[nodeIndex].light.color);
+                        std::cout << "lightColor" << lightTransform[3].x << ", " << lightTransform[3].y << ", " << lightTransform[3].z << std::endl;
+                        lightIndex++;
+                    }
                 }
             }
         }
