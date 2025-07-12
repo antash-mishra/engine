@@ -27,11 +27,15 @@ struct DirLight {
 
 uniform sampler2D baseColorTexture;
 uniform sampler2D normalTexture;
+uniform sampler2D metallicRoughnessTexture;
+uniform float metallicFactor;
+
 uniform sampler2D shadowMap;
 
 uniform Light light[NR_LIGHTS];
 uniform DirLight dirLight[DIR_LIGHT_COUNT];
 uniform vec3 viewPos;
+
 
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
@@ -95,6 +99,7 @@ vec3 calcPointLight(Light lgt, vec3 normal, vec3 fragPos, vec3 viewDir) {
 void main()
 {
     vec3 color = texture(baseColorTexture, TexCoords).rgb;
+    vec3 specColor = texture(metallicRoughnessTexture, TexCoords).rgb * metallicFactor;
     
     // Use normal map if available, otherwise use vertex normal
     vec3 normal = normalize(Normal);
@@ -111,20 +116,20 @@ void main()
 
     for (int j=0; j<DIR_LIGHT_COUNT; j++) {
         // Directional light calculations
-        vec3 ambient = 0.05 * vec3(0.9999999, 0.9999998, 1.0);
+        vec3 ambient = 0.05 * vec3(0.9999999, 0.9999998, 1.0) * dirLight[j].color;
         vec3 lightDir = normalize(-dirLight[j].direction); // Negate because direction points FROM light
         float diff = max(dot(lightDir, normal), 0.0);
-        vec3 diffuse = diff * dirLight[j].color;
+        vec3 diffuse = dirLight[j].color * diff;
 
         vec3 halfwayDir = normalize(lightDir + viewDir);
         float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-        vec3 specular = spec * dirLight[j].color;
+        vec3 specular = dirLight[j].color * spec * specColor;
         float shadow = ShadowCalculation(FragPosLightSpace, normal, lightDir);
         lighting += (ambient + (1.0 - shadow) * (diffuse + specular)) * 0.4;
-
     }
 
     color *= lighting;
+
     color = pow(color, vec3(1.0/2.2));
 
     FragColor = vec4(color, 1.0);

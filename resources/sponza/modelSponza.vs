@@ -13,6 +13,7 @@ out vec2 TexCoords;
 out vec3 FragPos;
 out vec3 Normal;
 out vec4 FragPosLightSpace;
+out vec3 WorldPos;
 
 void main()
 {

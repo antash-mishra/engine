@@ -536,8 +536,21 @@ class GLTFLoader {
                     material.baseColorFactor = glm::vec4(1.0f);
                 }
 
-                material.metallicFactor = gltfMaterial.pbrMetallicRoughness.metallicFactor;
-                material.roughnessFactor = gltfMaterial.pbrMetallicRoughness.roughnessFactor;
+                // metallic factor
+                if (gltfMaterial.pbrMetallicRoughness.metallicFactor >= 0.0f) {
+                    material.metallicFactor = gltfMaterial.pbrMetallicRoughness.metallicFactor;
+                }
+                else {
+                    material.metallicFactor = 0.5f;
+                }
+
+                // roughness factor
+                if (gltfMaterial.pbrMetallicRoughness.roughnessFactor >= 0.0f) {
+                    material.roughnessFactor = gltfMaterial.pbrMetallicRoughness.roughnessFactor;
+                }
+                else {
+                    material.roughnessFactor = 0.5f;
+                }
 
                 // Texture indices
                 material.baseColorTexture  = gltfMaterial.pbrMetallicRoughness.baseColorTexture.index;
@@ -738,10 +751,18 @@ class GLTFLoader {
                         glBindTexture(GL_TEXTURE_2D, textures[material.baseColorTexture].textureID);
                         shaderProgram.setInt("baseColorTexture", 0);
                     }
+
                     if (material.normalTexture >= 0) {
                         glActiveTexture(GL_TEXTURE1);
                         glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture].textureID);
                         shaderProgram.setInt("normalTexture", 1);
+                    }
+
+                    if (material.metallicRoughnessTexture >= 0) {
+                        glActiveTexture(GL_TEXTURE3);
+                        glBindTexture(GL_TEXTURE_2D, textures[material.metallicRoughnessTexture].textureID);
+                        shaderProgram.setInt("metallicRoughnessTexture", 2);
+                        shaderProgram.setInt("metallicFactor", material.metallicFactor);
                     }
                 }
 
@@ -853,7 +874,6 @@ class GLTFLoader {
                         // render only one light cube
                         glm::mat4 lightTransform = nodes[nodeIndex].transform;
                         renderLightCube(lightTransform, shaderProgram, view, projection, nodes[nodeIndex].light.color);
-                        std::cout << "lightColor" << lightTransform[3].x << ", " << lightTransform[3].y << ", " << lightTransform[3].z << std::endl;
                         lightIndex++;
                     }
                 }
