@@ -108,6 +108,7 @@ int main() {
     camera.far  = 60.0f;
 
     glEnable(GL_DEPTH_TEST);
+    // glCullFace(GL_BACK);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -226,6 +227,7 @@ int main() {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, depthMap);   // depthMap was generated earlier
         modelSponza.setInt("shadowMap", 2);
+        modelSponza.setVec3("camPosition", camera.Position);
         loader.Render(modelSponza, viewMatrix, projectionMatrix);
 
         // render Depth map to quad for visual debugging

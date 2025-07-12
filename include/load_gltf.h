@@ -484,17 +484,25 @@ class GLTFLoader {
 
                     glTexImage2D(GL_TEXTURE_2D, 0, format, gltfImage.width, gltfImage.height, 0, format, GL_UNSIGNED_BYTE,  gltfImage.image.data());
 
-                    // Set texture parameters based on sampler
-                    if (gltfTexture.sampler >= 0) {
+
+                    // Apply sampler settings if one is specified, otherwise use glTF defaults
+                    if (gltfTexture.sampler >= 0 && gltfTexture.sampler < model.samplers.size()) {
                         const tinygltf::Sampler& sampler = model.samplers[gltfTexture.sampler];
+
+                        // Filter
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
+
+                        // Wrap – if the author omitted wrapS / wrapT tinygltf already stores the
+                        // spec default 10497 (GL_REPEAT) so we can pass the values directly.
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                     } else {
-                        // Default parameters
+                        // No sampler → use spec defaults
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                     }
 
                     glGenerateMipmap(GL_TEXTURE_2D);
@@ -594,6 +602,9 @@ class GLTFLoader {
                         colorArray.Get(1).GetNumberAsDouble(),
                         colorArray.Get(2).GetNumberAsDouble()
                     );
+                    if (length(light.color) < 0.001f) {
+                        light.color = glm::vec3(1.0f); // fallback white
+                    }
                 } else {
                     light.color = glm::vec3(1.0f, 1.0f, 1.0f); // Default white
                 }
@@ -601,6 +612,10 @@ class GLTFLoader {
                 // Parse intensity (default to 1.0 if not present)
                 if (lightValue.Has("intensity")) {
                     light.intensity = lightValue.Get("intensity").GetNumberAsDouble();
+                    if (light.intensity < 0.001f) {
+                        // Many glTF lights ship with 0 intensity; default to 1
+                        light.intensity = 1.0f;
+                    }
                 } else {
                     light.intensity = 1.0f;
                 }
@@ -749,20 +764,21 @@ class GLTFLoader {
                     if (material.baseColorTexture >= 0) {
                         glActiveTexture(GL_TEXTURE0);
                         glBindTexture(GL_TEXTURE_2D, textures[material.baseColorTexture].textureID);
-                        shaderProgram.setInt("baseColorTexture", 0);
+                        shaderProgram.setInt("albedoMap", 0);
                     }
 
                     if (material.normalTexture >= 0) {
                         glActiveTexture(GL_TEXTURE1);
                         glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture].textureID);
-                        shaderProgram.setInt("normalTexture", 1);
+                        shaderProgram.setInt("normalMap", 1);
                     }
 
                     if (material.metallicRoughnessTexture >= 0) {
                         glActiveTexture(GL_TEXTURE3);
                         glBindTexture(GL_TEXTURE_2D, textures[material.metallicRoughnessTexture].textureID);
-                        shaderProgram.setInt("metallicRoughnessTexture", 2);
-                        shaderProgram.setInt("metallicFactor", material.metallicFactor);
+                        shaderProgram.setInt("metallicRoughnessMap", 3);
+                        shaderProgram.setFloat("metallicFactor", material.metallicFactor);
+                        shaderProgram.setFloat("roughnessFactor", material.roughnessFactor);
                     }
                 }
 
@@ -852,7 +868,9 @@ class GLTFLoader {
                     shaderProgram.setVec3("dirLight[" + std::to_string(directionalLightCount) + "].color", light.color);
                     shaderProgram.setFloat("dirLight[" + std::to_string(directionalLightCount) + "].intensity", light.intensity);
                     shaderProgram.setBool("dirLight[" + std::to_string(directionalLightCount) + "].isPointLight", false);
-                    shaderProgram.setVec3("dirLight["+ std::to_string(directionalLightCount) + "].lightPos", glm::vec3(0.0f)); // unused for directional
+
+                    glm::vec3 lightPos = glm::vec3(model[3]);
+                    shaderProgram.setVec3("dirLight["+ std::to_string(directionalLightCount) + "].lightPos", lightPos); // unused for directional
 
                     directionalLightCount++;
                 }

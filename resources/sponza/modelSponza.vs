@@ -10,7 +10,6 @@ uniform mat4 lightSpaceMatrix;
 uniform mat4 model;
 
 out vec2 TexCoords;
-out vec3 FragPos;
 out vec3 Normal;
 out vec4 FragPosLightSpace;
 out vec3 WorldPos;
@@ -19,7 +18,7 @@ void main()
 {
     TexCoords = aTexCoords_0;  // Use primary texture coordinates
     vec4 worldPos = model * vec4(aPos, 1.0f);
-    FragPos = worldPos.xyz;
+    WorldPos = worldPos.xyz;
     Normal = aNormal;
     FragPosLightSpace = lightSpaceMatrix * worldPos;
     gl_Position = MVP * vec4(aPos, 1.0f);
