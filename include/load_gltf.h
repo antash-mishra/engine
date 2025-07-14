@@ -20,6 +20,7 @@
 #include "shader.h"
 #include <tiny_gltf.h>
 #include <map>
+#include <unordered_set>
 #include <cassert>
 #include <utility>
 #include <iostream>
@@ -45,7 +46,7 @@ struct Vertex {
     glm::vec3 normal;
     glm::vec2 texCoords_0;
     glm::vec2 texCoords_1;
-    glm::vec3 tangent;
+    glm::vec4 tangent;  // xyz = tangent direction, w = handedness
 };
 
 struct Mesh {
@@ -267,6 +268,15 @@ class GLTFLoader {
             size_t stride = bufferView.byteStride;
             size_t byteStride = stride? stride : sizeof(float) * 4;
 
+            // Validate accessor bounds
+            if (accessor.minValues.size() == 4 && accessor.maxValues.size() == 4) {
+                // Optional: Could validate that loaded values are within bounds
+                std::cout << "Accessor bounds: min(" << accessor.minValues[0] << ", " << accessor.minValues[1] 
+                         << ", " << accessor.minValues[2] << ", " << accessor.minValues[3] << "), max(" 
+                         << accessor.maxValues[0] << ", " << accessor.maxValues[1] << ", " << accessor.maxValues[2] 
+                         << ", " << accessor.maxValues[3] << ")" << std::endl;
+            }
+
             for (size_t i = 0; i < accessor.count; i++) {
                 const float *vertexPtr = reinterpret_cast<const float*>(
                     reinterpret_cast<const char*>(ptr) + i * byteStride
@@ -440,9 +450,18 @@ class GLTFLoader {
             for (size_t v = 0; v < vertexCount; v++) {
                 mesh.vertices[v].position = positions[v];
                 mesh.vertices[v].normal = (v < normals.size()) ? normals[v] : glm::vec3(0.0f);
-                mesh.vertices[v].texCoords_0 = (v < texCoords_0.size()) ? texCoords_0[v] : glm::vec2(0.0f);
+                // If the primitive does not provide TEXCOORD_0 (common for decals) but does provide TEXCOORD_1,
+                // fall back to that secondary UV set so the fragment shader receives meaningful coordinates.
+                if (v < texCoords_0.size()) {
+                    mesh.vertices[v].texCoords_0 = texCoords_0[v];
+                } else if (v < texCoords_1.size()) {
+                    mesh.vertices[v].texCoords_0 = texCoords_1[v];
+                } else {
+                    // Absolute fallback – centre of the texture.  Should not happen for real geometry.
+                    mesh.vertices[v].texCoords_0 = glm::vec2(0.5f);
+                }
                 mesh.vertices[v].texCoords_1 = (v < texCoords_1.size()) ? texCoords_1[v] : glm::vec2(0.0f);
-                mesh.vertices[v].tangent = (v < tangents.size()) ? tangents[v] : glm::vec3(0.0f);
+                mesh.vertices[v].tangent = (v < tangents.size()) ? glm::vec4(tangents[v]) : glm::vec4(0.0f);
             }
 
             // Extract indices
@@ -462,62 +481,78 @@ class GLTFLoader {
         void ProcessTextures() {
             std::cout << "Processing " << model.textures.size() << " textures..." << std::endl;
             textures.resize(model.textures.size());
-            
             int loadedCount = 0;
+            // -----------------------------------------------------------------
+            // Determine which texture indices should be treated as sRGB
+            // (base-color and emissive are defined in sRGB space)
+            // -----------------------------------------------------------------
+            std::unordered_set<int> sRGBImages;
+            for (const auto &mat : model.materials) {
+                if (mat.pbrMetallicRoughness.baseColorTexture.index >= 0)
+                    sRGBImages.insert(model.textures[mat.pbrMetallicRoughness.baseColorTexture.index].source);
+                if (mat.emissiveTexture.index >= 0)
+                    sRGBImages.insert(model.textures[mat.emissiveTexture.index].source);
+            }
             for (size_t t = 0; t < model.textures.size(); t++) {
                 const tinygltf::Texture& gltfTexture = model.textures[t];
-
+                std::cout << "Texture " << t << ": source=" << gltfTexture.source << ", sampler=" << gltfTexture.sampler << std::endl;
                 if (gltfTexture.source >= 0) {
                     const tinygltf::Image& gltfImage = model.images[gltfTexture.source];
-
+                    std::cout << "  Image: width=" << gltfImage.width << ", height=" << gltfImage.height << ", component=" << gltfImage.component << std::endl;
                     // create Texture
                     GLuint texID;
                     glGenTextures(1, &texID);
                     glBindTexture(GL_TEXTURE_2D, texID);
-
-                    // Determine format based on image component
-                    GLenum format;
-                    if (gltfImage.component == 1) format = GL_RED;
-                    else if (gltfImage.component == 2) format = GL_RG;
-                    else if (gltfImage.component == 3) format = GL_RGB;
-                    else if (gltfImage.component == 4) format = GL_RGBA;
-
-                    glTexImage2D(GL_TEXTURE_2D, 0, format, gltfImage.width, gltfImage.height, 0, format, GL_UNSIGNED_BYTE,  gltfImage.image.data());
-
-
+                    GLenum external;
+                    if (gltfImage.component == 1) external = GL_RED;
+                    else if (gltfImage.component == 2) external = GL_RG;
+                    else if (gltfImage.component == 3) external = GL_RGB;
+                    else external = GL_RGBA; // 4
+                    bool needsSRGB = sRGBImages.count(gltfTexture.source) > 0;
+                    GLenum internal;
+                    switch (gltfImage.component) {
+                        case 1: internal = GL_R8; break;
+                        case 2: internal = GL_RG8; break;
+                        case 3: internal = needsSRGB ? GL_SRGB8 : GL_RGB8; break;
+                        case 4: default: internal = needsSRGB ? GL_SRGB8_ALPHA8 : GL_RGBA8; break;
+                    }
+                    glTexImage2D(GL_TEXTURE_2D, 0, internal, gltfImage.width, gltfImage.height, 0, external, GL_UNSIGNED_BYTE,  gltfImage.image.data());
+                    GLenum error = glGetError();
+                    if (error != GL_NO_ERROR) {
+                        std::cout << "OpenGL error after glTexImage2D for texture " << t << ": " << error << std::endl;
+                    }
                     // Apply sampler settings if one is specified, otherwise use glTF defaults
                     if (gltfTexture.sampler >= 0 && gltfTexture.sampler < model.samplers.size()) {
                         const tinygltf::Sampler& sampler = model.samplers[gltfTexture.sampler];
-
-                        // Filter
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
-
-                        // Wrap – if the author omitted wrapS / wrapT tinygltf already stores the
-                        // spec default 10497 (GL_REPEAT) so we can pass the values directly.
+                        GLint minF = sampler.minFilter >= 0 ? sampler.minFilter : GL_LINEAR_MIPMAP_LINEAR;
+                        GLint magF = sampler.magFilter >= 0 ? sampler.magFilter : GL_LINEAR;
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minF);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magF);
+                        GLint wrapS = sampler.wrapS ? sampler.wrapS : GL_REPEAT;
+                        GLint wrapT = sampler.wrapT ? sampler.wrapT : GL_REPEAT;
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                     } else {
-                        // No sampler → use spec defaults
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                     }
-
+                    error = glGetError();
+                    if (error != GL_NO_ERROR) {
+                        std::cout << "OpenGL error after glTexParameteri for texture " << t << ": " << error << std::endl;
+                    }
                     glGenerateMipmap(GL_TEXTURE_2D);
-
+                    error = glGetError();
+                    if (error != GL_NO_ERROR) {
+                        std::cout << "OpenGL error after glGenerateMipmap for texture " << t << ": " << error << std::endl;
+                    }
                     textures[t].textureID = texID;
                     textures[t].samplerIndex = gltfTexture.sampler;
-                    
-                    // Check for OpenGL errors (only for first few textures)
-                    if (t < 3) {
-                        GLenum error = glGetError();
-                        if (error != GL_NO_ERROR) {
-                            std::cout << "OpenGL error loading texture " << t << ": " << error << std::endl;
-                        }
-                    }
                     loadedCount++;
+                    std::cout << "Texture " << t << " loaded successfully. TextureID=" << texID << std::endl;
+                } else {
+                    std::cout << "Texture " << t << " has no valid source, not loaded." << std::endl;
                 }
             }
             std::cout << "Successfully loaded " << loadedCount << "/" << textures.size() << " textures" << std::endl;
@@ -529,7 +564,7 @@ class GLTFLoader {
             for (size_t m = 0; m < model.materials.size(); m++) {
                 const tinygltf::Material& gltfMaterial = model.materials[m];
                 Material& material = materials[m];
-
+                std::cout << "Material " << m << ": baseColorTexture=" << gltfMaterial.pbrMetallicRoughness.baseColorTexture.index << ", normalTexture=" << gltfMaterial.normalTexture.index << ", metallicRoughnessTexture=" << gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index << std::endl;
                 // pbr metallic roughness workflow
                 // base color
                 if (gltfMaterial.pbrMetallicRoughness.baseColorFactor.size() == 4) {
@@ -635,23 +670,19 @@ class GLTFLoader {
 
         void ProcessMeshes() {
             std::cout << "Processing meshes" << std::endl;
-            // Don't resize based on model.meshes.size() since we need one Mesh per primitive
             meshes.clear();
-            
-            // Reserve capacity to avoid frequent reallocations
             size_t totalPrimitives = 0;
             for (size_t i = 0; i < model.meshes.size(); i++) {
                 totalPrimitives += model.meshes[i].primitives.size();
             }
             meshes.reserve(totalPrimitives);
-            
             for (size_t i = 0; i < model.meshes.size(); i++) {
                 const tinygltf::Mesh& gltfMesh = model.meshes[i];
-
-                // Process each primitive in the mesh as a separate Mesh object
+                std::cout << "Mesh " << i << ": " << gltfMesh.name << " has " << gltfMesh.primitives.size() << " primitives" << std::endl;
                 for (size_t j = 0; j < gltfMesh.primitives.size(); j++) {
                     Mesh newMesh;
                     ProcessPrimitive(gltfMesh.primitives[j], newMesh);
+                    std::cout << "  Primitive " << j << ": vertices=" << newMesh.vertices.size() << ", indices=" << newMesh.indices.size() << ", materialIndex=" << newMesh.materialIndex << std::endl;
                     meshes.push_back(std::move(newMesh));
                 }
             }
@@ -758,12 +789,42 @@ class GLTFLoader {
             for (int meshIndex : node.meshIndices) {
                 const Mesh &mesh = meshes[meshIndex];
 
-                // Bind material for base color texture and normal texture
+                bool enableAlphaBlend = false; // scope-wide flag so we can restore GL state after draw
                 if (mesh.materialIndex >= 0) {
                     const Material &material = materials[mesh.materialIndex];
+                    // Check if alpha blending is needed
+                    enableAlphaBlend = false;
+                    std::string matName = "";
+                    if (mesh.materialIndex < this->model.materials.size()) {
+                        const tinygltf::Material& gltfMaterial = this->model.materials[mesh.materialIndex];
+                        if (gltfMaterial.alphaMode == "BLEND") {
+                            enableAlphaBlend = true;
+                        }
+                        if (gltfMaterial.name.size()) matName = gltfMaterial.name;
+                    }
+                    if (enableAlphaBlend) {
+                        glEnable(GL_BLEND);
+                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                        glDepthMask(GL_FALSE); // Don't write to depth buffer for transparent
+                    }
                     if (material.baseColorTexture >= 0) {
                         glActiveTexture(GL_TEXTURE0);
                         glBindTexture(GL_TEXTURE_2D, textures[material.baseColorTexture].textureID);
+                        shaderProgram.setInt("albedoMap", 0);
+                        
+                    } else {
+                        // Bind a default white texture for albedo
+                        static unsigned int defaultWhiteTex = 0;
+                        if (defaultWhiteTex == 0) {
+                            unsigned char whitePixel[4] = {255, 255, 255, 255};
+                            glGenTextures(1, &defaultWhiteTex);
+                            glBindTexture(GL_TEXTURE_2D, defaultWhiteTex);
+                            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, whitePixel);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                        }
+                        glActiveTexture(GL_TEXTURE0);
+                        glBindTexture(GL_TEXTURE_2D, defaultWhiteTex);
                         shaderProgram.setInt("albedoMap", 0);
                     }
 
@@ -771,19 +832,58 @@ class GLTFLoader {
                         glActiveTexture(GL_TEXTURE1);
                         glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture].textureID);
                         shaderProgram.setInt("normalMap", 1);
+                    } else {
+                        // Bind a default normal map (flat normal - pointing up)
+                        static unsigned int defaultNormalTex = 0;
+                        if (defaultNormalTex == 0) {
+                            unsigned char normalPixel[4] = {127, 127, 255, 255}; // (0.5, 0.5, 1.0) in [0,255]
+                            glGenTextures(1, &defaultNormalTex);
+                            glBindTexture(GL_TEXTURE_2D, defaultNormalTex);
+                            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, normalPixel);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                        }
+                        glActiveTexture(GL_TEXTURE1);
+                        glBindTexture(GL_TEXTURE_2D, defaultNormalTex);
+                        shaderProgram.setInt("normalMap", 1);
                     }
 
                     if (material.metallicRoughnessTexture >= 0) {
-                        glActiveTexture(GL_TEXTURE3);
+                        glActiveTexture(GL_TEXTURE4);  // Changed from GL_TEXTURE3 to GL_TEXTURE4 to avoid shadow map conflict
                         glBindTexture(GL_TEXTURE_2D, textures[material.metallicRoughnessTexture].textureID);
-                        shaderProgram.setInt("metallicRoughnessMap", 3);
-                        shaderProgram.setFloat("metallicFactor", material.metallicFactor);
-                        shaderProgram.setFloat("roughnessFactor", material.roughnessFactor);
+                        shaderProgram.setInt("metallicRoughnessMap", 4);
+                    } else {
+                        // Bind a default metallic-roughness texture (no metallic, medium roughness)
+                        static unsigned int defaultMetallicRoughnessTex = 0;
+                        if (defaultMetallicRoughnessTex == 0) {
+                            unsigned char mrPixel[4] = {0, 127, 0, 255}; // metallic=0, roughness=0.5
+                            glGenTextures(1, &defaultMetallicRoughnessTex);
+                            glBindTexture(GL_TEXTURE_2D, defaultMetallicRoughnessTex);
+                            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, mrPixel);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                        }
+                        glActiveTexture(GL_TEXTURE4);
+                        glBindTexture(GL_TEXTURE_2D, defaultMetallicRoughnessTex);
+                        shaderProgram.setInt("metallicRoughnessMap", 4);
                     }
+                    
+                    // Set material properties (common to both branches)
+                    shaderProgram.setFloat("metallicFactor", material.metallicFactor);
+                    shaderProgram.setFloat("roughnessFactor", material.roughnessFactor);
+                    
+                    shaderProgram.setVec4("baseColorFactor", material.baseColorFactor);
+                    
+
                 }
 
                 glBindVertexArray(mesh.VAO);
                 glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
+                // Restore GL state if we enabled alpha blending for this mesh
+                if (enableAlphaBlend) {
+                    glDepthMask(GL_TRUE);
+                    glDisable(GL_BLEND);
+                }
             }
 
             // TODO: if the model had child nodes, we would recurse here

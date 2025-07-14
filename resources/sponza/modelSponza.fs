@@ -31,6 +31,7 @@ uniform sampler2D normalMap;
 uniform sampler2D metallicRoughnessMap;
 uniform float metallicFactor;
 uniform float roughnessFactor;
+uniform vec4 baseColorFactor;
 
 uniform sampler2D shadowMap;
 
@@ -157,7 +158,9 @@ vec3 calcPointLight(Light lgt, vec3 normal, vec3 fragPos, vec3 viewDir) {
 
 void main()
 {
-    vec3 albedo     = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+    // vec3 albedo     = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+    vec4 baseColor  = texture(albedoMap, TexCoords) * baseColorFactor;
+    vec3 albedo     = baseColor.rgb;
     float metallic  = texture(metallicRoughnessMap, TexCoords).r * metallicFactor;
     float roughness = texture(metallicRoughnessMap, TexCoords).g * roughnessFactor;
     float ao        = 1.0;
@@ -222,12 +225,15 @@ void main()
         Lo  +=  ((kD * albedo / PI) + specular) * radiance * nDotL * (1.0 - shadow);
     }
 
-    vec3 ambient = vec3(0.03) * albedo * ao;
+    vec3 ambient = vec3(0.15) * albedo * ao;
     vec3 color = ambient + Lo;
 
     // reinhard tone mapping (As Lo can go very high to preserve the high dynamic range)
     color = color / (color + vec3(1.0));
     // gamma correction
     color = pow(color, vec3(1.0/2.2));
-    FragColor = vec4(color, 1.0);
+    
+    // Use the alpha from baseColor for transparent materials
+    float finalAlpha = baseColor.a;
+    FragColor = vec4(color, finalAlpha);
 }
