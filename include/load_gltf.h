@@ -33,8 +33,6 @@
 #define GLT_BUFFER_OFFSET(i) ((char *)nullptr + (i))
 
 
-
-// --------------------------------------------------------------------------------
 enum lightType {
     POINT,
     DIRECTIONAL
@@ -495,10 +493,11 @@ class GLTFLoader {
             }
             for (size_t t = 0; t < model.textures.size(); t++) {
                 const tinygltf::Texture& gltfTexture = model.textures[t];
-                std::cout << "Texture " << t << ": source=" << gltfTexture.source << ", sampler=" << gltfTexture.sampler << std::endl;
+                // std::cout << "Texture " << t << ": source=" << gltfTexture.source << ", sampler=" << gltfTexture.sampler << std::endl;
+                
                 if (gltfTexture.source >= 0) {
                     const tinygltf::Image& gltfImage = model.images[gltfTexture.source];
-                    std::cout << "  Image: width=" << gltfImage.width << ", height=" << gltfImage.height << ", component=" << gltfImage.component << std::endl;
+                    
                     // create Texture
                     GLuint texID;
                     glGenTextures(1, &texID);
@@ -508,6 +507,7 @@ class GLTFLoader {
                     else if (gltfImage.component == 2) external = GL_RG;
                     else if (gltfImage.component == 3) external = GL_RGB;
                     else external = GL_RGBA; // 4
+                    
                     bool needsSRGB = sRGBImages.count(gltfTexture.source) > 0;
                     GLenum internal;
                     switch (gltfImage.component) {
@@ -521,6 +521,7 @@ class GLTFLoader {
                     if (error != GL_NO_ERROR) {
                         std::cout << "OpenGL error after glTexImage2D for texture " << t << ": " << error << std::endl;
                     }
+                    
                     // Apply sampler settings if one is specified, otherwise use glTF defaults
                     if (gltfTexture.sampler >= 0 && gltfTexture.sampler < model.samplers.size()) {
                         const tinygltf::Sampler& sampler = model.samplers[gltfTexture.sampler];
@@ -550,7 +551,6 @@ class GLTFLoader {
                     textures[t].textureID = texID;
                     textures[t].samplerIndex = gltfTexture.sampler;
                     loadedCount++;
-                    std::cout << "Texture " << t << " loaded successfully. TextureID=" << texID << std::endl;
                 } else {
                     std::cout << "Texture " << t << " has no valid source, not loaded." << std::endl;
                 }
@@ -792,7 +792,8 @@ class GLTFLoader {
                 bool enableAlphaBlend = false; // scope-wide flag so we can restore GL state after draw
                 if (mesh.materialIndex >= 0) {
                     const Material &material = materials[mesh.materialIndex];
-                    // Check if alpha blending is needed
+                    
+                    // Check if depth mask should be disabled for transparent materials
                     enableAlphaBlend = false;
                     std::string matName = "";
                     if (mesh.materialIndex < this->model.materials.size()) {
@@ -803,9 +804,7 @@ class GLTFLoader {
                         if (gltfMaterial.name.size()) matName = gltfMaterial.name;
                     }
                     if (enableAlphaBlend) {
-                        glEnable(GL_BLEND);
-                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                        glDepthMask(GL_FALSE); // Don't write to depth buffer for transparent
+                        glDepthMask(GL_FALSE); // Don't write to depth buffer for transparent objects
                     }
                     if (material.baseColorTexture >= 0) {
                         glActiveTexture(GL_TEXTURE0);
@@ -833,6 +832,7 @@ class GLTFLoader {
                         glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture].textureID);
                         shaderProgram.setInt("normalMap", 1);
                     } else {
+                       
                         // Bind a default normal map (flat normal - pointing up)
                         static unsigned int defaultNormalTex = 0;
                         if (defaultNormalTex == 0) {
@@ -868,7 +868,7 @@ class GLTFLoader {
                         shaderProgram.setInt("metallicRoughnessMap", 4);
                     }
                     
-                    // Set material properties (common to both branches)
+                    // Set material properties
                     shaderProgram.setFloat("metallicFactor", material.metallicFactor);
                     shaderProgram.setFloat("roughnessFactor", material.roughnessFactor);
                     
@@ -879,10 +879,9 @@ class GLTFLoader {
 
                 glBindVertexArray(mesh.VAO);
                 glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
-                // Restore GL state if we enabled alpha blending for this mesh
+                // Restore depth mask if we disabled it for transparent materials
                 if (enableAlphaBlend) {
                     glDepthMask(GL_TRUE);
-                    glDisable(GL_BLEND);
                 }
             }
 

@@ -13,13 +13,22 @@ out vec2 TexCoords;
 out vec3 Normal;
 out vec4 FragPosLightSpace;
 out vec3 WorldPos;
+out vec3 Tangent;
+out vec3 Bitangent;
+
 
 void main()
 {
     TexCoords = aTexCoords_0;  // Use primary texture coordinates
     vec4 worldPos = model * vec4(aPos, 1.0f);
     WorldPos = worldPos.xyz;
-    Normal = mat3(transpose(inverse(model))) * aNormal;
+    
+    // Transform normal, tangent, and calculate bitangent to world space
+    mat3 normalMatrix = mat3(transpose(inverse(model)));
+    Normal = normalize(normalMatrix * aNormal);
+    Tangent = normalize(normalMatrix * aTangent.xyz);
+    Bitangent = normalize(cross(Normal, Tangent)) * aTangent.w; // aTangent.w is handedness
+    
     FragPosLightSpace = lightSpaceMatrix * worldPos;
     gl_Position = MVP * vec4(aPos, 1.0f);
 }  

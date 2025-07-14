@@ -9,6 +9,8 @@ in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
 in vec4 FragPosLightSpace;
+in vec3 Tangent;
+in vec3 Bitangent;
 
 struct Light {
     vec3 direction; // For directional lights: direction vector (points FROM light)
@@ -44,16 +46,16 @@ uniform vec3 camPosition;
 
 vec3 getNormalFromNormalMap()
 {
+    // Sample the normal map and convert from [0,1] to [-1,1] range
     vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
 
-    vec3 Q1  = dFdx(WorldPos);
-    vec3 Q2  = dFdy(WorldPos);
-    vec2 st1 = dFdx(TexCoords);
-    vec2 st2 = dFdy(TexCoords);
-
-    vec3 N   = normalize(Normal);
-    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
-    vec3 B  = -normalize(cross(N, T));
+    // Use the pre-calculated tangent space vectors from vertex shader
+    // Note: Re-normalizing because interpolation can change vector lengths
+    vec3 N = normalize(Normal);
+    vec3 T = normalize(Tangent);
+    vec3 B = normalize(Bitangent);
+    
+    // Construct the TBN matrix to transform from tangent space to world space
     mat3 TBN = mat3(T, B, N);
 
     return normalize(TBN * tangentNormal);
@@ -225,7 +227,7 @@ void main()
         Lo  +=  ((kD * albedo / PI) + specular) * radiance * nDotL * (1.0 - shadow);
     }
 
-    vec3 ambient = vec3(0.15) * albedo * ao;
+    vec3 ambient = vec3(0.03) * albedo;
     vec3 color = ambient + Lo;
 
     // reinhard tone mapping (As Lo can go very high to preserve the high dynamic range)
