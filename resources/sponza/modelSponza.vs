@@ -15,11 +15,12 @@ out vec4 FragPosLightSpace;
 out vec3 WorldPos;
 out vec3 Tangent;
 out vec3 Bitangent;
-
+out vec2 TexCoords1;
 
 void main()
 {
     TexCoords = aTexCoords_0;  // Use primary texture coordinates
+    TexCoords1 = aTexCoords_1;
     vec4 worldPos = model * vec4(aPos, 1.0f);
     WorldPos = worldPos.xyz;
     

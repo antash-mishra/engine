@@ -65,6 +65,7 @@ struct Material {
     int baseColorTexture;
     int normalTexture;
     int metallicRoughnessTexture;
+    int occlusionTexture;
     float metallicFactor;
     float roughnessFactor;
 };
@@ -564,7 +565,6 @@ class GLTFLoader {
             for (size_t m = 0; m < model.materials.size(); m++) {
                 const tinygltf::Material& gltfMaterial = model.materials[m];
                 Material& material = materials[m];
-                std::cout << "Material " << m << ": baseColorTexture=" << gltfMaterial.pbrMetallicRoughness.baseColorTexture.index << ", normalTexture=" << gltfMaterial.normalTexture.index << ", metallicRoughnessTexture=" << gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index << std::endl;
                 // pbr metallic roughness workflow
                 // base color
                 if (gltfMaterial.pbrMetallicRoughness.baseColorFactor.size() == 4) {
@@ -579,26 +579,28 @@ class GLTFLoader {
                     material.baseColorFactor = glm::vec4(1.0f);
                 }
 
-                // metallic factor
-                if (gltfMaterial.pbrMetallicRoughness.metallicFactor >= 0.0f) {
+                // metallic factor - check if this material has explicit values or is using defaults
+                // If no metallic-roughness texture is specified and values are at defaults, use more reasonable values
+                bool hasMetallicRoughnessTexture = gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0;
+                
+                if (hasMetallicRoughnessTexture) {
+                    // Use the factor values as-is when texture is present
                     material.metallicFactor = gltfMaterial.pbrMetallicRoughness.metallicFactor;
-                }
-                else {
-                    material.metallicFactor = 0.5f;
-                }
-
-                // roughness factor
-                if (gltfMaterial.pbrMetallicRoughness.roughnessFactor >= 0.0f) {
                     material.roughnessFactor = gltfMaterial.pbrMetallicRoughness.roughnessFactor;
-                }
-                else {
-                    material.roughnessFactor = 0.5f;
+                } else {
+                    // No texture - use more sensible defaults for most materials
+                    material.metallicFactor = (gltfMaterial.pbrMetallicRoughness.metallicFactor == 1.0) ? 0.0f : gltfMaterial.pbrMetallicRoughness.metallicFactor;
+                    material.roughnessFactor = (gltfMaterial.pbrMetallicRoughness.roughnessFactor == 1.0) ? 0.5f : gltfMaterial.pbrMetallicRoughness.roughnessFactor;
                 }
 
                 // Texture indices
                 material.baseColorTexture  = gltfMaterial.pbrMetallicRoughness.baseColorTexture.index;
                 material.normalTexture = gltfMaterial.normalTexture.index;
                 material.metallicRoughnessTexture = gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index;
+                if (gltfMaterial.occlusionTexture.index >= 0)
+                    material.occlusionTexture = gltfMaterial.occlusionTexture.index;
+                else
+                    material.occlusionTexture = -1;
             }
         }
 
@@ -678,11 +680,11 @@ class GLTFLoader {
             meshes.reserve(totalPrimitives);
             for (size_t i = 0; i < model.meshes.size(); i++) {
                 const tinygltf::Mesh& gltfMesh = model.meshes[i];
-                std::cout << "Mesh " << i << ": " << gltfMesh.name << " has " << gltfMesh.primitives.size() << " primitives" << std::endl;
+                // std::cout << "Mesh " << i << ": " << gltfMesh.name << " has " << gltfMesh.primitives.size() << " primitives" << std::endl;
                 for (size_t j = 0; j < gltfMesh.primitives.size(); j++) {
                     Mesh newMesh;
                     ProcessPrimitive(gltfMesh.primitives[j], newMesh);
-                    std::cout << "  Primitive " << j << ": vertices=" << newMesh.vertices.size() << ", indices=" << newMesh.indices.size() << ", materialIndex=" << newMesh.materialIndex << std::endl;
+                    // std::cout << "  Primitive " << j << ": vertices=" << newMesh.vertices.size() << ", indices=" << newMesh.indices.size() << ", materialIndex=" << newMesh.materialIndex << std::endl;
                     meshes.push_back(std::move(newMesh));
                 }
             }
@@ -868,6 +870,26 @@ class GLTFLoader {
                         shaderProgram.setInt("metallicRoughnessMap", 4);
                     }
                     
+                    // Bind occlusion (AO) texture or default white
+                    if (material.occlusionTexture >= 0) {
+                        glActiveTexture(GL_TEXTURE3);
+                        glBindTexture(GL_TEXTURE_2D, textures[material.occlusionTexture].textureID);
+                        shaderProgram.setInt("aoMap", 3);
+                    } else {
+                        static unsigned int defaultAOTex = 0;
+                        if (defaultAOTex == 0) {
+                            unsigned char whitePixel[4] = {255, 255, 255, 255};
+                            glGenTextures(1, &defaultAOTex);
+                            glBindTexture(GL_TEXTURE_2D, defaultAOTex);
+                            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, whitePixel);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                        }
+                        glActiveTexture(GL_TEXTURE3);
+                        glBindTexture(GL_TEXTURE_2D, defaultAOTex);
+                        shaderProgram.setInt("aoMap", 3);
+                    }
+                    
                     // Set material properties
                     shaderProgram.setFloat("metallicFactor", material.metallicFactor);
                     shaderProgram.setFloat("roughnessFactor", material.roughnessFactor);
@@ -908,6 +930,18 @@ class GLTFLoader {
             return false; // none found
         }
 
+        // Retrieve the first directional light with its full transform matrix
+        bool getFirstDirectionalLightTransform(glm::mat4 &outTransform) const {
+            for (const Node &node : nodes) {
+                if (!node.hasLight) continue;
+                if (node.light.type != DIRECTIONAL) continue;
+                
+                outTransform = node.transform;
+                return true;
+            }
+            return false; // none found
+        }
+
         void setupLighting(Shader shaderProgram) {
             // Find first light node and get its transform
             std::vector<Node> lightNodes;
@@ -932,37 +966,22 @@ class GLTFLoader {
             int directionalLightCount = 0;
             int pointLightCount = 0;
 
+            // Only process directional lights
             for (int i = 0; i < numLights; i++) {
                 const Node &node = lightNodes[i];
                 const Light &light = node.light;
                 glm::mat4 model = node.transform; // Use node's transform matrix
-                std::string lightType = light.type == POINT ? "point" : "directional";
-
-                std::cout << "Light Type: " << lightType << std::endl;
-
-                if (light.type == POINT) {
-                    // Calculate light direction from node's rotation (forward is +Z)
-                    glm::vec3 lightDir = glm::mat3(model) * glm::vec3(0.0f, 0.0f, -1.0f);
-                    lightDir = glm::normalize(lightDir);
-
-                    std::cout << " Light Type: " << light.type << " Light Color: " << light.color.x << ", " << light.color.y << ", " << light.color.z << std::endl;
-
-                    shaderProgram.setVec3("light[" + std::to_string(pointLightCount) + "].direction", lightDir);
-                    shaderProgram.setVec3("light["+ std::to_string(pointLightCount) + "].color", light.color);
-                    shaderProgram.setFloat("light["+ std::to_string(pointLightCount) + "].intensity", light.intensity);
-                    shaderProgram.setBool("light["+ std::to_string(pointLightCount) +"].isPointLight", true);
-
-                    // Set light position from transform matrix
-                    glm::vec3 lightPos = glm::vec3(model[3]);
-                    shaderProgram.setVec3("light["+ std::to_string(pointLightCount) +"].lightPos", lightPos);
-
-                    pointLightCount++;
-                } else {
+                
+                if (light.type == DIRECTIONAL) {
+                    std::cout << "Using directional light" << std::endl;
+                    
                     // DIRECTIONAL light - calculate direction from node's rotation (forward is -Z)
                     glm::vec3 lightDir = glm::mat3(model) * glm::vec3(0.0f, 0.0f, -1.0f);
                     lightDir = glm::normalize(lightDir);
 
-                    // std::cout << " Light Type: " << light.type << " Light Direction: " << lightDir.x << ", " << lightDir.y << ", " << lightDir.z << std::endl;
+                    std::cout << "Light Color: " << light.color.x << ", " << light.color.y << ", " << light.color.z << std::endl;
+                    std::cout << "Light Direction: " << lightDir.x << ", " << lightDir.y << ", " << lightDir.z << std::endl;
+                    
                     shaderProgram.setVec3("dirLight[" + std::to_string(directionalLightCount)+ "].direction", lightDir);
                     shaderProgram.setVec3("dirLight[" + std::to_string(directionalLightCount) + "].color", light.color);
                     shaderProgram.setFloat("dirLight[" + std::to_string(directionalLightCount) + "].intensity", light.intensity);
@@ -972,6 +991,11 @@ class GLTFLoader {
                     shaderProgram.setVec3("dirLight["+ std::to_string(directionalLightCount) + "].lightPos", lightPos); // unused for directional
 
                     directionalLightCount++;
+                    
+                    // Break after finding first directional light
+                    if (directionalLightCount >= 1) {
+                        break;
+                    }
                 }
             }
         }

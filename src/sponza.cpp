@@ -30,6 +30,8 @@ void renderSphere();
 void renderCube();
 void renderQuad();
 void showFPS(GLFWwindow* window);
+// add the following prototype so it can be used before definition
+void window_focus_callback(GLFWwindow* window, int focused);
 
 // settings (initial)
 const unsigned int SCR_WIDTH = 800;
@@ -47,7 +49,8 @@ float lastX = SCR_WIDTH / 2.0;
 float lastY = SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 float fov = 45.0f;
-float exposure = 5.0f;
+float exposure = 1.5f;
+float ambientScale = 0.3f;
 
 Camera camera(glm::vec3(13.0f, 5.0f, 0.0f));
 
@@ -75,6 +78,30 @@ unsigned int quadVBO;
 
 unsigned int sphereVAO = 0, sphereVBO = 0;
 
+void setupCubeMap(unsigned int& textureID, unsigned int width, unsigned int height, bool mipmap)
+{
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if (mipmap)
+    {
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    }
+    else
+    {
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    }
+}
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -94,8 +121,10 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    // capture/release cursor automatically when window focus changes
+    glfwSetWindowFocusCallback(window, window_focus_callback);
 
-    // tell GLFW to capture our mouse
+    // initially disable the cursor once window is ready and focused
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
@@ -108,9 +137,11 @@ int main() {
     camera.far  = 60.0f;
 
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
     // glCullFace(GL_BACK);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 
     std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
@@ -120,8 +151,14 @@ int main() {
     Shader modelSponza (
         (parentDir + "/resources/sponza/modelSponza.vs").c_str(),
         (parentDir + "/resources/sponza/modelSponza.fs").c_str());
+    // Shader equirectangularToCubemapShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
     Shader depthShader((parentDir + "/resources/sponza/depthMap.vs").c_str(), (parentDir + "/resources/sponza/depthMap.fs").c_str());
     Shader debugDepthQuadShader((parentDir + "/resources/sponza/debugDepthQuad.vs").c_str(), (parentDir + "/resources/sponza/debugDepthQuad.fs").c_str());
+    Shader proceduralSkyShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
+    Shader cubeMapShader((parentDir + "/resources/shaders/background.vs").c_str(), (parentDir + "/resources/shaders/background.fs").c_str());
+    Shader irradianceShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/irradiance.fs").c_str());
+    Shader prefilterShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/prefilter.fs").c_str());
+    Shader brdfShader((parentDir + "/resources/shaders/brdf.vs").c_str(), (parentDir + "/resources/shaders/brdf.fs").c_str());
 
     // Use GLTFLoader class
     // GLTFLoader loader; // This line is moved to global scope
@@ -131,7 +168,29 @@ int main() {
         return -1;
     }
 
-    // framebuffer for depth map
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, nrComponents;
+    // Load the .hdr file
+    float *data = stbi_loadf((parentDir + "/resources/w.hdr").c_str(), &width, &height, &nrComponents, 0);
+    unsigned int hdrTexture;
+    if (data) {
+      glGenTextures(1, &hdrTexture);
+      glBindTexture(GL_TEXTURE_2D, hdrTexture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+  
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  
+      stbi_image_free(data);
+    }
+    else {
+      std::cout << "Failed to load HDR texture" << std::endl;
+    }
+    
+
+    // framebuffer for shadow depth map
     unsigned int depthMapFBO;
     glGenFramebuffers(1, &depthMapFBO);
 
@@ -154,29 +213,172 @@ int main() {
     glReadBuffer(GL_NONE); // No color buffer is read from
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // capture fbo and rbo for indirect lighting
+    unsigned int captureFBO, captureRBO;
+    glGenFramebuffers(1, &captureFBO);
+    glGenRenderbuffers(1, &captureRBO);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+
+    // cube map
+    unsigned int envCubeMap;
+    setupCubeMap(envCubeMap, 512, 512, false);
+
+
+    glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+    glm::mat4 captureViews[] = {
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+    };
+    proceduralSkyShader.use();
+    proceduralSkyShader.setInt("equirectangularMap", 0);
+    proceduralSkyShader.setMat4("projection", captureProjection);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, hdrTexture);
+
+    glViewport(0, 0, 512, 512);
+    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+
+    for (unsigned int i = 0; i < 6; ++i) {
+        proceduralSkyShader.setMat4("view", captureViews[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderCube();
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // remove artifact
+    glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+    unsigned int irradianceMap;
+    setupCubeMap(irradianceMap, 32, 32, false);
+
+    irradianceShader.use();
+    irradianceShader.setInt("environmentMap", 0);
+    irradianceShader.setMat4("projection", captureProjection);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
+
+    glViewport(0, 0, 32, 32);
+    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    for (unsigned int i = 0; i < 6; i++) {
+        irradianceShader.setMat4("view", captureViews[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderCube();
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // pre-filter map
+    unsigned int preFilterMap;
+    setupCubeMap(preFilterMap, 128, 128, true);
+
+
+    prefilterShader.use();
+    prefilterShader.setInt("environmentMap", 0);
+    prefilterShader.setMat4("projection", captureProjection);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
+
+    // glViewport(0, 0, 128, 128);
+    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+
+    unsigned int maxMipLevels = 5;
+    for (unsigned int mip = 0; mip < maxMipLevels; ++mip) {
+        // resize frame buffer mip-size
+        unsigned int mipWidth = 128 * std::pow(0.5, mip);
+        unsigned int mipHeight = 128 * std::pow(0.5, mip);
+        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+        glViewport(0, 0, mipWidth, mipHeight);
+
+        float roughness = (float)mip / (float)(maxMipLevels - 1);
+        prefilterShader.setFloat("roughness", roughness);
+        for (unsigned int i=0; i<6; ++i) {
+            prefilterShader.setMat4("view", captureViews[i]);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, preFilterMap, mip);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            renderCube();
+        }
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // BRDF Convolution Texture
+    unsigned int brdfLUTTexture;
+    glGenTextures(1, &brdfLUTTexture);
+
+    // pre-allocate memory for lut texture
+    glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // reuse same framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
+    // render quad and viewport
+    glViewport(0, 0, 512, 512);
+    brdfShader.use();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    renderQuad();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     // ------------------------------------------------------------
     //   Extract first enabled directional light for shadow mapping
     // ------------------------------------------------------------
-    glm::vec3 sunPosWS, sunDirWS;
-    if (!loader.getFirstDirectionalLight(sunPosWS, sunDirWS)) {
+    glm::mat4 lightTransform;
+    if (!loader.getFirstDirectionalLightTransform(lightTransform)) {
         std::cerr << "No active directional light found. Shadows disabled." << std::endl;
-        sunDirWS = glm::vec3(0.0f, -1.0f, 0.0f); // fallback
+        // Fallback to default transform pointing down
+        lightTransform = glm::mat4(1.0f);
+        lightTransform = glm::translate(lightTransform, glm::vec3(0.0f, 10.0f, 0.0f));
+        lightTransform = glm::rotate(lightTransform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     }
 
-    // Choose a point along -sunDir so the ortho volume encloses the scene
-    glm::vec3 sceneCenter(0.0f);        // tweak if scene is offset
-    float     sceneRadius = 20.0f;      // tweak to fit whole scene
-    glm::vec3 lightPos = sceneCenter - sunDirWS * sceneRadius;
+    // Keep the transform for reuse each frame
+    glm::mat4 cachedLightTransform = lightTransform;
 
-    // Keep these for reuse each frame
-    glm::vec3 cachedLightPos = lightPos;
-    glm::vec3 cachedSunDir   = sunDirWS;
+    // Pre-compute light direction (−Z axis transformed by rotation part)
+    glm::vec3 cachedLightDir = glm::normalize(glm::mat3(cachedLightTransform) * glm::vec3(0.0f, 0.0f, -1.0f));
 
+    // Define scene bounds (adjust if your scene is offset/ larger)
+    glm::vec3 sceneCenter(0.0f);     // world-space centre of the scene
+    const float sceneRadius = 20.0f; // encompasses entire Sponza atrium
+
+    // Position the virtual light camera far enough to encapsulate the scene
+    glm::vec3 cachedLightPos = sceneCenter - cachedLightDir * sceneRadius;
+ 
     modelSponza.use();
+    modelSponza.setInt("shadowMap", 2);
+    modelSponza.setInt("irradianceMap", 5);
+    modelSponza.setInt("brdfLUT", 6);
+    modelSponza.setInt("prefilterMap", 7);
+    modelSponza.setFloat("exposure", exposure);
+    modelSponza.setFloat("ambientScale", ambientScale);
+
     loader.setupLighting(modelSponza);
+
 
     debugDepthQuadShader.use();
     debugDepthQuadShader.setInt("depthMap", 0);
+
+    // then before rendering, configure the viewport to the original framebuffer's screen dimensions
+    int scrWidth, scrHeight;
+    glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
+    glViewport(0, 0, scrWidth, scrHeight);
 
     while (!glfwWindowShouldClose(window)) {
         // Update window title with FPS information
@@ -194,51 +396,80 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         depthShader.use();
-        float near_plane = 1.0f, far_plane = sceneRadius * 2.0f;
-        // Build light-space matrices using cached light position & direction
-        float orthoHalf = sceneRadius;
+        // ------------------------------------------------------------------
+        // Compute light-space matrix (directional light) every frame
+        // ------------------------------------------------------------------
+        const float near_plane = 1.0f;
+        const float far_plane  = sceneRadius * 2.0f;  // cover entire scene depth
+        const float orthoHalf  = sceneRadius;         // half-width of ortho box
+
+        // Orthographic projection that encloses the scene bounds
         glm::mat4 lightProjection = glm::ortho(-orthoHalf, orthoHalf,
                                                -orthoHalf, orthoHalf,
                                                near_plane, far_plane);
+
+        // Build view matrix from the light's position & direction
         glm::mat4 lightView = glm::lookAt(cachedLightPos,
                                           sceneCenter,
                                           glm::vec3(0.0f, 1.0f, 0.0f));
+
         glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
         loader.Render(depthShader, lightView, lightProjection);
+        glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // reset viewport
         glViewport(0, 0, gWindowWidth, gWindowHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glCullFace(GL_BACK);
+
 
         // render scene with depth map
         glm::mat4 viewMatrix = camera.GetViewMatrix();
         glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)gWindowWidth / (float)gWindowHeight, camera.near, camera.far);
         modelSponza.use();
+        modelSponza.setFloat("exposure", exposure);
+        modelSponza.setFloat("ambientScale", ambientScale);
         
         // Set camera position for specular lighting (must be after shader.use())
         // modelSponza.setVec3("viewPos", camera.Position);
         modelSponza.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, depthMap);   // depthMap was generated earlier
-        modelSponza.setInt("shadowMap", 2);
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+        glActiveTexture(GL_TEXTURE6);
+        glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+        glActiveTexture(GL_TEXTURE7);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, preFilterMap);
         modelSponza.setVec3("camPosition", camera.Position);
         loader.Render(modelSponza, viewMatrix, projectionMatrix);
 
+        // render skybox (render as last to prevent overdraw)
+        cubeMapShader.use();
+        cubeMapShader.setMat4("view", viewMatrix);
+        cubeMapShader.setMat4("projection", projectionMatrix);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
+        glDepthFunc(GL_LEQUAL); // Change depth function for skybox rendering
+        renderCube();
+        glDepthFunc(GL_LESS); // Set it back to default for the next frame
+
+
+
         // render Depth map to quad for visual debugging
         // ---------------------------------------------
-        debugDepthQuadShader.use();
-        debugDepthQuadShader.setFloat("near_plane", near_plane);
-        debugDepthQuadShader.setFloat("far_plane", far_plane);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
+        // debugDepthQuadShader.use();
+        // debugDepthQuadShader.setFloat("near_plane", near_plane);
+        // debugDepthQuadShader.setFloat("far_plane", far_plane);
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, depthMap);
+        
         // renderQuad();
-
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -455,6 +686,16 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(LEFT, deltaTime);
 
+    // Exposure control with '=' and '-' keys
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
+        exposure = std::min(exposure + 0.1f * deltaTime, 5.0f); // Increase with upper limit
+        std::cout << "Exposure: " << std::fixed << std::setprecision(2) << exposure << std::endl;
+    }
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
+        exposure = std::max(exposure - 0.1f * deltaTime, 0.1f); // Decrease with lower limit
+        std::cout << "Exposure: " << std::fixed << std::setprecision(2) << exposure << std::endl;
+    }
+
     // Toggle light cube visualization with 'L' key
     static bool lPressedLastFrame = false;
     bool lPressedNow = glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS;
@@ -498,6 +739,22 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
+// new: focus callback to automatically (re)capture the mouse cursor when the
+// window gains focus and release it when it loses focus.
+void window_focus_callback(GLFWwindow* window, int focused)
+{
+    if (focused)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        // Reset firstMouse to avoid sudden jump due to cursor recentering
+        firstMouse = true;
+    }
+    else
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
@@ -583,62 +840,3 @@ void showFPS(GLFWwindow* window)
 
     frameCount++;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

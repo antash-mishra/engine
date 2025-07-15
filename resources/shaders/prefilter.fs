@@ -7,6 +7,20 @@ uniform samplerCube environmentMap;
 uniform float roughness;
 const float PI = 3.1415926;
 
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a = roughness*roughness;
+    float a2 = a*a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH*NdotH;
+
+    float nom   = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return nom / denom;
+}
+
 // Van Der corpus sequence
 // Radical inverse of i in base 2
 // ex: i = 2
@@ -60,6 +74,9 @@ void main() {
     vec3 R = N;
     vec3 V = R;
 
+    // Clamp roughness to avoid extreme aliasing and division-by-zero in PDF
+    float r = max(roughness, 0.04);
+
     const uint SAMPLE_COUNT = 1024u;
     float totalWeight = 0.0;
     vec3 prefilterColor = vec3(0.0);
@@ -68,16 +85,27 @@ void main() {
         // get sample using hammersley sampling
         vec2 Xi  = Hammersley(i, SAMPLE_COUNT);
         // sample halfway vector using importance sampling which samples from specular probe
-        vec3 H = ImportanceSampleGGX(Xi, N, roughness);
+        vec3 H = ImportanceSampleGGX(Xi, N, r);
         // Getting outgoing outgoing
         vec3 L = normalize(2 * dot(V, H) * H - V);
 
         float NdotL = max(dot(N, L), 0.0);
-        // It should be in hemisphere and less than 90 degrees
-        // samples with less influence on the final result (for small NdotL) contribute less to the final weight
         if (NdotL > 0.0) {
-            prefilterColor += texture(environmentMap, L).rgb * NdotL;
-            totalWeight += NdotL;
+            // sample from the environment's mip level based on roughness/pdf
+            float D   = DistributionGGX(N, H, roughness);
+            float NdotH = max(dot(N, H), 0.0);
+            float HdotV = max(dot(H, V), 0.0);
+            float pdf = D * NdotH / (4.0 * HdotV) + 0.0001;
+
+            float resolution = 512.0; //   resolution of source cubemap (per face)
+            float saTexel  = 4.0 * PI / (6.0 * resolution * resolution);
+            float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
+
+            float mipLevel = roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
+
+            prefilterColor += textureLod(environmentMap, L, mipLevel).rgb * NdotL;
+            totalWeight      += NdotL;
+
         }
     }
     prefilterColor = prefilterColor / totalWeight;

@@ -6,6 +6,7 @@ layout (location = 0) out vec4 FragColor;
 #define PI 3.14159265359
 
 in vec2 TexCoords;
+in vec2 TexCoords1;
 in vec3 WorldPos;
 in vec3 Normal;
 in vec4 FragPosLightSpace;
@@ -34,6 +35,15 @@ uniform sampler2D metallicRoughnessMap;
 uniform float metallicFactor;
 uniform float roughnessFactor;
 uniform vec4 baseColorFactor;
+uniform samplerCube irradianceMap;
+uniform sampler2D brdfLUT;
+uniform samplerCube prefilterMap;
+uniform float exposure;
+uniform float ambientScale;
+
+// ADD_UNIFORM_AO
+uniform sampler2D aoMap;
+// END_ADD_UNIFORM_AO
 
 uniform sampler2D shadowMap;
 
@@ -63,6 +73,10 @@ vec3 getNormalFromNormalMap()
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
+    return F0 + (max(vec3(1.0-roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
 float distributionGGX(vec3 N, vec3 H, float roughness) {
@@ -112,7 +126,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
-    float bias = max(0.3 * (1.0 - dot(normal, lightDir)), 0.03);
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
     for(int x = -1; x <= 1; ++x)
@@ -124,6 +138,9 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
         }
     }
     shadow /= 9.0;
+    // Soften shadows by limiting maximum darkness to 70%
+    shadow = min(shadow, 0.7);
+    
     if(projCoords.z > 1.0)
         shadow = 0.0;
     return shadow;
@@ -157,15 +174,26 @@ vec3 calcPointLight(Light lgt, vec3 normal, vec3 fragPos, vec3 viewDir) {
     return (diffuse + specular) * lgt.intensity;
 }
 
+vec3 tonemapACES(vec3 x) {
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return clamp((x*(a*x+b)) / (x*(c*x+d)+e), 0.0, 1.0);
+}
+
 
 void main()
 {
-    // vec3 albedo     = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+    // Apply gamma correction to convert from sRGB to linear space
     vec4 baseColor  = texture(albedoMap, TexCoords) * baseColorFactor;
-    vec3 albedo     = baseColor.rgb;
-    float metallic  = texture(metallicRoughnessMap, TexCoords).r * metallicFactor;
+    vec3 albedo     = pow(baseColor.rgb, vec3(2.2));
+    float metallic  = texture(metallicRoughnessMap, TexCoords).b * metallicFactor;  // Fixed: metallic is in blue channel, not red
+    // glTF stores perceptual roughness (linear in perception). Convert to microfacet roughness (alpha)
     float roughness = texture(metallicRoughnessMap, TexCoords).g * roughnessFactor;
-    float ao        = 1.0;
+    // float roughness = perceptualRoughness * perceptualRoughness; // perceptual -> physical
+    float ao        = texture(aoMap, TexCoords1).r;
 
     // Apply material factors
     
@@ -176,13 +204,16 @@ void main()
     vec3 V = normalize(camPosition - WorldPos);
     vec3 Lo = vec3(0.0);
 
-    // Directional light branch
 
-    for (int i = 0; i < NR_LIGHTS; i++) {
-        // Skip inactive lights
-        // if (light[i].intensity <= 0.0) continue;
-        Lo += calcPointLight(light[i], N, WorldPos, V);
-    }
+     // base reflectivity of surface
+     vec3 F0 = vec3(0.04);
+     F0 = mix(F0, albedo, metallic);
+
+    // for (int i = 0; i < NR_LIGHTS; i++) {
+    //     // Skip inactive lights
+    //     // if (light[i].intensity <= 0.0) continue;
+    //     Lo += calcPointLight(light[i], N, WorldPos, V);
+    // }
 
     for (int j=0; j<DIR_LIGHT_COUNT; j++) {
         // For directional lights, use the direction directly (not position-based)
@@ -190,20 +221,15 @@ void main()
 
         // Halfway vector
         vec3 H = normalize(V + L);
-
-        // No attenuation for directional lights (infinitely distant)
-        float attenuation = 1.0;
         
         // Apply shadow calculation for directional lights
         float shadow = ShadowCalculation(FragPosLightSpace, N, L);
         
-        // incoming light Radiance
-        vec3 radiance = dirLight[j].color * 0.6;
+        // incoming light Radiance (increased brightness)
+        vec3 radiance = dirLight[j].color * 0.7;
 
         // BRDF Eq
         // ----------------------------------------------
-        vec3 F0 = vec3(0.04);
-        F0 = mix(F0, albedo, metallic);
         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
         // Normal Distribution
@@ -227,11 +253,33 @@ void main()
         Lo  +=  ((kD * albedo / PI) + specular) * radiance * nDotL * (1.0 - shadow);
     }
 
-    vec3 ambient = vec3(0.03) * albedo;
+    // irradiance (indirect lighting)
+    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 kS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+    // Energy compensation for rough specular (affect metals predominantly)
+//     float energyBias   = 0.5 * roughness * metallic;
+//     float energyFactor = 1.0 - 0.5 * roughness;
+//     kS = kS * energyFactor + energyBias;
+
+    vec3 kD = vec3(1.0) - kS;
+    kD *= (1.0 - metallic);
+    vec3 diffuse = irradiance * albedo;
+
+    // Indirect specular reflection
+    vec3 R = reflect(-V, N);
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilteredColor= textureLod(prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
+    vec2 envBRDF = texture(brdfLUT, vec2(max(dot(N,V), 0.0), roughness)).rg;
+    vec3 specular = prefilteredColor * (kS * envBRDF.x + envBRDF.y);
+    vec3 ambient = (kD * diffuse + specular) * ao * 0.1;
+
     vec3 color = ambient + Lo;
 
+    // ACES filmic tone mapping with user-controlled exposure
     // reinhard tone mapping (As Lo can go very high to preserve the high dynamic range)
-    color = color / (color + vec3(1.0));
+    color = tonemapACES(color * exposure);
+
     // gamma correction
     color = pow(color, vec3(1.0/2.2));
     
