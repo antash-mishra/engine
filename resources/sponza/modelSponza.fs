@@ -32,12 +32,13 @@ struct DirLight {
 uniform sampler2D albedoMap;
 uniform sampler2D normalMap;
 uniform sampler2D metallicRoughnessMap;
-uniform float metallicFactor;
-uniform float roughnessFactor;
-uniform vec4 baseColorFactor;
 uniform samplerCube irradianceMap;
 uniform sampler2D brdfLUT;
 uniform samplerCube prefilterMap;
+uniform sampler2D ssaoMap;
+uniform float metallicFactor;
+uniform float roughnessFactor;
+uniform vec4 baseColorFactor;
 uniform float exposure;
 uniform float ambientScale;
 
@@ -57,14 +58,14 @@ uniform vec3 camPosition;
 vec3 getNormalFromNormalMap()
 {
     // Sample the normal map and convert from [0,1] to [-1,1] range
-    vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(normalMap, TexCoords1).xyz * 2.0 - 1.0;
 
     // Use the pre-calculated tangent space vectors from vertex shader
     // Note: Re-normalizing because interpolation can change vector lengths
     vec3 N = normalize(Normal);
     vec3 T = normalize(Tangent);
     vec3 B = normalize(Bitangent);
-    
+
     // Construct the TBN matrix to transform from tangent space to world space
     mat3 TBN = mat3(T, B, N);
 
@@ -117,34 +118,40 @@ vec3 cookTorrence (vec3 N, vec3 V, vec3 L, float normalDis, float geoDis, vec3 f
 
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
-    // perform perspective divide
+    // Perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
+    // Transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-    // get depth of current fragment from light's perspective
+    
+    // Early exit if outside shadow map
+    if(projCoords.z > 1.0) return 0.0;
+    
+    // Get current depth
     float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+    
+    // Calculate bias - smaller values for Sponza
+    float bias = max(0.01 * (1.0 - dot(normal, lightDir)), 0.001);
+    
+    // Optional: Add slope-scale bias for better quality
+    // bias += 0.0001 * tan(acos(dot(normal, lightDir)));
+    
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; ++x)
+    
+    // 3x3 PCF
+    for(int x = -2; x <= 2; ++x)
     {
-        for(int y = -1; y <= 1; ++y)
+        for(int y = -2; y <= 2; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+        shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
-    shadow /= 9.0;
-    // Soften shadows by limiting maximum darkness to 70%
-    shadow = min(shadow, 0.7);
+    shadow /= 25.0;
     
-    if(projCoords.z > 1.0)
-        shadow = 0.0;
     return shadow;
 }
+
 
 // Simple Blinn-Phong point-light calculation with quadratic attenuation
 vec3 calcPointLight(Light lgt, vec3 normal, vec3 fragPos, vec3 viewDir) {
@@ -162,7 +169,7 @@ vec3 calcPointLight(Light lgt, vec3 normal, vec3 fragPos, vec3 viewDir) {
     float distance = length(lgt.lightPos - fragPos);
     float attenuation = 1.0 / (distance * distance);
 
-    
+
 //     vec3 ambient  = 0.05 * lgt.color;
     vec3 diffuse  = diff * lgt.color;
     vec3 specular = spec * lgt.color;
@@ -188,18 +195,18 @@ void main()
 {
     // Apply gamma correction to convert from sRGB to linear space
     vec4 baseColor  = texture(albedoMap, TexCoords) * baseColorFactor;
-    vec3 albedo     = pow(baseColor.rgb, vec3(2.2));
+    vec3 albedo     = baseColor.rgb;
     float metallic  = texture(metallicRoughnessMap, TexCoords).b * metallicFactor;  // Fixed: metallic is in blue channel, not red
     // glTF stores perceptual roughness (linear in perception). Convert to microfacet roughness (alpha)
     float roughness = texture(metallicRoughnessMap, TexCoords).g * roughnessFactor;
     // float roughness = perceptualRoughness * perceptualRoughness; // perceptual -> physical
-    float ao        = texture(aoMap, TexCoords1).r;
-
+    float ao        = texture(aoMap, TexCoords).r;
+    float ssaoFactor = texture(ssaoMap, TexCoords).r;
     // Apply material factors
-    
+
     // Use normal map if available, otherwise use vertex normal
     vec3 N = getNormalFromNormalMap();
-    
+
     // viewPos
     vec3 V = normalize(camPosition - WorldPos);
     vec3 Lo = vec3(0.0);
@@ -221,12 +228,12 @@ void main()
 
         // Halfway vector
         vec3 H = normalize(V + L);
-        
+
         // Apply shadow calculation for directional lights
         float shadow = ShadowCalculation(FragPosLightSpace, N, L);
-        
-        // incoming light Radiance (increased brightness)
-        vec3 radiance = dirLight[j].color * 0.7;
+
+        // incoming light radiance scaled by intensity provided from glTF
+        vec3 radiance = dirLight[j].color * dirLight[j].intensity;
 
         // BRDF Eq
         // ----------------------------------------------
@@ -272,17 +279,29 @@ void main()
     vec3 prefilteredColor= textureLod(prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
     vec2 envBRDF = texture(brdfLUT, vec2(max(dot(N,V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (kS * envBRDF.x + envBRDF.y);
-    vec3 ambient = (kD * diffuse + specular) * ao * 0.1;
+
+    // float combinedAO = ao * ssaoFactor;
+    // vec3 diffuseAmbient = kD * diffuse * combinedAO;
+    // vec3 specularAmbient = specular * mix(combinedAO, 1.0, metallic); // Less AO on metals
+    // vec3 ambient = diffuseAmbient + specularAmbient;
+
+    // float combinedAO = ao * ssaoFactor;
+    // vec3 ambient = (kD * diffuse + specular) * combinedAO;
+
+    float ssaoModulation = mix(0.2, 1.0, ssaoFactor); // Minimum 30% ambient, maximum 100%
+    vec3 ambient = (kD * diffuse * ssaoModulation + specular) * ao * ambientScale;
+
 
     vec3 color = ambient + Lo;
 
     // ACES filmic tone mapping with user-controlled exposure
     // reinhard tone mapping (As Lo can go very high to preserve the high dynamic range)
     color = tonemapACES(color * exposure);
+    // color = color / (color + vec3(1.0));
 
     // gamma correction
     color = pow(color, vec3(1.0/2.2));
-    
+
     // Use the alpha from baseColor for transparent materials
     float finalAlpha = baseColor.a;
     FragColor = vec4(color, finalAlpha);

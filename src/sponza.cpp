@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <random>
 
 #include "shader.h"
 #include "camera.h"
@@ -50,7 +51,8 @@ float lastY = SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 float fov = 45.0f;
 float exposure = 1.5f;
-float ambientScale = 0.3f;
+float ambientScale = 0.6f;
+bool enableSSAO = true; // Toggle for SSAO
 
 Camera camera(glm::vec3(13.0f, 5.0f, 0.0f));
 
@@ -102,6 +104,10 @@ void setupCubeMap(unsigned int& textureID, unsigned int width, unsigned int heig
     }
 }
 
+float lerp(float a, float b, float t) {
+    return a + (b - a) * t;
+}
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -138,6 +144,7 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
+    // glEnable(GL_CULL_FACE);
     // glCullFace(GL_BACK);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -151,14 +158,17 @@ int main() {
     Shader modelSponza (
         (parentDir + "/resources/sponza/modelSponza.vs").c_str(),
         (parentDir + "/resources/sponza/modelSponza.fs").c_str());
-    // Shader equirectangularToCubemapShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
+    Shader equirectangularToCubemapShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
+    // Shader proceduralSkyShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
     Shader depthShader((parentDir + "/resources/sponza/depthMap.vs").c_str(), (parentDir + "/resources/sponza/depthMap.fs").c_str());
     Shader debugDepthQuadShader((parentDir + "/resources/sponza/debugDepthQuad.vs").c_str(), (parentDir + "/resources/sponza/debugDepthQuad.fs").c_str());
-    Shader proceduralSkyShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
     Shader cubeMapShader((parentDir + "/resources/shaders/background.vs").c_str(), (parentDir + "/resources/shaders/background.fs").c_str());
     Shader irradianceShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/irradiance.fs").c_str());
     Shader prefilterShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/prefilter.fs").c_str());
     Shader brdfShader((parentDir + "/resources/shaders/brdf.vs").c_str(), (parentDir + "/resources/shaders/brdf.fs").c_str());
+    Shader geometryPassShader((parentDir + "/resources/sponza/gPass.vs").c_str(), (parentDir + "/resources/sponza/gPass.fs").c_str());
+    Shader ssao((parentDir + "/resources/sponza/ssao.vs").c_str(), (parentDir + "/resources/sponza/ssao.fs").c_str());
+    Shader ssaoBlur((parentDir + "/resources/sponza/ssao.vs").c_str(),   (parentDir + "/resources/sponza/ssaoBlur.fs").c_str());
 
     // Use GLTFLoader class
     // GLTFLoader loader; // This line is moved to global scope
@@ -177,18 +187,131 @@ int main() {
       glGenTextures(1, &hdrTexture);
       glBindTexture(GL_TEXTURE_2D, hdrTexture);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_FLOAT, data);
-  
+
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  
+
       stbi_image_free(data);
     }
     else {
       std::cout << "Failed to load HDR texture" << std::endl;
     }
-    
+
+    // Generating random sample kernel with 64 sample values
+    std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
+    std::default_random_engine generator;
+    std::vector<glm::vec3> ssaoKernel;
+    for (unsigned int i=0; i<64; ++i) {
+        glm::vec3 sample(
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator)
+        );
+        sample = glm::normalize(sample);
+        sample *= randomFloats(generator);
+        float scale = (float)i / 64.0f;
+        scale = lerp(0.1f, 1.0f, scale * scale);
+        sample *= scale;
+        ssaoKernel.push_back(sample);
+    }
+
+    // Generating noise Texture
+    // used to rotate sample kernel
+    std::vector<glm::vec3> ssaoNoise;
+    for (unsigned int i=0; i<16; i++) {
+        glm::vec3 noise(
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) * 2.0 - 1.0,
+            0.0f
+        );
+        ssaoNoise.push_back(noise);
+    }
+
+    // Geometry pass
+    unsigned int gBuffer;
+    glGenFramebuffers(1, &gBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+
+    // position color buffer;
+    unsigned int gPosition, gNormal;
+    glGenTextures(1, &gPosition);
+    glBindTexture(GL_TEXTURE_2D, gPosition);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+    // normal color buffer;
+    glGenTextures(1, &gNormal);
+    glBindTexture(GL_TEXTURE_2D, gNormal);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+
+    constexpr unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, attachments);
+
+    // Add rbo as depth buffer to check completeness
+    unsigned int grboDepth;
+    glGenRenderbuffers(1, &grboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, grboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, grboDepth);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Kernel Noise (Rotation) Buffer (5×5 tileable noise)
+    // -----------------------------------------------------
+    const unsigned int noiseDim = 5;
+    unsigned int noiseTexture;
+    glGenTextures(1, &noiseTexture);
+    glBindTexture(GL_TEXTURE_2D, noiseTexture);
+    // Store as RGB; alpha channel not needed
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, noiseDim, noiseDim, 0, GL_RGBA, GL_FLOAT, ssaoNoise.data());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // framebuffer to store render output of ssao shader
+    // -----------------------------------------------------
+    unsigned int ssaoFBO;
+    glGenFramebuffers(1, &ssaoFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+
+    // ambient occlusion color buffer
+    unsigned int ssaoColorBuffer;
+    glGenTextures(1, &ssaoColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SSAO Framebuffer not complete!" << std::endl;
+
+    // blur fbo
+    unsigned int ssaoBlurFBO, ssaoColorBufferBlur;
+    glGenFramebuffers(1, &ssaoBlurFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+    glGenTextures(1, &ssaoColorBufferBlur);
+    glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 
     // framebuffer for shadow depth map
     unsigned int depthMapFBO;
@@ -220,7 +343,7 @@ int main() {
 
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
     glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
     // cube map
@@ -237,9 +360,9 @@ int main() {
         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
     };
-    proceduralSkyShader.use();
-    proceduralSkyShader.setInt("equirectangularMap", 0);
-    proceduralSkyShader.setMat4("projection", captureProjection);
+    equirectangularToCubemapShader.use();
+    equirectangularToCubemapShader.setInt("equirectangularMap", 0);
+    equirectangularToCubemapShader.setMat4("projection", captureProjection);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, hdrTexture);
 
@@ -247,7 +370,7 @@ int main() {
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 
     for (unsigned int i = 0; i < 6; ++i) {
-        proceduralSkyShader.setMat4("view", captureViews[i]);
+        equirectangularToCubemapShader.setMat4("view", captureViews[i]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
             GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -360,20 +483,31 @@ int main() {
 
     // Position the virtual light camera far enough to encapsulate the scene
     glm::vec3 cachedLightPos = sceneCenter - cachedLightDir * sceneRadius;
- 
+
     modelSponza.use();
     modelSponza.setInt("shadowMap", 2);
     modelSponza.setInt("irradianceMap", 5);
     modelSponza.setInt("brdfLUT", 6);
     modelSponza.setInt("prefilterMap", 7);
+    modelSponza.setInt("ssaoMap", 8);
     modelSponza.setFloat("exposure", exposure);
     modelSponza.setFloat("ambientScale", ambientScale);
-
     loader.setupLighting(modelSponza);
 
 
     debugDepthQuadShader.use();
     debugDepthQuadShader.setInt("depthMap", 0);
+
+    ssao.use();
+    ssao.setInt("gPosition", 0);
+    ssao.setInt("gNormal", 1);
+    ssao.setInt("texNoise", 2);
+
+    ssaoBlur.use();
+    ssaoBlur.setInt("ssaoInput", 0);
+
+    cubeMapShader.use();
+    cubeMapShader.setInt("envCubeMap", 0);
 
     // then before rendering, configure the viewport to the original framebuffer's screen dimensions
     int scrWidth, scrHeight;
@@ -395,10 +529,61 @@ int main() {
         glClearColor(0.9999999, 0.9999998, 1.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+
+        // render scene with depth map
+        glm::mat4 viewMatrix = camera.GetViewMatrix();
+        glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)gWindowWidth / (float)gWindowHeight, camera.near, camera.far);
+
+        // Geometry pass
+        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+        glDepthMask(GL_TRUE);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        geometryPassShader.use();
+        geometryPassShader.setMat4("view", viewMatrix);
+        loader.Render(geometryPassShader, viewMatrix, projectionMatrix);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // SSAO pass (only if enabled)
+        if (enableSSAO) {
+            glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            ssao.use();
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, gPosition);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, gNormal);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, noiseTexture);
+            for (unsigned int i=0; i<ssaoKernel.size(); i++) {
+                ssao.setVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
+            }
+            ssao.setMat4("projection", projectionMatrix);
+            ssao.setVec2("noiseScale", glm::vec2(SCR_WIDTH / 5.0f, SCR_HEIGHT / 5.0f));
+            renderQuad();
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            // Ambient Occlusion blur to remove the repeated pattern
+            // -----------------------------------------------------
+            glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+            glClear(GL_COLOR_BUFFER_BIT);
+            ssaoBlur.use();
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+            renderQuad();
+            glDepthMask(GL_TRUE);
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        // ------------------------------------------------------------------
+        // Depth pass
+        // ------------------------------------------------------------------
         depthShader.use();
-        // ------------------------------------------------------------------
-        // Compute light-space matrix (directional light) every frame
-        // ------------------------------------------------------------------
         const float near_plane = 1.0f;
         const float far_plane  = sceneRadius * 2.0f;  // cover entire scene depth
         const float orthoHalf  = sceneRadius;         // half-width of ortho box
@@ -428,13 +613,12 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        // render scene with depth map
-        glm::mat4 viewMatrix = camera.GetViewMatrix();
-        glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)gWindowWidth / (float)gWindowHeight, camera.near, camera.far);
+
+
         modelSponza.use();
         modelSponza.setFloat("exposure", exposure);
         modelSponza.setFloat("ambientScale", ambientScale);
-        
+
         // Set camera position for specular lighting (must be after shader.use())
         // modelSponza.setVec3("viewPos", camera.Position);
         modelSponza.setMat4("lightSpaceMatrix", lightSpaceMatrix);
@@ -446,30 +630,57 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
         glActiveTexture(GL_TEXTURE7);
         glBindTexture(GL_TEXTURE_CUBE_MAP, preFilterMap);
+        glActiveTexture(GL_TEXTURE8);
+        // Bind SSAO texture (use white texture if disabled)
+        if (enableSSAO) {
+            glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+        } else {
+            // Create a white texture for when SSAO is disabled
+            static unsigned int whiteTexture = 0;
+            if (whiteTexture == 0) {
+                glGenTextures(1, &whiteTexture);
+                glBindTexture(GL_TEXTURE_2D, whiteTexture);
+                float whitePixel[] = {1.0f, 1.0f, 1.0f, 1.0f};
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, whitePixel);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            }
+            glBindTexture(GL_TEXTURE_2D, whiteTexture);
+        }
         modelSponza.setVec3("camPosition", camera.Position);
         loader.Render(modelSponza, viewMatrix, projectionMatrix);
 
+
+        // Before skybox rendering:
+        // glDepthFunc(GL_LEQUAL);
+        // glDisable(GL_CULL_FACE);
         // render skybox (render as last to prevent overdraw)
         cubeMapShader.use();
+
+        // Pass the full view matrix - the shader will extract rotation internally
         cubeMapShader.setMat4("view", viewMatrix);
         cubeMapShader.setMat4("projection", projectionMatrix);
         glActiveTexture(GL_TEXTURE0);
+
         glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
-        glDepthFunc(GL_LEQUAL); // Change depth function for skybox rendering
+        glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
         renderCube();
-        glDepthFunc(GL_LESS); // Set it back to default for the next frame
+        // After skybox rendering:
+        glDepthFunc(GL_LESS);
 
 
 
         // render Depth map to quad for visual debugging
         // ---------------------------------------------
-        // debugDepthQuadShader.use();
-        // debugDepthQuadShader.setFloat("near_plane", near_plane);
-        // debugDepthQuadShader.setFloat("far_plane", far_plane);
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, depthMap);
-        
-        // renderQuad();
+        /*
+        debugDepthQuadShader.use();
+        debugDepthQuadShader.setFloat("near_plane", near_plane);
+        debugDepthQuadShader.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+
+        renderQuad();
+        */
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -705,13 +916,14 @@ void processInput(GLFWwindow *window)
     }
     lPressedLastFrame = lPressedNow;
 
-    // Toggle SSAO debug view with key 'O'
-    // static bool oPressedLastFrame = false;
-    // bool oPressedNow = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
-    // if (oPressedNow && !oPressedLastFrame) {
-    //     gShowSSAO = !gShowSSAO;
-    // }
-    // oPressedLastFrame = oPressedNow;
+    // Toggle SSAO with key 'O'
+    static bool oPressedLastFrame = false;
+    bool oPressedNow = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
+    if (oPressedNow && !oPressedLastFrame) {
+        enableSSAO = !enableSSAO;
+        std::cout << "SSAO " << (enableSSAO ? "enabled" : "disabled") << std::endl;
+    }
+    oPressedLastFrame = oPressedNow;
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
