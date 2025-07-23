@@ -14,7 +14,7 @@ void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 unsigned int loadTexture(const char *path);
-void renderScene(const Shader &shader);
+void renderScene(const Shader &shader, unsigned int roomTexture, unsigned int cubesTexture);
 void renderCube();
 void renderQuad();
 
@@ -104,6 +104,8 @@ int main()
   std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
   Shader shader("resources/shaders/vertexShader.vs", "resources/shaders/fragmentShader.fs");
   Shader depthShader("resources/shaders/depthVertexShader.vs", "resources/shaders/depthFragmentShader.fs", "resources/shaders/depthGeometryShader.gs");
+  Shader hdrShader("resources/shaders/debugDepthQuad.vs", "resources/shaders/debugDepthQuad.fs");
+  
   GLuint planeVBO;
 
   glGenVertexArrays(1, &planeVAO);
@@ -123,8 +125,12 @@ int main()
 
   // Load textures
   // ---------------------------------------------------
-  unsigned int planeTexture = loadTexture((parentDir + "/resources/wood.png").c_str());
-
+  unsigned int planeTexture = loadTexture((parentDir + "/resources/brickwall.jpg").c_str());
+  unsigned int normalMap = loadTexture((parentDir + "/resources/brickwall_normal.jpg").c_str());
+  
+  // load cube texture
+  unsigned int cubeTexture = loadTexture((parentDir + "/resources/planks.png").c_str());
+  
   // Create a framebuffer object for the depth map
   // ---------------------------------------------------
   unsigned int depthMapFBO;
@@ -156,6 +162,7 @@ int main()
   shader.use();
   shader.setInt("texture_diffuse0", 0);
   shader.setInt("shadowMap", 1);
+  shader.setInt("normalMap", 2);
 
   while (!glfwWindowShouldClose(window))
   {
@@ -221,7 +228,7 @@ int main()
       depthShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
     depthShader.setFloat("far_plane", far);
     depthShader.setVec3("lightPos", lightPos);
-    renderScene(depthShader);
+    renderCube();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // reset viewport
@@ -242,12 +249,12 @@ int main()
     // glUniform3fv(glGetUniformLocation(shader.ID, "lightColors"), 4, &lightColors[0][0]);
 
     // Render Plane
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, planeTexture);
     glActiveTexture(GL_TEXTURE1);
     // glBindTexture(GL_TEXTURE_2D, depthMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
-    renderScene(shader);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, normalMap);
+    renderScene(shader, planeTexture, cubeTexture);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -368,9 +375,13 @@ void renderQuad()
 }
 
 // render the scene with the given shader
-void renderScene(const Shader &shader)
+void renderScene(const Shader &shader, unsigned int roomTexture, unsigned int cubesTexture)
 {
     // room cube
+    if (roomTexture) {
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, roomTexture);
+    }
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(5.0f));
     shader.setMat4("model", model);
@@ -380,6 +391,10 @@ void renderScene(const Shader &shader)
     shader.setInt("reverse_normals", 0); // and of course disable it
     glEnable(GL_CULL_FACE);
     // cubes
+    if (cubesTexture) {
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, roomTexture);
+    }
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
     model = glm::scale(model, glm::vec3(0.5f));

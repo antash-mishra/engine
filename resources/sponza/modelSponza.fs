@@ -58,7 +58,7 @@ uniform vec3 camPosition;
 vec3 getNormalFromNormalMap()
 {
     // Sample the normal map and convert from [0,1] to [-1,1] range
-    vec3 tangentNormal = texture(normalMap, TexCoords1).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
 
     // Use the pre-calculated tangent space vectors from vertex shader
     // Note: Re-normalizing because interpolation can change vector lengths
@@ -130,7 +130,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
     float currentDepth = projCoords.z;
     
     // Calculate bias - smaller values for Sponza
-    float bias = max(0.01 * (1.0 - dot(normal, lightDir)), 0.001);
+    float bias = max(0.2 * (1.0 - dot(normal, lightDir)), 0.02);
     
     // Optional: Add slope-scale bias for better quality
     // bias += 0.0001 * tan(acos(dot(normal, lightDir)));
@@ -144,7 +144,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
         for(int y = -2; y <= 2; ++y)
         {
         float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-        shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        shadow += currentDepth - bias >= pcfDepth ? 1.0 : 0.0;
         }
     }
     shadow /= 25.0;
@@ -196,12 +196,12 @@ void main()
     // Apply gamma correction to convert from sRGB to linear space
     vec4 baseColor  = texture(albedoMap, TexCoords) * baseColorFactor;
     vec3 albedo     = baseColor.rgb;
-    float metallic  = texture(metallicRoughnessMap, TexCoords).b * metallicFactor;  // Fixed: metallic is in blue channel, not red
+    float metallic  = texture(metallicRoughnessMap, TexCoords).b * metallicFactor; 
     // glTF stores perceptual roughness (linear in perception). Convert to microfacet roughness (alpha)
     float roughness = texture(metallicRoughnessMap, TexCoords).g * roughnessFactor;
     // float roughness = perceptualRoughness * perceptualRoughness; // perceptual -> physical
     float ao        = texture(aoMap, TexCoords).r;
-    float ssaoFactor = texture(ssaoMap, TexCoords).r;
+    float ssaoFactor = texture(ssaoMap, TexCoords1).r;
     // Apply material factors
 
     // Use normal map if available, otherwise use vertex normal
@@ -288,8 +288,8 @@ void main()
     // float combinedAO = ao * ssaoFactor;
     // vec3 ambient = (kD * diffuse + specular) * combinedAO;
 
-    float ssaoModulation = mix(0.2, 1.0, ssaoFactor); // Minimum 30% ambient, maximum 100%
-    vec3 ambient = (kD * diffuse * ssaoModulation + specular) * ao * ambientScale;
+    float ssaoModulation = mix(0.3, 1.0, ssaoFactor); // Minimum 30% ambient, maximum 100%
+    vec3 ambient = (kD * diffuse * ssaoModulation + specular) * ao;
 
 
     vec3 color = ambient + Lo;
