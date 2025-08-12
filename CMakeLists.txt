@@ -21,8 +21,8 @@ set(IMGUI_SOURCES
 
 # Source files
 add_executable(game_engine 
-    src/scene.cpp
-    src/glad.c 
+    src/ray_marching.cpp
+    src/glad.c
     src/shader.cpp
     src/stb_image.cpp
     src/camera.cpp
