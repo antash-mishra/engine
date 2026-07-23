@@ -1,0 +1,126 @@
+{
+  "entrypoint": "/home/antash/workspace/engine/tests/fixtures/gltf/phase0_scene.gltf",
+  "status": "pass",
+  "summary": {
+    "camera_count": 0,
+    "default_scene": 0,
+    "geometry_0": {
+      "indices": [
+        0,
+        1,
+        2
+      ],
+      "normals": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "position_bounds": {
+        "max": [
+          1.0,
+          1.0,
+          0.0
+        ],
+        "min": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "texcoords_0": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "light_0": {
+      "color": [
+        1.0,
+        0.5,
+        0.25
+      ],
+      "intensity": 3.0,
+      "type": "directional"
+    },
+    "light_count": 1,
+    "light_node_world_translations": [
+      [
+        10.0,
+        4.0,
+        1.0
+      ]
+    ],
+    "material_0": {
+      "base_color_factor": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "metallic_factor": 0.2,
+      "roughness_factor": 0.6
+    },
+    "material_count": 1,
+    "mesh_count": 1,
+    "mesh_node_world_translations": [
+      [
+        10.0,
+        2.0,
+        0.0
+      ]
+    ],
+    "node_count": 3,
+    "primitive_count": 1,
+    "scene_count": 1,
+    "world_position_bounds": {
+      "max": [
+        11.0,
+        3.0,
+        0.0
+      ],
+      "min": [
+        10.0,
+        2.0,
+        0.0
+      ]
+    }
+  }
+}

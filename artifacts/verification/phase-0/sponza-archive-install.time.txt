@@ -1,0 +1,23 @@
+	Command being timed: "python3 tools/assets/manage_assets.py install --asset intel-sponza-base --archive /home/antash/Downloads/main_sponza.zip --root /tmp/phase0-durable-install-20260723 --accept-license --evidence artifacts/verification/phase-0/sponza-archive-install.json"
+	User time (seconds): 34.77
+	System time (seconds): 7.12
+	Percent of CPU this job got: 91%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:45.79
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 161688
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 1493161
+	Voluntary context switches: 2446
+	Involuntary context switches: 233
+	Swaps: 0
+	File system inputs: 7790024
+	File system outputs: 13114752
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

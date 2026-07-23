@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "capture_status": "partial",
+  "captured_at": "2026-07-23T14:26:05Z",
+  "revision": {
+    "git_commit": "44577008dfcdcbcad68cfb39ccfc38bdd87165f5",
+    "dirty": true
+  },
+  "build": {
+    "type": "ad-hoc Release diagnostic",
+    "compiler": "g++ 13.3.0",
+    "command": "g++ -std=c++17 -O2 -Iinclude src/sponza.cpp src/shader.cpp src/camera.cpp src/stb_image.cpp src/glad.c -lglfw -ldl -pthread -o /tmp/sponza_asset_audit"
+  },
+  "system": {
+    "os": "Linux Mint 22.2, Linux 6.8.0-88-generic x86_64",
+    "cpu": "Intel Core i7-8700K CPU @ 3.70GHz",
+    "ram_bytes": 33589395456
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 3060 12 GiB",
+    "driver": "570.153.02",
+    "api": "OpenGL 4.3 requested; exact runtime string not captured"
+  },
+  "asset": {
+    "id": "intel-sponza-base",
+    "profile": "full",
+    "entrypoint_sha256": "e04c4c540c74bdddcbd3f590a85c14119bfd5839702246a23b3a737c0cce2400",
+    "closure_sha256": "2d6102dc617e6e5cfed37d5fe23674d518cfb6d1a6b2fbd86084010ce7246645",
+    "closure_bytes": 2171830243
+  },
+  "settings": {
+    "sample": "legacy-sponza",
+    "width": 800,
+    "height": 600,
+    "camera": {
+      "name": "sponza_legacy_default",
+      "position": [
+        13.0,
+        5.0,
+        0.0
+      ],
+      "forward": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "up": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "vertical_fov_degrees": 35.0,
+      "near_plane": 0.5,
+      "far_plane": 60.0
+    }
+  },
+  "observations": [
+    {
+      "name": "gltf_file_load",
+      "value": 32992,
+      "unit": "ms",
+      "source": "legacy loader console timer"
+    },
+    {
+      "name": "texture_processing",
+      "value": 6091,
+      "unit": "ms",
+      "source": "legacy loader console timer"
+    },
+    {
+      "name": "mesh_processing",
+      "value": 305,
+      "unit": "ms",
+      "source": "legacy loader console timer"
+    },
+    {
+      "name": "loader_total",
+      "value": 39390,
+      "unit": "ms",
+      "source": "legacy loader console timer"
+    },
+    {
+      "name": "maximum_resident_set",
+      "value": 10307168,
+      "unit": "KiB",
+      "source": "/usr/bin/time -v"
+    },
+    {
+      "name": "process_timeout",
+      "value": 180,
+      "unit": "s",
+      "source": "timeout command; exit code 124 after the render loop was reached"
+    }
+  ],
+  "blockers": [
+    "The diagnostic did not timestamp first-frame presentation.",
+    "Cold versus warm cache state was not controlled.",
+    "Retained staging bytes were not instrumented.",
+    "Frame CPU/GPU timing samples were not captured.",
+    "OpenGL debug counts and the exact runtime OpenGL string were not captured.",
+    "No numeric framebuffer attachment readbacks were available.",
+    "The original measurement start timestamp was not retained; captured_at is the record date, not the run time."
+  ]
+}

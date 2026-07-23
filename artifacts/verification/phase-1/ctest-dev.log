@@ -1,0 +1,27 @@
+Test project /tmp/engine-phase1-ci-hardening.YNzZ97/source/build/dev
+    Start 1: sample_registry_unit
+1/7 Test #1: sample_registry_unit .............   Passed    0.00 sec
+    Start 2: launcher_cli
+2/7 Test #2: launcher_cli .....................   Passed    1.36 sec
+    Start 3: baseline_schema
+3/7 Test #3: baseline_schema ..................   Passed    0.52 sec
+    Start 4: asset_tool_unit
+4/7 Test #4: asset_tool_unit ..................   Passed    0.17 sec
+    Start 5: fixture_gltf
+5/7 Test #5: fixture_gltf .....................   Passed    0.07 sec
+    Start 6: dependency_lock
+6/7 Test #6: dependency_lock ..................   Passed    0.18 sec
+    Start 7: dependency_lock_unit
+7/7 Test #7: dependency_lock_unit .............   Passed    0.08 sec
+
+100% tests passed, 0 tests failed out of 7
+
+Label Time Summary:
+build           =   0.26 sec*proc (2 tests)
+dependencies    =   0.26 sec*proc (2 tests)
+launcher        =   1.36 sec*proc (1 test)
+negative        =   1.36 sec*proc (1 test)
+samples         =   0.00 sec*proc (1 test)
+unit            =   0.08 sec*proc (2 tests)
+
+Total Test time (real) =   2.39 sec

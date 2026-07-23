@@ -1,0 +1,18 @@
+Internal ctest changing into directory: /tmp/engine-phase0-evidence-build-20260723
+Test project /tmp/engine-phase0-evidence-build-20260723
+    Start 1: baseline_schema
+1/4 Test #1: baseline_schema ..................   Passed    0.19 sec
+    Start 2: asset_tool_unit
+2/4 Test #2: asset_tool_unit ..................   Passed    0.15 sec
+    Start 3: fixture_gltf
+3/4 Test #3: fixture_gltf .....................   Passed    0.06 sec
+    Start 4: asset_manifest
+4/4 Test #4: asset_manifest ...................   Passed    5.27 sec
+
+100% tests passed, 0 tests failed out of 4
+
+Label Time Summary:
+asset          =   5.27 sec*proc (1 test)
+integration    =   5.27 sec*proc (1 test)
+
+Total Test time (real) =   5.68 sec

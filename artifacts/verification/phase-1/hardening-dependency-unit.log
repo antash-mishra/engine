@@ -1,0 +1,7 @@
+test_duplicate_multiarch_package_versions_are_normalized (test_verify_dependencies.ClosureHashTests.test_duplicate_multiarch_package_versions_are_normalized) ... ok
+test_nested_mutation_addition_and_removal_change_digest (test_verify_dependencies.ClosureHashTests.test_nested_mutation_addition_and_removal_change_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.003s
+
+OK

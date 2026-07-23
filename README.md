@@ -1,180 +1,96 @@
 # Mini-Engine
 
-A comprehensive 3D graphics engine showcasing advanced real-time rendering techniques with OpenGL 4.3.
+Mini-Engine is an OpenGL 4.3 rendering sandbox being reorganized around reusable engine libraries
+and one multi-sample launcher. The maintained path currently contains the ray-marching sample.
+Sponza and the older rendering experiments remain isolated compatibility code until their renderer,
+asset pipeline, and tests are migrated through the phased plan.
 
-## What is Mini-Engine?
+## Current Structure
 
-Mini-Engine is an advanced graphics learning project that demonstrates modern real-time rendering techniques. It has evolved from basic triangle rendering to a sophisticated engine featuring PBR materials, shadow mapping, deferred rendering, and cluster-based lighting optimizations.
+The default build produces:
 
-## Features
+- `engine_platform`: GLFW and native OpenGL context lifetime
+- `engine_render`: maintained GLAD owner and shared rendering primitives
+- `engine_assets`: deterministic asset-root resolution and validation
+- `engine_scene`: renderer-independent scene state
+- `engine_samples`: sample registry and sample implementations
+- `render_samples`: command-line launcher
 
-### Core Graphics Pipeline
-- **OpenGL 4.3** with modern core profile
-- **Deferred rendering** for efficient multi-light scenes
-- **Cluster-based deferred shading** supporting 10,000+ lights with zero FPS drop
-- **Compute shaders** for cluster grid calculations and light culling
+See [`docs/architecture.md`](docs/architecture.md) for ownership and dependency rules and
+[`docs/adding-a-sample.md`](docs/adding-a-sample.md) for the extension workflow. The execution
+sequence and phase gates are in
+[`docs/plans/03-master-execution-plan.md`](docs/plans/03-master-execution-plan.md).
 
-### Advanced Lighting & Shading
-- **Physically Based Rendering (PBR)** with metallic-roughness workflow
-- **Image Based Lighting (IBL)** with:
-  - Diffuse irradiance mapping
-  - Specular reflection with prefiltered environment maps
-  - BRDF integration lookup table
-- **Direct lighting**: Directional, point, and spot lights
-- **Blinn-Phong** and **PBR BRDF** shading models
+## Prerequisites
 
-### Shadow Mapping
-- **Real-time shadow mapping** with PCF (Percentage Closer Filtering)
-- **Point light shadows** using geometry shaders and cube maps
-- **Directional light shadows** with orthographic projection
-- **Shadow acne elimination** and bias correction
-- **Smooth shadow edges** with multi-sample filtering
+The verified Ubuntu 24.04 package resolution is recorded in `dependencies.lock.json`:
 
-### Post-Processing Effects
-- **HDR rendering** with tone mapping operators
-- **Bloom effect** with gaussian blur
-- **SSAO (Screen Space Ambient Occlusion)** for realistic ambient shading
-- **Gamma correction** for proper color space handling
-
-### Asset Loading & Scene Management
-- **glTF 2.0 model loading** using TinyGLTF
-- **KHR_lights_punctual** extension support for scene lighting
-- **Sponza scene** with full material and lighting setup
-- **Multiple texture support** (albedo, normal, metallic-roughness)
-
-### Rendering Optimizations
-- **Frustum culling** and **light volume optimization**
-- **Face culling** and **depth testing**
-- **Instanced rendering** for repeated geometry
-- **Light volume spheres** for deferred rendering optimization
-
-### Technical Features
-- **Advanced shader system** with uniform management
-- **Framebuffer objects** for multi-pass rendering
-- **Cubemap support** for skyboxes and environment mapping
-- **Dynamic window resizing** with proper viewport management
-- **Debug visualization** for shadow maps and light volumes
-
-## Rendering Techniques Demonstrated
-
-1. **Forward Rendering** → **Deferred Rendering** → **Cluster Deferred Rendering**
-2. **Basic Lighting** → **PBR Materials** → **IBL Environment Lighting**
-3. **No Shadows** → **Shadow Maps** → **Multi-light Shadows**
-4. **LDR** → **HDR** → **Tone Mapping & Bloom**
-5. **Simple Geometry** → **Complex Models** → **glTF Scene Loading**
-
-## Project Evolution (Latest Commits)
-
-- **Current**: Sponza scene with directional lighting and shadow mapping
-- **PBR & IBL**: Full physically-based materials with environment lighting
-- **SSAO**: Screen-space ambient occlusion for realistic depth perception
-- **Cluster Shading**: 10,000+ light support with compute shader optimization
-- **Deferred Pipeline**: Multi-pass rendering for complex lighting scenarios
-- **Shadow Systems**: Real-time shadows for directional and point lights
-- **HDR Pipeline**: High dynamic range with bloom and tone mapping
-
-## How to Build and Run
-
-### Prerequisites
 ```bash
-# Install dependencies (Ubuntu/Debian)
-sudo apt-get install build-essential cmake libglfw3-dev libglew-dev libglm-dev
+sudo apt-get update
+sudo apt-get install --yes \
+  $(python3 tools/build/verify_dependencies.py apt-arguments)
 ```
 
-### Build
+The maintained targets use CMake 3.23 or newer, Ninja, GCC-compatible C++17, GLFW 3.3 or newer,
+OpenGL, and the vendored GLAD/GLM headers. Assimp and Draco are required only by opt-in legacy
+targets.
+
+## Build and Test
+
 ```bash
-mkdir -p build
-cd build
-cmake ..
-make -j$(nproc)
+cmake --preset dev
+cmake --build --preset dev --parallel
+ctest --preset dev --output-on-failure
 ```
 
-### Run Different Demos
+Use `release` for an optimized maintained build and `sanitizers` for AddressSanitizer plus
+UndefinedBehaviorSanitizer:
+
 ```bash
-# Main Sponza scene with PBR and shadows
-./sponza
+cmake --preset release
+cmake --build --preset release --parallel
 
-# Deferred rendering demo
-./deffered_rendering
-
-# Cluster deferred shading (10k lights)
-./cluster_deffered_rendering
-
-# HDR and bloom demo
-./hdr
-
-# Basic lighting examples
-./lighting_main
+cmake --preset sanitizers
+cmake --build --preset sanitizers --parallel
+ctest --preset sanitizers --output-on-failure
 ```
 
-## Controls
+Run the maintained launcher:
 
-### Camera
-- **W/A/S/D**: Move forward/left/backward/right
-- **Mouse**: Look around (FPS-style)
-- **Scroll wheel**: Zoom in/out
-- **Tab**: Toggle mouse cursor for UI interaction
+```bash
+build/dev/render_samples --list-samples
+build/dev/render_samples --sample ray-marching --frames 10
+```
 
-### Debug Controls
-- **L**: Toggle light cube visualization
-- **O**: Toggle SSAO debug view (where available)
-- **ESC**: Exit application
+`--frames` makes automated runs finite and deterministic. Use `--help` for the complete CLI.
+Assets resolve from `--asset-root`, then `ENGINE_ASSET_ROOT`, then `assets/` beside the executable;
+the process working directory is never an asset-root fallback.
 
-## Scene Assets
+## Legacy Compatibility
 
-### Sponza Scene
-- **Location**: `resources/main-sponza/main_sponza/`
-- **Format**: glTF 2.0 with PBR materials
-- **Features**: 
-  - High-quality textures (albedo, normal, metallic-roughness)
-  - Scene lighting with KHR_lights_punctual
-  - Complex architecture for shadow testing
+The old ray-marching and Sponza entrypoints are excluded from the default target graph. Build them
+only while comparing migration behavior:
 
-### Environment Maps
-- **HDR Environment**: `resources/newport_loft.hdr`
-- **Skybox textures**: `resources/skybox/`
+```bash
+cmake -S . -B build/legacy -G Ninja \
+  -DENGINE_BUILD_LEGACY_SAMPLES=ON \
+  -DENGINE_SPONZA_ASSET_ROOT="$PWD/resources/main-sponza"
+cmake --build build/legacy --target game_engine legacy_sponza
+```
 
-## Technical Architecture
+The Intel Sponza archive is external and is never copied into a build directory. Its pinned
+manifest, validation commands, measured loading baseline, and license evidence are documented in
+[`tools/assets/README.md`](tools/assets/README.md) and
+[`docs/verification/phase-0.md`](docs/verification/phase-0.md).
 
-### Shaders
-- **Vertex/Fragment**: Traditional pipeline stages
-- **Geometry**: Point light shadow mapping
-- **Compute**: Cluster grid generation and light culling
+## Status
 
-### Framebuffers
-- **G-Buffer**: Position, normal, albedo, material properties
-- **Shadow Maps**: Depth textures for shadow calculations
-- **HDR Buffer**: High dynamic range color storage
-- **Bloom**: Multi-pass gaussian blur
+The existing Sponza path is not yet a maintained sample and its Phase 0 readbacks identified clear
+G-buffer/SSAO correctness failures. Loading also retains several gigabytes of CPU data and takes
+tens of seconds on the reference system. These are explicit Phase 4 through Phase 6 work, not
+claims of current functionality. DDGI is planned only after the shared runtime, GPU ownership,
+scene pipeline, and Sponza correctness gates pass.
 
-### Dependencies
-
-- **GLFW 3.3+**: Window management and input
-- **GLAD**: OpenGL function loading
-- **GLM**: Mathematics library for graphics
-- **stb_image**: Image loading (PNG, JPG, HDR)
-- **TinyGLTF**: glTF 2.0 model loading
-- **Dear ImGui**: Debug UI (in some demos)
-
-## Performance Notes
-
-- **Cluster Deferred**: Handles 10,000+ lights at 60+ FPS
-- **Shadow Maps**: 1024x1024 depth maps with PCF
-- **SSAO**: Full-screen effect with configurable samples
-- **PBR**: Real-time IBL with precomputed environment maps
-
-## Future Enhancements
-
-- **Temporal Anti-Aliasing (TAA)**
-- **Screen Space Reflections (SSR)**
-- **Volumetric lighting and fog**
-- **Animation system for glTF models**
-- **Real-time global illumination**
-
-## Learning Resources
-
-Each major technique is implemented in separate demos, making it easy to understand the progression from basic to advanced rendering. Check the `docs/` directory for detailed explanations of specific techniques.
-
----
-
-*This project demonstrates the evolution from basic OpenGL rendering to production-quality real-time graphics techniques.*
+Rendering features are accepted with deterministic fixtures, analytic or CPU references, GPU
+readback, invariants, ablation, temporal checks, and performance telemetry. Screenshots are
+supplementary evidence rather than the correctness oracle.

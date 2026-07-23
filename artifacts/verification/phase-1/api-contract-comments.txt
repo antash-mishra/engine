@@ -1,0 +1,27 @@
+docs/adding-a-sample.md:5:A maintained sample implements `engine::sample::Sample` and provides a factory returning
+docs/adding-a-sample.md:7:sample behavior and GPU resources, but it receives window dimensions, an optional fixed frame
+docs/adding-a-sample.md:14:2. Implement `run(const SampleRunConfig&)`, a factory, and a side-effect-free
+docs/adding-a-sample.md:37:delete every handle deterministically and document their required context/thread lifetime.
+docs/adding-a-sample.md:62:Document public purpose, ownership, lifetime, thread restrictions, failure behavior, and render-pass
+docs/architecture.md:28:| Target | Owns | Must not own |
+docs/architecture.md:33:| `engine_render` | The maintained GLAD implementation and context-bound fullscreen render resources | Window lifetime, sample registry, asset-root selection |
+docs/architecture.md:52:  -> destroy render resources
+docs/architecture.md:53:  -> destroy Window/context
+docs/architecture.md:57:All platform and GL operations currently run on the main thread. A sample owns its render resources
+docs/architecture.md:58:but receives an immutable validated asset root. GL resources must be destroyed before `Window`,
+docs/architecture.md:64:Resolution is deterministic and independent of the shell's current directory:
+include/engine/render/fullscreen_pass.h:10:// Owns a linked GL program and fullscreen-quad VAO/VBO for one context.
+include/engine/render/fullscreen_pass.h:12:// Construction reads and compiles both shader files and throws with the file or
+include/engine/render/fullscreen_pass.h:14:// handles are context-bound. It must be destroyed on the context thread before
+include/engine/sample/sample_registry.h:12:// Process-local factory registry. Factories are stored without being invoked and
+include/engine/sample/sample_registry.h:25:        SampleFactory factory = nullptr;
+include/engine/sample/sample.h:29:// policy. run() is called once on the main thread. It returns only after all
+include/engine/sample/sample.h:30:// sample-owned GPU resources and its window have been destroyed, and throws
+include/engine/sample/sample.h:45:    SampleFactory factory = nullptr;
+include/engine/assets/asset_root.h:16:// A validated, immutable base directory for runtime asset lookup.
+include/engine/assets/asset_root.h:18:// Resolution precedence is command line, ENGINE_ASSET_ROOT, then an "assets"
+include/engine/platform/window.h:19:// Owns GLFW's process-global initialization and one OpenGL context.
+include/engine/platform/window.h:22:// destruction must run on the main thread. Objects that own GL handles must be
+include/engine/platform/window.h:23:// destroyed before this window so their destructors execute with a current
+include/engine/platform/window.h:24:// context. Construction throws std::runtime_error if GLFW or context creation
+include/engine/platform/window.h:25:// fails; no partially initialized GLFW lifetime is retained after a failure.

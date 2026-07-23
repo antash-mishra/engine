@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "fixture_revision": {
+    "gltf": "tests/fixtures/gltf/phase0_scene.gltf",
+    "gltf_sha256": "e1c5ce076dddc6842a2ac95cd5399f215aada9da484f5f0872d5302f484fb349",
+    "expectation": "tests/fixtures/gltf/phase0_scene.expected.json",
+    "expectation_sha256": "d8a667d9d3b1ba3b3834eae8e1fad1899984cc556fb74b0f01740bcaeb51b0f7"
+  },
+  "numeric": {
+    "absolute_tolerance": 0.00001,
+    "relative_tolerance": 0.0001,
+    "buffer_overrides": {
+      "depth": {
+        "absolute_tolerance": 0.00001,
+        "relative_tolerance": 0.0001
+      },
+      "world_normal": {
+        "absolute_tolerance": 0.0001,
+        "relative_tolerance": 0.0001
+      },
+      "hdr_color": {
+        "absolute_tolerance": 0.001,
+        "relative_tolerance": 0.001
+      },
+      "ssao": {
+        "absolute_tolerance": 0.002,
+        "relative_tolerance": 0.002
+      }
+    }
+  },
+  "image_readback": {
+    "max_bad_pixel_fraction": 0.001
+  },
+  "timing": {
+    "repetitions": 5,
+    "warmup_frames": 120,
+    "measured_frames": 600,
+    "fixed_timestep_seconds": 0.016666666666666666,
+    "capture_frame_rule": "last_measured_frame",
+    "cold_start_budget_ms": 60000,
+    "warm_start_budget_ms": 10000,
+    "gpu_pass_budget_ms": {
+      "depth": 4.0,
+      "gbuffer": 8.0,
+      "ssao": 4.0,
+      "pbr": 12.0,
+      "post_process": 2.0
+    }
+  },
+  "memory": {
+    "peak_rss_budget_bytes": 12884901888,
+    "retained_staging_budget_bytes": 536870912
+  },
+  "cameras": {
+    "ray_marching_default": {
+      "position": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "forward": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "up": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "vertical_fov_degrees": 35.0,
+      "near_plane": 0.1,
+      "far_plane": 100.0
+    },
+    "sponza_legacy_default": {
+      "position": [
+        13.0,
+        5.0,
+        0.0
+      ],
+      "forward": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "up": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "vertical_fov_degrees": 35.0,
+      "near_plane": 0.5,
+      "far_plane": 60.0
+    }
+  },
+  "resolutions": {
+    "baseline": [
+      800,
+      600
+    ],
+    "performance": [
+      1920,
+      1080
+    ],
+    "resize_sequence": [
+      [
+        800,
+        600
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        1024,
+        1024
+      ],
+      [
+        640,
+        360
+      ]
+    ]
+  },
+  "random_seed": 1597463007,
+  "legacy_baseline": {
+    "feature_flags": {
+      "ray_marching.fixed_shader_time": true,
+      "sponza.exposure": 1.5,
+      "sponza.ambient_scale": 0.6,
+      "sponza.ssao": true,
+      "sponza.light_cubes": true
+    },
+    "expected_readbacks": {
+      "ray-marching": [
+        "final_color"
+      ],
+      "sponza": [
+        "final_color",
+        "view_position",
+        "view_normal",
+        "ssao",
+        "shadow_depth"
+      ]
+    },
+    "diagnostic_min_dynamic_range": {
+      "ray-marching": {
+        "final_color": 1.0
+      },
+      "sponza": {
+        "final_color": 1.0,
+        "view_position": 0.001,
+        "view_normal": 0.001,
+        "ssao": 0.001,
+        "shadow_depth": 0.001
+      }
+    }
+  },
+  "ddgi": {
+    "ray_hit_agreement": 0.9999,
+    "hit_distance_tolerance": {
+      "absolute": 0.0001,
+      "relative": 0.001
+    },
+    "irradiance_tolerance": {
+      "absolute": 0.01,
+      "relative": 0.02
+    },
+    "convergence_frame_count": 256,
+    "energy_bound": 1.05,
+    "update_budget_ms": {
+      "low": 2.0,
+      "medium": 4.0,
+      "high": 8.0
+    }
+  }
+}

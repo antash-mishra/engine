@@ -1,0 +1,22 @@
+{
+  "asset_id": "intel-sponza-base",
+  "closure": {
+    "algorithm": "sha256-v1",
+    "file_count": 74,
+    "total_bytes": 2171830243,
+    "tree_sha256": "2d6102dc617e6e5cfed37d5fe23674d518cfb6d1a6b2fbd86084010ce7246645"
+  },
+  "entrypoint_sha256": "e04c4c540c74bdddcbd3f590a85c14119bfd5839702246a23b3a737c0cce2400",
+  "root": "/tmp/phase0-fetch-root-20260723",
+  "status": "pass",
+  "structure": {
+    "camera_count": 6,
+    "default_scene": 0,
+    "light_count": 24,
+    "material_count": 28,
+    "mesh_count": 115,
+    "node_count": 155,
+    "primitive_count": 405,
+    "scene_count": 1
+  }
+}

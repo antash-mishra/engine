@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "purpose": "Machine-checked Phase 1 dependency resolution; compatibility ranges live in cmake/Dependencies.cmake.",
+  "verification_platform": {
+    "distribution": "Linux Mint 22.2 (Ubuntu 24.04 package base)",
+    "architecture": "x86_64",
+    "compiler_package": "g++ 4:13.2.0-7ubuntu1",
+    "compiler": "GNU 13.3.0",
+    "cmake_package": "3.28.3-1build7",
+    "ninja_package": "1.11.1-2"
+  },
+  "package_lock": {
+    "build": {
+      "cmake": "3.28.3-1build7",
+      "g++": "4:13.2.0-7ubuntu1",
+      "libgl-dev": "1.7.0-1build1",
+      "libglfw3-dev": "3.3.10-1build1",
+      "ninja-build": "1.11.1-2"
+    },
+    "ci": {
+      "libgl1-mesa-dri": "25.2.8-0ubuntu0.24.04.2",
+      "xauth": "1:1.1.2-1build1",
+      "xvfb": "2:21.1.12-1ubuntu1.6"
+    }
+  },
+  "system_dependencies": {
+    "glfw": {
+      "package": "libglfw3-dev",
+      "package_version": "3.3.10-1build1",
+      "cmake_target": "glfw"
+    },
+    "opengl": {
+      "required_api": "4.3 core",
+      "cmake_target": "OpenGL::GL",
+      "verified_implementation": "NVIDIA OpenGL 4.6.0",
+      "verified_driver": "570.153.02"
+    },
+    "assimp_legacy_only": {
+      "package": "libassimp-dev",
+      "package_version": "5.3.1+ds-2build1",
+      "cmake_target": "assimp::assimp"
+    },
+    "draco_legacy_only": {
+      "package": "libdraco-dev",
+      "package_version": "1.5.6+dfsg-3build1",
+      "required": false
+    }
+  },
+  "vendored_dependencies": {
+    "glad": {
+      "paths": [
+        "include/glad",
+        "include/KHR",
+        "src/glad.c"
+      ],
+      "closure_sha256": "be38c9b914e0e3b41d7d4d78d377f36c51f865a912bf28783e9c1c510ec3eebf"
+    },
+    "glm": {
+      "version": "0.9.8.5",
+      "paths": [
+        "include/glm"
+      ],
+      "closure_sha256": "0f36f3f08d8e1c4cb4bcc91f4dfb23a41963dd8c4f7e25bf9d9cec6d7012b499"
+    },
+    "stb_image_legacy_only": {
+      "paths": [
+        "include/stb_image.h",
+        "src/stb_image.cpp"
+      ],
+      "closure_sha256": "a10032d83ce708b2c967fbd2621492e61bac6b7cbc5defcfc94a7fd7259a2e76"
+    },
+    "tinygltf_legacy_only": {
+      "paths": [
+        "include/tiny_gltf.h",
+        "include/json",
+        "include/stb_image.h",
+        "include/stb_image_write.h"
+      ],
+      "closure_sha256": "04c97dee8bae4ad832528878346dce72b7615be259ce7450417a9a87704f7f23"
+    }
+  },
+  "ci_actions": {
+    "actions/checkout": "11d5960a326750d5838078e36cf38b85af677262",
+    "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02"
+  },
+  "quarantined_dependency_state": {
+    "imgui": "The invalid unused external/imgui gitlink is removed in Phase 1. Legacy source files that mention ImGui are not maintained targets."
+  }
+}

@@ -1,0 +1,16 @@
+[ 28%] Building C object CMakeFiles/game_engine.dir/src/glad.c.o
+[ 28%] Building CXX object CMakeFiles/legacy_sponza.dir/src/sponza.cpp.o
+[ 28%] Building C object CMakeFiles/legacy_sponza.dir/src/glad.c.o
+[ 28%] Building CXX object CMakeFiles/game_engine.dir/src/ray_marching.cpp.o
+[ 35%] Building CXX object CMakeFiles/game_engine.dir/src/shader.cpp.o
+[ 42%] Building CXX object CMakeFiles/legacy_sponza.dir/src/shader.cpp.o
+[ 50%] Building CXX object CMakeFiles/legacy_sponza.dir/src/stb_image.cpp.o
+[ 57%] Building CXX object CMakeFiles/game_engine.dir/src/stb_image.cpp.o
+[ 64%] Building CXX object CMakeFiles/legacy_sponza.dir/src/camera.cpp.o
+[ 71%] Building CXX object CMakeFiles/legacy_sponza.dir/src/legacy_baseline.cpp.o
+[ 78%] Building CXX object CMakeFiles/game_engine.dir/src/camera.cpp.o
+[ 85%] Building CXX object CMakeFiles/game_engine.dir/src/legacy_baseline.cpp.o
+[ 92%] Linking CXX executable game_engine
+[ 92%] Built target game_engine
+[100%] Linking CXX executable legacy_sponza
+[100%] Built target legacy_sponza

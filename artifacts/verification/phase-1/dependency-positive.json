@@ -1,0 +1,59 @@
+{
+  "failures": [],
+  "include_ci": false,
+  "packages": {
+    "cmake": {
+      "actual": "3.28.3-1build7",
+      "expected": "3.28.3-1build7",
+      "matches": true
+    },
+    "g++": {
+      "actual": "4:13.2.0-7ubuntu1",
+      "expected": "4:13.2.0-7ubuntu1",
+      "matches": true
+    },
+    "libgl-dev": {
+      "actual": "1.7.0-1build1",
+      "expected": "1.7.0-1build1",
+      "matches": true
+    },
+    "libglfw3-dev": {
+      "actual": "3.3.10-1build1",
+      "expected": "3.3.10-1build1",
+      "matches": true
+    },
+    "ninja-build": {
+      "actual": "1.11.1-2",
+      "expected": "1.11.1-2",
+      "matches": true
+    }
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "vendored_files": {
+    "glad": {
+      "actual": "be38c9b914e0e3b41d7d4d78d377f36c51f865a912bf28783e9c1c510ec3eebf",
+      "expected": "be38c9b914e0e3b41d7d4d78d377f36c51f865a912bf28783e9c1c510ec3eebf",
+      "file_count": 3,
+      "matches": true
+    },
+    "glm": {
+      "actual": "0f36f3f08d8e1c4cb4bcc91f4dfb23a41963dd8c4f7e25bf9d9cec6d7012b499",
+      "expected": "0f36f3f08d8e1c4cb4bcc91f4dfb23a41963dd8c4f7e25bf9d9cec6d7012b499",
+      "file_count": 258,
+      "matches": true
+    },
+    "stb_image_legacy_only": {
+      "actual": "a10032d83ce708b2c967fbd2621492e61bac6b7cbc5defcfc94a7fd7259a2e76",
+      "expected": "a10032d83ce708b2c967fbd2621492e61bac6b7cbc5defcfc94a7fd7259a2e76",
+      "file_count": 2,
+      "matches": true
+    },
+    "tinygltf_legacy_only": {
+      "actual": "04c97dee8bae4ad832528878346dce72b7615be259ce7450417a9a87704f7f23",
+      "expected": "04c97dee8bae4ad832528878346dce72b7615be259ce7450417a9a87704f7f23",
+      "file_count": 4,
+      "matches": true
+    }
+  }
+}

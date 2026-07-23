@@ -1,0 +1,16 @@
+[1/16] Building CXX object CMakeFiles/engine_assets.dir/src/engine/assets/asset_root.cpp.o
+[2/16] Linking CXX static library libengine_assets.a
+[3/16] Building CXX object CMakeFiles/engine_scene.dir/src/engine/scene/camera_state.cpp.o
+[4/16] Linking CXX static library libengine_scene.a
+[5/16] Building CXX object CMakeFiles/engine_platform.dir/src/engine/platform/window.cpp.o
+[6/16] Linking CXX static library libengine_platform.a
+[7/16] Building C object CMakeFiles/engine_render.dir/src/glad.c.o
+[8/16] Building CXX object CMakeFiles/engine_render.dir/src/engine/render/opengl.cpp.o
+[9/16] Building CXX object CMakeFiles/engine_render.dir/src/engine/render/fullscreen_pass.cpp.o
+[10/16] Linking CXX static library libengine_render.a
+[11/16] Building CXX object CMakeFiles/engine_samples.dir/src/engine/sample/sample_registry.cpp.o
+[12/16] Building CXX object CMakeFiles/render_samples.dir/src/apps/render_samples_main.cpp.o
+[13/16] Building CXX object CMakeFiles/engine_samples.dir/src/samples/ray_marching_sample.cpp.o
+[14/16] Linking CXX static library libengine_samples.a
+[15/16] Building CXX object CMakeFiles/render_samples.dir/src/apps/launcher_cli.cpp.o
+[16/16] Linking CXX executable render_samples

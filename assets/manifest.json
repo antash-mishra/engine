@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "intel-sponza-base",
+      "display_name": "Intel GPU Research Sponza Base Scene",
+      "source": {
+        "publisher": "Intel Corporation",
+        "landing_page": "https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html",
+        "download_url": "https://cdrdv2.intel.com/v1/dl/getContent/830833?fileName=main_sponza.zip",
+        "content_id": "830833",
+        "version": "Publisher content 830833, observed 2026-07-23",
+        "reported_archive_size": "3.71 GB"
+      },
+      "license": {
+        "name": "Creative Commons Attribution 4.0 International",
+        "spdx": "CC-BY-4.0",
+        "evidence_url": "resources/main-sponza/main_sponza/credits_license.txt",
+        "attribution": "Sponza 2022 Scene commissioned by Frank Meinl, sponsored by Anton Kaplanyan.",
+        "note": "The archive-supplied credits file contains the CC BY 4.0 license text and requested publication citation."
+      },
+      "archive": {
+        "filename": "main_sponza.zip",
+        "size": 3987608266,
+        "sha256": "b8bb853884ab1566b3beb35666bd09882a4e0dc16661e4684e103792cf0229b9",
+        "sha256_source": "Project-derived on 2026-07-23 from /home/antash/Downloads/main_sponza.zip; not publisher-issued.",
+        "etag_md5": "8c9c6c6f7d8bd75f15737379be181ba3",
+        "last_modified": "2025-05-29",
+        "s3_version_id": "x5c5AxBlNIiVX0Zee9WfMSm0ODBGuILi",
+        "entry_count": 156,
+        "file_count": 154,
+        "uncompressed_bytes": 6714394828,
+        "limits": {
+          "max_entries": 512,
+          "max_uncompressed_bytes": 7000000000,
+          "max_file_bytes": 1000000000,
+          "max_compression_ratio": 1000
+        },
+        "status": "pinned-project-derived"
+      },
+      "local": {
+        "root": "resources/main-sponza",
+        "observed_unpacked_bytes": 6714394828,
+        "observed_file_count": 154,
+        "entrypoint": "main_sponza/NewSponza_Main_glTF_003.gltf",
+        "entrypoint_sha256": "e04c4c540c74bdddcbd3f590a85c14119bfd5839702246a23b3a737c0cce2400",
+        "primary_buffer": "main_sponza/NewSponza_Main_glTF_003.bin",
+        "primary_buffer_sha256": "903d443b46b51c8397c25b65286d9f9e111121f12a3e0e303f19019982568d6b",
+        "required_files": [
+          {
+            "path": "main_sponza/credits_license.txt",
+            "size": 15921,
+            "sha256": "3f981e31f8de04f3754e63d7c259a0a78f71db8f01b5155c58cac52fb79cc2b9"
+          }
+        ]
+      },
+      "gltf_closure": {
+        "algorithm": "sha256-v1",
+        "file_count": 74,
+        "total_bytes": 2171830243,
+        "tree_sha256": "2d6102dc617e6e5cfed37d5fe23674d518cfb6d1a6b2fbd86084010ce7246645",
+        "note": "Includes the glTF entrypoint and every non-data buffer/image URI it references. The hash covers each sorted relative path, size, and file SHA-256."
+      },
+      "profiles": {
+        "full": {
+          "status": "available-locally",
+          "entrypoint": "main_sponza/NewSponza_Main_glTF_003.gltf",
+          "file_count": 74,
+          "total_bytes": 2171830243,
+          "tree_sha256": "2d6102dc617e6e5cfed37d5fe23674d518cfb6d1a6b2fbd86084010ce7246645",
+          "contents": "Original glTF, binary buffer, and all 72 referenced 4K PNG images."
+        },
+        "ci": {
+          "status": "not-created",
+          "contents": "Reserved for a deterministic processed Sponza subset in Phase 5; the local Phase 0 triangle fixture is not represented as Sponza."
+        },
+        "dev": {
+          "status": "not-created",
+          "contents": "Reserved for a deterministic processed development profile in Phase 6."
+        }
+      }
+    }
+  ]
+}

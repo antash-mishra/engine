@@ -1,0 +1,32 @@
+test_archive_checksum_corruption_is_detected (test_manage_assets.ManageAssetsTests.test_archive_checksum_corruption_is_detected) ... ok
+test_buffer_view_cannot_exceed_declared_buffer_length (test_manage_assets.ManageAssetsTests.test_buffer_view_cannot_exceed_declared_buffer_length) ... ok
+test_cli_reports_malformed_container_without_traceback (test_manage_assets.ManageAssetsTests.test_cli_reports_malformed_container_without_traceback) ... ok
+test_closure_checksum_changes_when_payload_changes (test_manage_assets.ManageAssetsTests.test_closure_checksum_changes_when_payload_changes) ... ok
+test_drive_like_archive_filename_is_rejected (test_manage_assets.ManageAssetsTests.test_drive_like_archive_filename_is_rejected) ... ok
+test_failed_atomic_install_leaves_empty_root_and_no_staging_directory (test_manage_assets.ManageAssetsTests.test_failed_atomic_install_leaves_empty_root_and_no_staging_directory) ... ok
+test_fetch_requires_license_acceptance_before_network (test_manage_assets.ManageAssetsTests.test_fetch_requires_license_acceptance_before_network) ... ok
+test_fixture_bounds_ignore_untrusted_accessor_metadata (test_manage_assets.ManageAssetsTests.test_fixture_bounds_ignore_untrusted_accessor_metadata) ... ok
+test_fixture_matches_independent_expected_contract (test_manage_assets.ManageAssetsTests.test_fixture_matches_independent_expected_contract) ... ok
+test_fixture_out_of_range_index_payload_is_detected (test_manage_assets.ManageAssetsTests.test_fixture_out_of_range_index_payload_is_detected) ... ok
+test_fixture_position_payload_corruption_is_detected (test_manage_assets.ManageAssetsTests.test_fixture_position_payload_corruption_is_detected) ... ok
+test_full_profile_must_match_closure_contract (test_manage_assets.ManageAssetsTests.test_full_profile_must_match_closure_contract) ... ok
+test_invalid_khr_light_index_is_detected (test_manage_assets.ManageAssetsTests.test_invalid_khr_light_index_is_detected) ... ok
+test_invalid_sparse_reference_is_detected (test_manage_assets.ManageAssetsTests.test_invalid_sparse_reference_is_detected) ... ok
+test_malformed_container_element_is_detected (test_manage_assets.ManageAssetsTests.test_malformed_container_element_is_detected) ... ok
+test_malformed_manifest_reports_a_contract_error (test_manage_assets.ManageAssetsTests.test_malformed_manifest_reports_a_contract_error) ... ok
+test_malformed_top_level_container_is_detected (test_manage_assets.ManageAssetsTests.test_malformed_top_level_container_is_detected) ... ok
+test_missing_external_reference_is_detected (test_manage_assets.ManageAssetsTests.test_missing_external_reference_is_detected) ... ok
+test_node_cycle_is_detected (test_manage_assets.ManageAssetsTests.test_node_cycle_is_detected) ... ok
+test_out_of_range_accessor_is_detected (test_manage_assets.ManageAssetsTests.test_out_of_range_accessor_is_detected) ... ok
+test_sparse_accessor_without_base_buffer_decodes_override (test_manage_assets.ManageAssetsTests.test_sparse_accessor_without_base_buffer_decodes_override) ... ok
+test_symbolic_link_install_root_is_rejected (test_manage_assets.ManageAssetsTests.test_symbolic_link_install_root_is_rejected) ... ok
+test_unsafe_archive_filename_is_rejected (test_manage_assets.ManageAssetsTests.test_unsafe_archive_filename_is_rejected) ... ok
+test_uri_traversal_is_detected (test_manage_assets.ManageAssetsTests.test_uri_traversal_is_detected) ... ok
+test_zip_member_size_limit_is_enforced (test_manage_assets.ManageAssetsTests.test_zip_member_size_limit_is_enforced) ... ok
+test_zip_path_traversal_is_rejected (test_manage_assets.ManageAssetsTests.test_zip_path_traversal_is_rejected) ... ok
+test_zip_symbolic_link_is_rejected (test_manage_assets.ManageAssetsTests.test_zip_symbolic_link_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.087s
+
+OK
