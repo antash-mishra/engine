@@ -34,7 +34,16 @@ jobs:
         run: |
           mkdir -p build/dev/Testing
           xvfb-run -a ctest --preset dev --output-on-failure \
-            --output-junit build/dev/Testing/junit.xml
+            --output-junit Testing/junit.xml
+          python3 - <<'PY'
+          import pathlib
+          import xml.etree.ElementTree as ElementTree
+
+          report = pathlib.Path("build/dev/Testing/junit.xml")
+          suite = ElementTree.parse(report).getroot()
+          assert int(suite.attrib["tests"]) > 0
+          assert int(suite.attrib["failures"]) == 0
+          PY
 
       - name: Retain CTest results
         if: always()
