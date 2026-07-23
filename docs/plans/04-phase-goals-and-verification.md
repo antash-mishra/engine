@@ -12,7 +12,7 @@ its implementation looks plausible, compiles once, or produces a convincing scre
 | Phase | Goal summary | Status | Implementer | Independent verifier | Evidence record |
 |---|---|---|---|---|---|
 | 0 | Establish reproducible inputs and baselines | `complete` | `/root/phase0_artifacts`, `/root/legacy_baseline_design` | `/root`, `/root/phase0_artifact_verifier`, `/root/phase0_final_verifier` | [`docs/verification/phase-0.md`](../verification/phase-0.md) |
-| 1 | Establish the build and sample launcher | `in_progress` | `/root/phase1_build_launcher`, `/root` | `/root`, `/root/phase1_acceptance_design` | [`docs/verification/phase-1.md`](../verification/phase-1.md); code-controlled gates pass, commit/CI evidence pending |
+| 1 | Establish the build and sample launcher | `complete` | `/root/phase1_build_launcher`, `/root` | `/root`, `/root/phase1_acceptance_design` | [`docs/verification/phase-1.md`](../verification/phase-1.md) |
 | 2 | Centralize application/runtime behavior | `not_started` | Unassigned | Unassigned | Not yet created |
 | 3 | Make GPU ownership and render targets explicit | `not_started` | Unassigned | Unassigned | Not yet created |
 | 4 | Separate scene import, upload, and drawing | `not_started` | Unassigned | Unassigned | Not yet created |
@@ -147,7 +147,7 @@ must be labeled either verified with matching evidence or unverified.
 
 ## Phase 1: Build Foundation
 
-**Status:** `in_progress`
+**Status:** `complete`
 
 **Depends on:** Phase 0
 

@@ -2,22 +2,24 @@
 
 ## Verdict
 
-**Phase 1 build-foundation gate: IN PROGRESS.**
+**Phase 1 build-foundation gate: PASS.**
 
-All code-controlled checks pass on the frozen effective source, and the independent verifier found
-no implementation defect. Phase 1 is not complete because no committed project revision contains
-the implementation and no pushed GitHub Actions run or URL exists. The tracker therefore remains
-`in_progress`, and Phase 2 must not start.
+All local and independent checks pass. The exact committed implementation revision also passed the
+pushed GitHub Actions workflow, and the downloaded CI artifact contains the expected JUnit report
+and complete CTest log. The independent verifier found no implementation or evidence blocker.
 
 ## Revision and Environment
 
 | Field | Value |
 |---|---|
-| Repository `HEAD` / `origin/master` | `44577008dfcdcbcad68cfb39ccfc38bdd87165f5` |
-| Worktree | Dirty; Phase 0 and Phase 1 changes are uncommitted |
+| Accepted implementation revision | `831d4c67955100807132466210dfc3162e0212f6` |
+| Remote revision | `origin/agent/multi-sample-foundation` at `831d4c67955100807132466210dfc3162e0212f6` |
+| Worktree | Clean at the accepted revision before CI evidence capture |
+| Draft pull request | [PR #1](https://github.com/antash-mishra/engine/pull/1) |
+| Clean CI run / job | [Run 30029253959](https://github.com/antash-mishra/engine/actions/runs/30029253959) / [job 89281429706](https://github.com/antash-mishra/engine/actions/runs/30029253959/job/89281429706) |
 | Independent source | Frozen effective-state copy at `/tmp/engine-phase1-independent.MV33d4/source` |
-| Evidence manifest SHA-256 | `88d28e50c9feeb3899023d9404aca5a67638c08f447dff77da6c66b0ec2fdab9` |
-| Evidence completed | `2026-07-23T17:11:54Z` |
+| Evidence manifest SHA-256 | `8ad17eb3dc649bd6d369f0bc14bc5a8d86ff4c5348b826ce9a9dec497522fcf1` |
+| Evidence completed | `2026-07-23T17:33:19Z` |
 | OS | Linux Mint 22.2, kernel 6.8.0-88-generic, x86_64 |
 | Compiler / CMake / Ninja | GCC 13.3.0 / CMake 3.28.3 / Ninja 1.11.1 |
 | GPU / driver | NVIDIA GeForce RTX 3060 / 570.153.02 |
@@ -135,6 +137,19 @@ cd artifacts/verification/phase-1
 sha256sum --check SHA256SUMS
 ```
 
+The exact pushed revision and retained CI artifact were checked with:
+
+```bash
+gh run view 30029253959 --log
+gh run download 30029253959 --name phase-1-ctest --dir <EMPTY_DIRECTORY>
+python3 - <<'PY'
+import xml.etree.ElementTree as ET
+root = ET.parse("<EMPTY_DIRECTORY>/junit.xml").getroot()
+assert root.attrib["tests"] == "7"
+assert root.attrib["failures"] == "0"
+PY
+```
+
 ## Results
 
 | Requirement | Result | Evidence |
@@ -150,25 +165,23 @@ sha256sum --check SHA256SUMS
 | Pinned and machine-checked dependencies | PASS | [Positive lock result](../../artifacts/verification/phase-1/dependency-positive.json) |
 | Transitive vendored mutation rejection | PASS | [Tamper result](../../artifacts/verification/phase-1/dependency-tamper.json) |
 | Exact CI packages available from apt | PASS, 8/8 | [Install arguments](../../artifacts/verification/phase-1/hardening-apt-arguments.txt), [candidate check](../../artifacts/verification/phase-1/hardening-apt-candidate-availability.txt) |
-| Dependency verifier regression tests | PASS, 2/2 | [Unit log](../../artifacts/verification/phase-1/hardening-dependency-unit.log) |
+| Dependency verifier regression tests | PASS, 3/3 | [Unit log](../../artifacts/verification/phase-1/hardening-dependency-unit.log) |
 | Optimized maintained build | PASS | [Release build](../../artifacts/verification/phase-1/build-release.log) and [10-frame result](../../artifacts/verification/phase-1/run-release-10.log) |
 | Address/undefined sanitizer suite | PASS, 7/7 | [Sanitizer log](../../artifacts/verification/phase-1/ctest-sanitizers.log), [JUnit](../../artifacts/verification/phase-1/ctest-sanitizers.xml) |
 | Legacy comparison targets still compile | PASS | [Legacy build](../../artifacts/verification/phase-1/build-legacy.log) |
 | Public API contracts and contributor guides | PASS | [Comment scan](../../artifacts/verification/phase-1/api-contract-comments.txt), [architecture](../architecture.md), [sample guide](../adding-a-sample.md) |
 | Broken ImGui gitlink removed; no source junk | PASS | Empty gitlink/submodule/junk evidence files |
-| CI workflow pinned and retains JUnit | PASS, static only | [Workflow](../../.github/workflows/ci.yml) |
-| Retained evidence integrity | PASS, 39/39 | [SHA-256 manifest](../../artifacts/verification/phase-1/SHA256SUMS) |
-| Project revision contains Phase 1 | **FAIL, blocking** | [Worktree/revision evidence](../../artifacts/verification/phase-1/original-worktree-status.txt) |
-| Clean-checkout pushed CI job URL/log | **NOT RUN, blocking** | No committed revision or Actions run exists |
+| CI workflow pins actions and retains JUnit | PASS | [Workflow](../../.github/workflows/ci.yml), [run metadata](../../artifacts/verification/phase-1/ci-run-831d4c6.json), and [artifact metadata](../../artifacts/verification/phase-1/ci-artifacts-831d4c6.json) |
+| Retained evidence integrity | PASS, 45/45 | [SHA-256 manifest](../../artifacts/verification/phase-1/SHA256SUMS) |
+| Project revision contains Phase 1 | PASS | [Accepted revision record](../../artifacts/verification/phase-1/clean-revision-ci.txt) |
+| Clean-checkout pushed CI job and artifact | PASS, 7/7 | [CI log](../../artifacts/verification/phase-1/ci-run-831d4c6.log), [JUnit](../../artifacts/verification/phase-1/ci-junit-831d4c6.xml), and [CTest log](../../artifacts/verification/phase-1/ci-last-test-831d4c6.log) |
 
-## Remaining Gates
+## Completion Basis
 
-1. Commit the intended Phase 0 and Phase 1 file set so one real project revision contains all
-   implementation and evidence.
-2. Push that revision and retain the successful GitHub Actions job URL/log plus uploaded JUnit
-   artifact.
-3. Rerun the independent verifier against that exact clean revision. Only then may the coordinator
-   change Phase 1 to `complete` and Phase 2 to `in_progress`.
+The accepted implementation revision is committed, pushed, and represented by an exact successful
+CI run. The independent verifier checked its head SHA, branch, successful job steps, uploaded
+artifact metadata, a byte-identical artifact redownload, all seven named CTest cases, and the
+repaired 45-file checksum manifest. The verifier explicitly authorized closure.
 
 The CI packages and action source revisions are exact. The CI-only lock includes Xvfb, Xauthority,
 and Mesa's software DRI renderer so `--no-install-recommends` cannot omit headless OpenGL support.
@@ -181,5 +194,5 @@ run can validate that path.
 |---|---|---|
 | Build/launcher implementer | `/root/phase1_build_launcher`, `/root` | Code complete |
 | Coordinator verification | `/root` | Code-controlled gates PASS |
-| Independent verification | `/root/phase1_acceptance_design` | Code-controlled gates PASS |
-| Overall Phase 1 gate | `/root` | IN PROGRESS; commit and CI evidence pending |
+| Independent verification | `/root/phase1_acceptance_design` | PASS; closure authorized |
+| Overall Phase 1 gate | `/root` | COMPLETE |

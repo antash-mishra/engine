@@ -1,0 +1,710 @@
+linux	Set up job	﻿2026-07-23T17:24:19.7754810Z Current runner version: '2.336.0'
+linux	Set up job	2026-07-23T17:24:19.7775953Z ##[group]Runner Image Provisioner
+linux	Set up job	2026-07-23T17:24:19.7776689Z Hosted Compute Agent
+linux	Set up job	2026-07-23T17:24:19.7777249Z Version: 20260707.563
+linux	Set up job	2026-07-23T17:24:19.7777992Z Commit: 02667638d2b423fbc733a8e32a88b44996a3ba6e
+linux	Set up job	2026-07-23T17:24:19.7778578Z Build Date: 2026-07-07T19:33:50Z
+linux	Set up job	2026-07-23T17:24:19.7779269Z Worker ID: {3ee5de66-1e65-494c-bb33-72cc5bd3a837}
+linux	Set up job	2026-07-23T17:24:19.7779837Z Azure Region: westus
+linux	Set up job	2026-07-23T17:24:19.7780276Z ##[endgroup]
+linux	Set up job	2026-07-23T17:24:19.7781434Z ##[group]Operating System
+linux	Set up job	2026-07-23T17:24:19.7781929Z Ubuntu
+linux	Set up job	2026-07-23T17:24:19.7782413Z 24.04.4
+linux	Set up job	2026-07-23T17:24:19.7782833Z LTS
+linux	Set up job	2026-07-23T17:24:19.7783248Z ##[endgroup]
+linux	Set up job	2026-07-23T17:24:19.7783720Z ##[group]Runner Image
+linux	Set up job	2026-07-23T17:24:19.7784189Z Image: ubuntu-24.04
+linux	Set up job	2026-07-23T17:24:19.7784629Z Version: 20260720.247.2
+linux	Set up job	2026-07-23T17:24:19.7785547Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260720.247/images/ubuntu/Ubuntu2404-Readme.md
+linux	Set up job	2026-07-23T17:24:19.7786885Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260720.247
+linux	Set up job	2026-07-23T17:24:19.7787825Z ##[endgroup]
+linux	Set up job	2026-07-23T17:24:19.7788750Z ##[group]GITHUB_TOKEN Permissions
+linux	Set up job	2026-07-23T17:24:19.7790225Z Contents: read
+linux	Set up job	2026-07-23T17:24:19.7790718Z Metadata: read
+linux	Set up job	2026-07-23T17:24:19.7791232Z ##[endgroup]
+linux	Set up job	2026-07-23T17:24:19.7792805Z Secret source: Actions
+linux	Set up job	2026-07-23T17:24:19.7794101Z Prepare workflow directory
+linux	Set up job	2026-07-23T17:24:19.8051549Z Prepare all required actions
+linux	Set up job	2026-07-23T17:24:19.8085450Z Getting action download info
+linux	Set up job	2026-07-23T17:24:20.1328533Z Download action repository 'actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+linux	Set up job	2026-07-23T17:24:20.6323023Z Download action repository 'actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f' (SHA:b7c566a772e6b6bfb58ed0dc250532a479d7789f)
+linux	Set up job	2026-07-23T17:24:20.7898209Z Complete job name: linux
+linux	Check out the exact source revision	﻿2026-07-23T17:24:20.8538223Z ##[group]Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+linux	Check out the exact source revision	2026-07-23T17:24:20.8539081Z with:
+linux	Check out the exact source revision	2026-07-23T17:24:20.8539421Z   repository: antash-mishra/engine
+linux	Check out the exact source revision	2026-07-23T17:24:20.8542539Z   token: ***
+linux	Check out the exact source revision	2026-07-23T17:24:20.8542876Z   ssh-strict: true
+linux	Check out the exact source revision	2026-07-23T17:24:20.8543216Z   ssh-user: git
+linux	Check out the exact source revision	2026-07-23T17:24:20.8543554Z   persist-credentials: true
+linux	Check out the exact source revision	2026-07-23T17:24:20.8543926Z   clean: true
+linux	Check out the exact source revision	2026-07-23T17:24:20.8544259Z   sparse-checkout-cone-mode: true
+linux	Check out the exact source revision	2026-07-23T17:24:20.8544649Z   fetch-depth: 1
+linux	Check out the exact source revision	2026-07-23T17:24:20.8544974Z   fetch-tags: false
+linux	Check out the exact source revision	2026-07-23T17:24:20.8545315Z   show-progress: true
+linux	Check out the exact source revision	2026-07-23T17:24:20.8545658Z   lfs: false
+linux	Check out the exact source revision	2026-07-23T17:24:20.8545977Z   submodules: false
+linux	Check out the exact source revision	2026-07-23T17:24:20.8546326Z   set-safe-directory: true
+linux	Check out the exact source revision	2026-07-23T17:24:20.8546737Z   allow-unsafe-pr-checkout: false
+linux	Check out the exact source revision	2026-07-23T17:24:20.8547299Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:20.9382849Z Syncing repository: antash-mishra/engine
+linux	Check out the exact source revision	2026-07-23T17:24:20.9384847Z ##[group]Getting Git version info
+linux	Check out the exact source revision	2026-07-23T17:24:20.9385758Z Working directory is '/home/runner/work/engine/engine'
+linux	Check out the exact source revision	2026-07-23T17:24:20.9386966Z [command]/usr/bin/git version
+linux	Check out the exact source revision	2026-07-23T17:24:20.9413034Z git version 2.54.0
+linux	Check out the exact source revision	2026-07-23T17:24:20.9462610Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:20.9474308Z Temporarily overriding HOME='/home/runner/work/_temp/cb29e1e1-3f8f-4ac6-bb6b-e997d83389a9' before making global git config changes
+linux	Check out the exact source revision	2026-07-23T17:24:20.9476138Z Adding repository directory to the temporary git global config as a safe directory
+linux	Check out the exact source revision	2026-07-23T17:24:20.9478522Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/engine/engine
+linux	Check out the exact source revision	2026-07-23T17:24:20.9511019Z Deleting the contents of '/home/runner/work/engine/engine'
+linux	Check out the exact source revision	2026-07-23T17:24:20.9519882Z ##[group]Determining repository object format
+linux	Check out the exact source revision	2026-07-23T17:24:20.9520950Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:20.9526438Z ##[group]Initializing the repository
+linux	Check out the exact source revision	2026-07-23T17:24:20.9527797Z [command]/usr/bin/git init /home/runner/work/engine/engine
+linux	Check out the exact source revision	2026-07-23T17:24:20.9609054Z hint: Using 'master' as the name for the initial branch. This default branch name
+linux	Check out the exact source revision	2026-07-23T17:24:20.9610612Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+linux	Check out the exact source revision	2026-07-23T17:24:20.9613333Z hint: to use in all of your new repositories, which will suppress this warning,
+linux	Check out the exact source revision	2026-07-23T17:24:20.9614606Z hint: call:
+linux	Check out the exact source revision	2026-07-23T17:24:20.9615338Z hint:
+linux	Check out the exact source revision	2026-07-23T17:24:20.9616137Z hint: 	git config --global init.defaultBranch <name>
+linux	Check out the exact source revision	2026-07-23T17:24:20.9617018Z hint:
+linux	Check out the exact source revision	2026-07-23T17:24:20.9618031Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+linux	Check out the exact source revision	2026-07-23T17:24:20.9619420Z hint: 'development'. The just-created branch can be renamed via this command:
+linux	Check out the exact source revision	2026-07-23T17:24:20.9620660Z hint:
+linux	Check out the exact source revision	2026-07-23T17:24:20.9621363Z hint: 	git branch -m <name>
+linux	Check out the exact source revision	2026-07-23T17:24:20.9622127Z hint:
+linux	Check out the exact source revision	2026-07-23T17:24:20.9623092Z hint: Disable this message with "git config set advice.defaultBranchName false"
+linux	Check out the exact source revision	2026-07-23T17:24:20.9624415Z Initialized empty Git repository in /home/runner/work/engine/engine/.git/
+linux	Check out the exact source revision	2026-07-23T17:24:20.9626902Z [command]/usr/bin/git remote add origin https://github.com/antash-mishra/engine
+linux	Check out the exact source revision	2026-07-23T17:24:20.9652193Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:20.9653105Z ##[group]Disabling automatic garbage collection
+linux	Check out the exact source revision	2026-07-23T17:24:20.9655200Z [command]/usr/bin/git config --local gc.auto 0
+linux	Check out the exact source revision	2026-07-23T17:24:20.9681449Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:20.9682583Z ##[group]Setting up auth
+linux	Check out the exact source revision	2026-07-23T17:24:20.9683203Z Removing SSH command configuration
+linux	Check out the exact source revision	2026-07-23T17:24:20.9687424Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+linux	Check out the exact source revision	2026-07-23T17:24:20.9719148Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+linux	Check out the exact source revision	2026-07-23T17:24:21.1225598Z Removing HTTP extra header
+linux	Check out the exact source revision	2026-07-23T17:24:21.1230765Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+linux	Check out the exact source revision	2026-07-23T17:24:21.1263853Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+linux	Check out the exact source revision	2026-07-23T17:24:21.1451011Z Removing includeIf entries pointing to credentials config files
+linux	Check out the exact source revision	2026-07-23T17:24:21.1451889Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+linux	Check out the exact source revision	2026-07-23T17:24:21.1480866Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+linux	Check out the exact source revision	2026-07-23T17:24:21.1672131Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+linux	Check out the exact source revision	2026-07-23T17:24:21.1705241Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/engine/engine/.git.path /home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Check out the exact source revision	2026-07-23T17:24:21.1732932Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/engine/engine/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Check out the exact source revision	2026-07-23T17:24:21.1761007Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Check out the exact source revision	2026-07-23T17:24:21.1788916Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Check out the exact source revision	2026-07-23T17:24:21.1817681Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:21.1818369Z ##[group]Fetching the repository
+linux	Check out the exact source revision	2026-07-23T17:24:21.1825471Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +831d4c67955100807132466210dfc3162e0212f6:refs/remotes/origin/agent/multi-sample-foundation
+linux	Check out the exact source revision	2026-07-23T17:24:25.1185215Z From https://github.com/antash-mishra/engine
+linux	Check out the exact source revision	2026-07-23T17:24:25.1186562Z  * [new ref]         831d4c67955100807132466210dfc3162e0212f6 -> origin/agent/multi-sample-foundation
+linux	Check out the exact source revision	2026-07-23T17:24:25.1210751Z [command]/usr/bin/git branch --list --remote origin/agent/multi-sample-foundation
+linux	Check out the exact source revision	2026-07-23T17:24:25.1233879Z   origin/agent/multi-sample-foundation
+linux	Check out the exact source revision	2026-07-23T17:24:25.1240538Z [command]/usr/bin/git rev-parse refs/remotes/origin/agent/multi-sample-foundation
+linux	Check out the exact source revision	2026-07-23T17:24:25.1262774Z 831d4c67955100807132466210dfc3162e0212f6
+linux	Check out the exact source revision	2026-07-23T17:24:25.1266038Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:25.1266507Z ##[group]Determining the checkout info
+linux	Check out the exact source revision	2026-07-23T17:24:25.1267147Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:25.1270675Z [command]/usr/bin/git sparse-checkout disable
+linux	Check out the exact source revision	2026-07-23T17:24:25.1304410Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+linux	Check out the exact source revision	2026-07-23T17:24:25.1329473Z ##[group]Checking out the ref
+linux	Check out the exact source revision	2026-07-23T17:24:25.1333492Z [command]/usr/bin/git checkout --progress --force -B agent/multi-sample-foundation refs/remotes/origin/agent/multi-sample-foundation
+linux	Check out the exact source revision	2026-07-23T17:24:25.4576300Z Switched to a new branch 'agent/multi-sample-foundation'
+linux	Check out the exact source revision	2026-07-23T17:24:25.4609982Z branch 'agent/multi-sample-foundation' set up to track 'origin/agent/multi-sample-foundation'.
+linux	Check out the exact source revision	2026-07-23T17:24:25.4611681Z ##[endgroup]
+linux	Check out the exact source revision	2026-07-23T17:24:25.4647721Z [command]/usr/bin/git log -1 --format=%H
+linux	Check out the exact source revision	2026-07-23T17:24:25.4670805Z 831d4c67955100807132466210dfc3162e0212f6
+linux	Install system dependencies	﻿2026-07-23T17:24:25.4848291Z ##[group]Run sudo apt-get update
+linux	Install system dependencies	2026-07-23T17:24:25.4848657Z [36;1msudo apt-get update[0m
+linux	Install system dependencies	2026-07-23T17:24:25.4848977Z [36;1msudo apt-get install --yes --no-install-recommends \[0m
+linux	Install system dependencies	2026-07-23T17:24:25.4849445Z [36;1m  $(python3 tools/build/verify_dependencies.py apt-arguments --include-ci)[0m
+linux	Install system dependencies	2026-07-23T17:24:25.4891700Z shell: /usr/bin/bash -e {0}
+linux	Install system dependencies	2026-07-23T17:24:25.4891979Z ##[endgroup]
+linux	Install system dependencies	2026-07-23T17:24:25.6258849Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+linux	Install system dependencies	2026-07-23T17:24:25.7234053Z Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+linux	Install system dependencies	2026-07-23T17:24:25.7235042Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+linux	Install system dependencies	2026-07-23T17:24:25.7235739Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+linux	Install system dependencies	2026-07-23T17:24:25.7571065Z Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
+linux	Install system dependencies	2026-07-23T17:24:25.8486015Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [203 kB]
+linux	Install system dependencies	2026-07-23T17:24:25.8634942Z Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [236 kB]
+linux	Install system dependencies	2026-07-23T17:24:25.9558660Z Get:11 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1417 B]
+linux	Install system dependencies	2026-07-23T17:24:27.1189727Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+linux	Install system dependencies	2026-07-23T17:24:29.0272636Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+linux	Install system dependencies	2026-07-23T17:24:31.6366859Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+linux	Install system dependencies	2026-07-23T17:24:31.7006488Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1136 kB]
+linux	Install system dependencies	2026-07-23T17:24:35.0260273Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [275 kB]
+linux	Install system dependencies	2026-07-23T17:24:35.2042069Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+linux	Install system dependencies	2026-07-23T17:24:35.9293781Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1676 kB]
+linux	Install system dependencies	2026-07-23T17:24:46.6322616Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [333 kB]
+linux	Install system dependencies	2026-07-23T17:24:48.3869970Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+linux	Install system dependencies	2026-07-23T17:24:49.9820183Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1336 kB]
+linux	Install system dependencies	2026-07-23T17:24:57.8098507Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [298 kB]
+linux	Install system dependencies	2026-07-23T17:25:00.0678806Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [45.4 kB]
+linux	Install system dependencies	2026-07-23T17:25:02.6609373Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.1 kB]
+linux	Install system dependencies	2026-07-23T17:25:04.6895294Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+linux	Install system dependencies	2026-07-23T17:25:04.7262111Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5784 B]
+linux	Install system dependencies	2026-07-23T17:25:04.7555798Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [32.5 kB]
+linux	Install system dependencies	2026-07-23T17:25:04.8816676Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+linux	Install system dependencies	2026-07-23T17:25:04.9776458Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [869 kB]
+linux	Install system dependencies	2026-07-23T17:25:09.1890292Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [194 kB]
+linux	Install system dependencies	2026-07-23T17:25:13.3071914Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.3 kB]
+linux	Install system dependencies	2026-07-23T17:25:17.7166282Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1194 kB]
+linux	Install system dependencies	2026-07-23T17:25:19.1048841Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [237 kB]
+linux	Install system dependencies	2026-07-23T17:25:23.4492619Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
+linux	Install system dependencies	2026-07-23T17:25:26.0113171Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1185 kB]
+linux	Install system dependencies	2026-07-23T17:25:27.0536949Z Get:33 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [273 kB]
+linux	Install system dependencies	2026-07-23T17:25:33.2080422Z Fetched 10.6 MB in 1min 2s (173 kB/s)
+linux	Install system dependencies	2026-07-23T17:25:33.7666168Z Reading package lists...
+linux	Install system dependencies	2026-07-23T17:25:33.8279882Z Reading package lists...
+linux	Install system dependencies	2026-07-23T17:25:33.9690919Z Building dependency tree...
+linux	Install system dependencies	2026-07-23T17:25:33.9696894Z Reading state information...
+linux	Install system dependencies	2026-07-23T17:25:34.0955826Z g++ is already the newest version (4:13.2.0-7ubuntu1).
+linux	Install system dependencies	2026-07-23T17:25:34.0956776Z libgl1-mesa-dri is already the newest version (25.2.8-0ubuntu0.24.04.2).
+linux	Install system dependencies	2026-07-23T17:25:34.0957300Z libgl1-mesa-dri set to manually installed.
+linux	Install system dependencies	2026-07-23T17:25:34.0957865Z xauth is already the newest version (1:1.1.2-1build1).
+linux	Install system dependencies	2026-07-23T17:25:34.1016921Z xauth set to manually installed.
+linux	Install system dependencies	2026-07-23T17:25:34.1017327Z xvfb is already the newest version (2:21.1.12-1ubuntu1.6).
+linux	Install system dependencies	2026-07-23T17:25:34.1017869Z The following additional packages will be installed:
+linux	Install system dependencies	2026-07-23T17:25:34.1018392Z   cmake-data libegl-dev libegl-mesa0 libegl1 libgles-dev libgles1 libgles2
+linux	Install system dependencies	2026-07-23T17:25:34.1018979Z   libglfw3 libglvnd-core-dev libglvnd-dev libglx-dev libjsoncpp25
+linux	Install system dependencies	2026-07-23T17:25:34.1019502Z   libopengl-dev libopengl0 libpthread-stubs0-dev librhash0 libx11-dev
+linux	Install system dependencies	2026-07-23T17:25:34.1020062Z   libxau-dev libxcb1-dev libxdmcp-dev x11proto-dev xorg-sgml-doctools
+linux	Install system dependencies	2026-07-23T17:25:34.1020485Z   xtrans-dev
+linux	Install system dependencies	2026-07-23T17:25:34.1020721Z Suggested packages:
+linux	Install system dependencies	2026-07-23T17:25:34.1021002Z   cmake-doc cmake-format elpa-cmake-mode libosmesa6 libglfw3-doc libx11-doc
+linux	Install system dependencies	2026-07-23T17:25:34.1021294Z   libxcb-doc
+linux	Install system dependencies	2026-07-23T17:25:34.1021461Z Recommended packages:
+linux	Install system dependencies	2026-07-23T17:25:34.1021721Z   libegl1-mesa-dev libvulkan-dev libwayland-dev libxrandr-dev
+linux	Install system dependencies	2026-07-23T17:25:34.1223715Z The following NEW packages will be installed:
+linux	Install system dependencies	2026-07-23T17:25:34.1225589Z   cmake cmake-data libegl-dev libegl-mesa0 libegl1 libgl-dev libgles-dev
+linux	Install system dependencies	2026-07-23T17:25:34.1226183Z   libgles1 libgles2 libglfw3 libglfw3-dev libglvnd-core-dev libglvnd-dev
+linux	Install system dependencies	2026-07-23T17:25:34.1226857Z   libglx-dev libjsoncpp25 libopengl-dev libopengl0 libpthread-stubs0-dev
+linux	Install system dependencies	2026-07-23T17:25:34.1232403Z   librhash0 libx11-dev libxau-dev libxcb1-dev libxdmcp-dev ninja-build
+linux	Install system dependencies	2026-07-23T17:25:34.1232893Z   x11proto-dev xorg-sgml-doctools xtrans-dev
+linux	Install system dependencies	2026-07-23T17:25:34.1392077Z 0 upgraded, 27 newly installed, 0 to remove and 59 not upgraded.
+linux	Install system dependencies	2026-07-23T17:25:34.1392603Z Need to get 15.8 MB of archives.
+linux	Install system dependencies	2026-07-23T17:25:34.1392886Z After this operation, 58.9 MB of additional disk space will be used.
+linux	Install system dependencies	2026-07-23T17:25:34.1393220Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+linux	Install system dependencies	2026-07-23T17:26:04.4400882Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1
+linux	Install system dependencies	2026-07-23T17:26:04.4401907Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1
+linux	Install system dependencies	2026-07-23T17:26:04.4402727Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:04.4403562Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:04.4404455Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libegl-mesa0 amd64 25.2.8-0ubuntu0.24.04.2
+linux	Install system dependencies	2026-07-23T17:26:04.4405321Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4407762Z Ign:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xorg-sgml-doctools all 1:1.11-1.1
+linux	Install system dependencies	2026-07-23T17:26:04.4411284Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 x11proto-dev all 2023.2-1
+linux	Install system dependencies	2026-07-23T17:26:04.4414181Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxau-dev amd64 1:1.0.9-1build6
+linux	Install system dependencies	2026-07-23T17:26:04.4414962Z Ign:11 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxdmcp-dev amd64 1:1.1.3-0ubuntu6
+linux	Install system dependencies	2026-07-23T17:26:04.4415485Z Ign:12 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xtrans-dev all 1.4.0-1
+linux	Install system dependencies	2026-07-23T17:26:04.4416329Z Ign:13 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpthread-stubs0-dev amd64 0.4-1build3
+linux	Install system dependencies	2026-07-23T17:26:04.4416809Z Ign:14 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxcb1-dev amd64 1.15-1ubuntu2
+linux	Install system dependencies	2026-07-23T17:26:04.4417262Z Ign:15 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libx11-dev amd64 2:1.8.7-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4417938Z Ign:16 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglx-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4418423Z Ign:17 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4418894Z Ign:18 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4419354Z Ign:19 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4419784Z Ign:20 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles2 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4420218Z Ign:21 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4420675Z Ign:22 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3 amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4421154Z Ign:23 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-core-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4421616Z Ign:24 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl0 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4422062Z Ign:25 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4422512Z Ign:26 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4422979Z Ign:27 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3-dev amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:04.4423455Z Ign:28 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 ninja-build amd64 1.11.1-2
+linux	Install system dependencies	2026-07-23T17:26:05.4409976Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1
+linux	Install system dependencies	2026-07-23T17:26:05.4410793Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1
+linux	Install system dependencies	2026-07-23T17:26:05.4411260Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:05.4411691Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:05.4412201Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libegl-mesa0 amd64 25.2.8-0ubuntu0.24.04.2
+linux	Install system dependencies	2026-07-23T17:26:05.4412724Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4415495Z Ign:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xorg-sgml-doctools all 1:1.11-1.1
+linux	Install system dependencies	2026-07-23T17:26:05.4416071Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 x11proto-dev all 2023.2-1
+linux	Install system dependencies	2026-07-23T17:26:05.4416541Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxau-dev amd64 1:1.0.9-1build6
+linux	Install system dependencies	2026-07-23T17:26:05.4417017Z Ign:11 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxdmcp-dev amd64 1:1.1.3-0ubuntu6
+linux	Install system dependencies	2026-07-23T17:26:05.4417886Z Ign:12 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xtrans-dev all 1.4.0-1
+linux	Install system dependencies	2026-07-23T17:26:05.4418655Z Ign:13 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpthread-stubs0-dev amd64 0.4-1build3
+linux	Install system dependencies	2026-07-23T17:26:05.4419460Z Ign:14 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxcb1-dev amd64 1.15-1ubuntu2
+linux	Install system dependencies	2026-07-23T17:26:05.4420021Z Ign:15 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libx11-dev amd64 2:1.8.7-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4420485Z Ign:16 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglx-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4420929Z Ign:17 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4421357Z Ign:18 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4421969Z Ign:19 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4422389Z Ign:20 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles2 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4422816Z Ign:21 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4423264Z Ign:22 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3 amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4423728Z Ign:23 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-core-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4424179Z Ign:24 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl0 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4424621Z Ign:25 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4425060Z Ign:26 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4425514Z Ign:27 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3-dev amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:05.4425968Z Ign:28 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 ninja-build amd64 1.11.1-2
+linux	Install system dependencies	2026-07-23T17:26:07.4418956Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1
+linux	Install system dependencies	2026-07-23T17:26:07.4419544Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1
+linux	Install system dependencies	2026-07-23T17:26:07.4420012Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:07.4420435Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:07.4421265Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libegl-mesa0 amd64 25.2.8-0ubuntu0.24.04.2
+linux	Install system dependencies	2026-07-23T17:26:07.4421996Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4422685Z Ign:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xorg-sgml-doctools all 1:1.11-1.1
+linux	Install system dependencies	2026-07-23T17:26:07.4423324Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 x11proto-dev all 2023.2-1
+linux	Install system dependencies	2026-07-23T17:26:07.4424002Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxau-dev amd64 1:1.0.9-1build6
+linux	Install system dependencies	2026-07-23T17:26:07.4424686Z Ign:11 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxdmcp-dev amd64 1:1.1.3-0ubuntu6
+linux	Install system dependencies	2026-07-23T17:26:07.4425308Z Ign:12 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xtrans-dev all 1.4.0-1
+linux	Install system dependencies	2026-07-23T17:26:07.4426069Z Ign:13 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpthread-stubs0-dev amd64 0.4-1build3
+linux	Install system dependencies	2026-07-23T17:26:07.4427116Z Ign:14 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxcb1-dev amd64 1.15-1ubuntu2
+linux	Install system dependencies	2026-07-23T17:26:07.4427968Z Ign:15 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libx11-dev amd64 2:1.8.7-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4428651Z Ign:16 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglx-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4429311Z Ign:17 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4429974Z Ign:18 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4430609Z Ign:19 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4431241Z Ign:20 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles2 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4431899Z Ign:21 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4432566Z Ign:22 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3 amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4433258Z Ign:23 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-core-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4433937Z Ign:24 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl0 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4434762Z Ign:25 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4435432Z Ign:26 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4436202Z Ign:27 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3-dev amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:07.4436885Z Ign:28 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 ninja-build amd64 1.11.1-2
+linux	Install system dependencies	2026-07-23T17:26:11.4427998Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1
+linux	Install system dependencies	2026-07-23T17:26:11.4509512Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1
+linux	Install system dependencies	2026-07-23T17:26:11.4510371Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:11.4511107Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7
+linux	Install system dependencies	2026-07-23T17:26:11.4511905Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libegl-mesa0 amd64 25.2.8-0ubuntu0.24.04.2
+linux	Install system dependencies	2026-07-23T17:26:11.4512441Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4513137Z Ign:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xorg-sgml-doctools all 1:1.11-1.1
+linux	Install system dependencies	2026-07-23T17:26:11.4513956Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 x11proto-dev all 2023.2-1
+linux	Install system dependencies	2026-07-23T17:26:11.4514978Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxau-dev amd64 1:1.0.9-1build6
+linux	Install system dependencies	2026-07-23T17:26:11.4515757Z Ign:11 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxdmcp-dev amd64 1:1.1.3-0ubuntu6
+linux	Install system dependencies	2026-07-23T17:26:11.4516434Z Ign:12 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xtrans-dev all 1.4.0-1
+linux	Install system dependencies	2026-07-23T17:26:11.4517184Z Ign:13 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpthread-stubs0-dev amd64 0.4-1build3
+linux	Install system dependencies	2026-07-23T17:26:11.4520585Z Ign:14 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxcb1-dev amd64 1.15-1ubuntu2
+linux	Install system dependencies	2026-07-23T17:26:11.4521082Z Ign:15 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libx11-dev amd64 2:1.8.7-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4521529Z Ign:16 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglx-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4521976Z Ign:17 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4522407Z Ign:18 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4522844Z Ign:19 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles1 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4523521Z Ign:20 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles2 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4523963Z Ign:21 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgles-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4524415Z Ign:22 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3 amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4524901Z Ign:23 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-core-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4525364Z Ign:24 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl0 amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4525813Z Ign:25 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopengl-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4526264Z Ign:26 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-dev amd64 1.7.0-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4526846Z Ign:27 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3-dev amd64 3.3.10-1build1
+linux	Install system dependencies	2026-07-23T17:26:11.4527378Z Ign:28 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 ninja-build amd64 1.11.1-2
+linux	Install system dependencies	2026-07-23T17:26:12.1957737Z Get:2 https://archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1 [82.8 kB]
+linux	Install system dependencies	2026-07-23T17:26:12.6765739Z Get:3 https://archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1 [129 kB]
+linux	Install system dependencies	2026-07-23T17:26:12.9899951Z Get:4 https://archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7 [2155 kB]
+linux	Install system dependencies	2026-07-23T17:26:13.8683857Z Get:5 https://archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7 [11.2 MB]
+linux	Install system dependencies	2026-07-23T17:26:14.6139229Z Get:6 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 libegl-mesa0 amd64 25.2.8-0ubuntu0.24.04.2 [117 kB]
+linux	Install system dependencies	2026-07-23T17:26:14.7523676Z Get:7 https://archive.ubuntu.com/ubuntu noble/main amd64 libegl1 amd64 1.7.0-1build1 [28.7 kB]
+linux	Install system dependencies	2026-07-23T17:26:14.8904749Z Get:8 https://archive.ubuntu.com/ubuntu noble/main amd64 xorg-sgml-doctools all 1:1.11-1.1 [10.9 kB]
+linux	Install system dependencies	2026-07-23T17:26:15.0285820Z Get:9 https://archive.ubuntu.com/ubuntu noble/main amd64 x11proto-dev all 2023.2-1 [602 kB]
+linux	Install system dependencies	2026-07-23T17:26:15.1723772Z Get:10 https://archive.ubuntu.com/ubuntu noble/main amd64 libxau-dev amd64 1:1.0.9-1build6 [9570 B]
+linux	Install system dependencies	2026-07-23T17:26:15.3101738Z Get:11 https://archive.ubuntu.com/ubuntu noble/main amd64 libxdmcp-dev amd64 1:1.1.3-0ubuntu6 [26.5 kB]
+linux	Install system dependencies	2026-07-23T17:26:15.4481770Z Get:12 https://archive.ubuntu.com/ubuntu noble/main amd64 xtrans-dev all 1.4.0-1 [68.9 kB]
+linux	Install system dependencies	2026-07-23T17:26:15.5864716Z Get:13 https://archive.ubuntu.com/ubuntu noble/main amd64 libpthread-stubs0-dev amd64 0.4-1build3 [4746 B]
+linux	Install system dependencies	2026-07-23T17:26:15.7244405Z Get:14 https://archive.ubuntu.com/ubuntu noble/main amd64 libxcb1-dev amd64 1.15-1ubuntu2 [85.8 kB]
+linux	Install system dependencies	2026-07-23T17:26:15.8628957Z Get:15 https://archive.ubuntu.com/ubuntu noble/main amd64 libx11-dev amd64 2:1.8.7-1build1 [732 kB]
+linux	Install system dependencies	2026-07-23T17:26:16.0085466Z Get:16 https://archive.ubuntu.com/ubuntu noble/main amd64 libglx-dev amd64 1.7.0-1build1 [14.2 kB]
+linux	Install system dependencies	2026-07-23T17:26:16.1465463Z Get:17 https://archive.ubuntu.com/ubuntu noble/main amd64 libgl-dev amd64 1.7.0-1build1 [102 kB]
+linux	Install system dependencies	2026-07-23T17:26:16.2851136Z Get:18 https://archive.ubuntu.com/ubuntu noble/main amd64 libegl-dev amd64 1.7.0-1build1 [18.2 kB]
+linux	Install system dependencies	2026-07-23T17:26:16.4229859Z Get:19 https://archive.ubuntu.com/ubuntu noble/main amd64 libgles1 amd64 1.7.0-1build1 [11.6 kB]
+linux	Install system dependencies	2026-07-23T17:26:16.5608762Z Get:20 https://archive.ubuntu.com/ubuntu noble/main amd64 libgles2 amd64 1.7.0-1build1 [17.1 kB]
+linux	Install system dependencies	2026-07-23T17:26:16.8771158Z Get:21 https://archive.ubuntu.com/ubuntu noble/main amd64 libgles-dev amd64 1.7.0-1build1 [50.5 kB]
+linux	Install system dependencies	2026-07-23T17:26:17.0152591Z Get:22 https://archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3 amd64 3.3.10-1build1 [80.5 kB]
+linux	Install system dependencies	2026-07-23T17:26:17.1536430Z Get:23 https://archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-core-dev amd64 1.7.0-1build1 [13.6 kB]
+linux	Install system dependencies	2026-07-23T17:26:17.2914634Z Get:24 https://archive.ubuntu.com/ubuntu noble/main amd64 libopengl0 amd64 1.7.0-1build1 [32.8 kB]
+linux	Install system dependencies	2026-07-23T17:26:17.4293807Z Get:25 https://archive.ubuntu.com/ubuntu noble/main amd64 libopengl-dev amd64 1.7.0-1build1 [3454 B]
+linux	Install system dependencies	2026-07-23T17:26:17.5672751Z Get:26 https://archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-dev amd64 1.7.0-1build1 [3198 B]
+linux	Install system dependencies	2026-07-23T17:26:17.7051664Z Get:27 https://archive.ubuntu.com/ubuntu noble/universe amd64 libglfw3-dev amd64 3.3.10-1build1 [41.5 kB]
+linux	Install system dependencies	2026-07-23T17:26:17.8433166Z Get:28 https://archive.ubuntu.com/ubuntu noble/universe amd64 ninja-build amd64 1.11.1-2 [129 kB]
+linux	Install system dependencies	2026-07-23T17:26:18.0542874Z Fetched 15.8 MB in 44s (361 kB/s)
+linux	Install system dependencies	2026-07-23T17:26:18.0735321Z Selecting previously unselected package libjsoncpp25:amd64.
+linux	Install system dependencies	2026-07-23T17:26:18.1057377Z (Reading database ...
+linux	Install system dependencies	2026-07-23T17:26:18.1057880Z (Reading database ... 5%
+linux	Install system dependencies	2026-07-23T17:26:18.1058096Z (Reading database ... 10%
+linux	Install system dependencies	2026-07-23T17:26:18.1058280Z (Reading database ... 15%
+linux	Install system dependencies	2026-07-23T17:26:18.1058448Z (Reading database ... 20%
+linux	Install system dependencies	2026-07-23T17:26:18.1059006Z (Reading database ... 25%
+linux	Install system dependencies	2026-07-23T17:26:18.1059258Z (Reading database ... 30%
+linux	Install system dependencies	2026-07-23T17:26:18.1059463Z (Reading database ... 35%
+linux	Install system dependencies	2026-07-23T17:26:18.1059632Z (Reading database ... 40%
+linux	Install system dependencies	2026-07-23T17:26:18.1059804Z (Reading database ... 45%
+linux	Install system dependencies	2026-07-23T17:26:18.1059975Z (Reading database ... 50%
+linux	Install system dependencies	2026-07-23T17:26:18.1104989Z (Reading database ... 55%
+linux	Install system dependencies	2026-07-23T17:26:18.3135898Z (Reading database ... 60%
+linux	Install system dependencies	2026-07-23T17:26:18.3814144Z (Reading database ... 65%
+linux	Install system dependencies	2026-07-23T17:26:18.4640964Z (Reading database ... 70%
+linux	Install system dependencies	2026-07-23T17:26:18.5108988Z (Reading database ... 75%
+linux	Install system dependencies	2026-07-23T17:26:18.6129701Z (Reading database ... 80%
+linux	Install system dependencies	2026-07-23T17:26:18.7185831Z (Reading database ... 85%
+linux	Install system dependencies	2026-07-23T17:26:18.8011023Z (Reading database ... 90%
+linux	Install system dependencies	2026-07-23T17:26:18.8775550Z (Reading database ... 95%
+linux	Install system dependencies	2026-07-23T17:26:18.8775858Z (Reading database ... 100%
+linux	Install system dependencies	2026-07-23T17:26:18.8776138Z (Reading database ... 202954 files and directories currently installed.)
+linux	Install system dependencies	2026-07-23T17:26:18.8816394Z Preparing to unpack .../00-libjsoncpp25_1.9.5-6build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:18.8895406Z Unpacking libjsoncpp25:amd64 (1.9.5-6build1) ...
+linux	Install system dependencies	2026-07-23T17:26:18.9098566Z Selecting previously unselected package librhash0:amd64.
+linux	Install system dependencies	2026-07-23T17:26:18.9208521Z Preparing to unpack .../01-librhash0_1.4.3-3build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:18.9218927Z Unpacking librhash0:amd64 (1.4.3-3build1) ...
+linux	Install system dependencies	2026-07-23T17:26:18.9426433Z Selecting previously unselected package cmake-data.
+linux	Install system dependencies	2026-07-23T17:26:18.9535817Z Preparing to unpack .../02-cmake-data_3.28.3-1build7_all.deb ...
+linux	Install system dependencies	2026-07-23T17:26:18.9595776Z Unpacking cmake-data (3.28.3-1build7) ...
+linux	Install system dependencies	2026-07-23T17:26:19.5906304Z Selecting previously unselected package cmake.
+linux	Install system dependencies	2026-07-23T17:26:19.6030284Z Preparing to unpack .../03-cmake_3.28.3-1build7_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:19.6040410Z Unpacking cmake (3.28.3-1build7) ...
+linux	Install system dependencies	2026-07-23T17:26:19.8377890Z Selecting previously unselected package libegl-mesa0:amd64.
+linux	Install system dependencies	2026-07-23T17:26:19.8491166Z Preparing to unpack .../04-libegl-mesa0_25.2.8-0ubuntu0.24.04.2_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:19.8821629Z Unpacking libegl-mesa0:amd64 (25.2.8-0ubuntu0.24.04.2) ...
+linux	Install system dependencies	2026-07-23T17:26:19.9370486Z Selecting previously unselected package libegl1:amd64.
+linux	Install system dependencies	2026-07-23T17:26:19.9482395Z Preparing to unpack .../05-libegl1_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:19.9494072Z Unpacking libegl1:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:19.9717859Z Selecting previously unselected package xorg-sgml-doctools.
+linux	Install system dependencies	2026-07-23T17:26:19.9827001Z Preparing to unpack .../06-xorg-sgml-doctools_1%3a1.11-1.1_all.deb ...
+linux	Install system dependencies	2026-07-23T17:26:19.9838064Z Unpacking xorg-sgml-doctools (1:1.11-1.1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.0062861Z Selecting previously unselected package x11proto-dev.
+linux	Install system dependencies	2026-07-23T17:26:20.0172180Z Preparing to unpack .../07-x11proto-dev_2023.2-1_all.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.0183033Z Unpacking x11proto-dev (2023.2-1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.0978080Z Selecting previously unselected package libxau-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.1091006Z Preparing to unpack .../08-libxau-dev_1%3a1.0.9-1build6_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.1100099Z Unpacking libxau-dev:amd64 (1:1.0.9-1build6) ...
+linux	Install system dependencies	2026-07-23T17:26:20.1325029Z Selecting previously unselected package libxdmcp-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.1437017Z Preparing to unpack .../09-libxdmcp-dev_1%3a1.1.3-0ubuntu6_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.1447389Z Unpacking libxdmcp-dev:amd64 (1:1.1.3-0ubuntu6) ...
+linux	Install system dependencies	2026-07-23T17:26:20.1625887Z Selecting previously unselected package xtrans-dev.
+linux	Install system dependencies	2026-07-23T17:26:20.1735703Z Preparing to unpack .../10-xtrans-dev_1.4.0-1_all.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.1744939Z Unpacking xtrans-dev (1.4.0-1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.1965936Z Selecting previously unselected package libpthread-stubs0-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.2075375Z Preparing to unpack .../11-libpthread-stubs0-dev_0.4-1build3_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.2226152Z Unpacking libpthread-stubs0-dev:amd64 (0.4-1build3) ...
+linux	Install system dependencies	2026-07-23T17:26:20.2405922Z Selecting previously unselected package libxcb1-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.2513891Z Preparing to unpack .../12-libxcb1-dev_1.15-1ubuntu2_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.2523352Z Unpacking libxcb1-dev:amd64 (1.15-1ubuntu2) ...
+linux	Install system dependencies	2026-07-23T17:26:20.2724320Z Selecting previously unselected package libx11-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.2830668Z Preparing to unpack .../13-libx11-dev_2%3a1.8.7-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.2840441Z Unpacking libx11-dev:amd64 (2:1.8.7-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.3172990Z Selecting previously unselected package libglx-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.3281241Z Preparing to unpack .../14-libglx-dev_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.3291065Z Unpacking libglx-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.3475657Z Selecting previously unselected package libgl-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.3583375Z Preparing to unpack .../15-libgl-dev_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.3593731Z Unpacking libgl-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.3811122Z Selecting previously unselected package libegl-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.3919094Z Preparing to unpack .../16-libegl-dev_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.3928818Z Unpacking libegl-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.4130850Z Selecting previously unselected package libgles1:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.4236456Z Preparing to unpack .../17-libgles1_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.4246194Z Unpacking libgles1:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.4440301Z Selecting previously unselected package libgles2:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.4544430Z Preparing to unpack .../18-libgles2_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.4553640Z Unpacking libgles2:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.4732644Z Selecting previously unselected package libgles-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.4837761Z Preparing to unpack .../19-libgles-dev_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.4848912Z Unpacking libgles-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.5083166Z Selecting previously unselected package libglfw3:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.5190758Z Preparing to unpack .../20-libglfw3_3.3.10-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.5200793Z Unpacking libglfw3:amd64 (3.3.10-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.5416505Z Selecting previously unselected package libglvnd-core-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.5523238Z Preparing to unpack .../21-libglvnd-core-dev_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.5532034Z Unpacking libglvnd-core-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.5719761Z Selecting previously unselected package libopengl0:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.5825724Z Preparing to unpack .../22-libopengl0_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.5840919Z Unpacking libopengl0:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.6020331Z Selecting previously unselected package libopengl-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.6125546Z Preparing to unpack .../23-libopengl-dev_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.6134545Z Unpacking libopengl-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.6309726Z Selecting previously unselected package libglvnd-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.6414726Z Preparing to unpack .../24-libglvnd-dev_1.7.0-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.6423553Z Unpacking libglvnd-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.6586945Z Selecting previously unselected package libglfw3-dev:amd64.
+linux	Install system dependencies	2026-07-23T17:26:20.6691635Z Preparing to unpack .../25-libglfw3-dev_3.3.10-1build1_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.6700168Z Unpacking libglfw3-dev:amd64 (3.3.10-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.6889032Z Selecting previously unselected package ninja-build.
+linux	Install system dependencies	2026-07-23T17:26:20.6995752Z Preparing to unpack .../26-ninja-build_1.11.1-2_amd64.deb ...
+linux	Install system dependencies	2026-07-23T17:26:20.7004372Z Unpacking ninja-build (1.11.1-2) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7570356Z Setting up libglfw3:amd64 (3.3.10-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7595264Z Setting up libglvnd-core-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7615846Z Setting up libpthread-stubs0-dev:amd64 (0.4-1build3) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7635781Z Setting up libopengl0:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7656497Z Setting up ninja-build (1.11.1-2) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7677620Z Setting up xtrans-dev (1.4.0-1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7699007Z Setting up libegl-mesa0:amd64 (25.2.8-0ubuntu0.24.04.2) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7722001Z Setting up libgles2:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7741926Z Setting up libgles1:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7761554Z Setting up libjsoncpp25:amd64 (1.9.5-6build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7854158Z Setting up librhash0:amd64 (1.4.3-3build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7875176Z Setting up libegl1:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7900202Z Setting up xorg-sgml-doctools (1:1.11-1.1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7923495Z Setting up cmake-data (3.28.3-1build7) ...
+linux	Install system dependencies	2026-07-23T17:26:20.7986129Z Setting up libopengl-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.8008271Z Setting up cmake (3.28.3-1build7) ...
+linux	Install system dependencies	2026-07-23T17:26:20.8082158Z Processing triggers for sgml-base (1.31) ...
+linux	Install system dependencies	2026-07-23T17:26:20.8332593Z Setting up x11proto-dev (2023.2-1) ...
+linux	Install system dependencies	2026-07-23T17:26:20.8359750Z Setting up libxau-dev:amd64 (1:1.0.9-1build6) ...
+linux	Install system dependencies	2026-07-23T17:26:20.8391829Z Processing triggers for libc-bin (2.39-0ubuntu8.7) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6254540Z Processing triggers for man-db (2.12.0-4build2) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6276618Z Not building database; man-db/auto-update is not 'true'.
+linux	Install system dependencies	2026-07-23T17:26:23.6288205Z Setting up libxdmcp-dev:amd64 (1:1.1.3-0ubuntu6) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6320939Z Setting up libxcb1-dev:amd64 (1.15-1ubuntu2) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6350500Z Setting up libx11-dev:amd64 (2:1.8.7-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6378006Z Setting up libglx-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6404348Z Setting up libgl-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6431281Z Setting up libegl-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6458273Z Setting up libgles-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6484958Z Setting up libglvnd-dev:amd64 (1.7.0-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:23.6508718Z Setting up libglfw3-dev:amd64 (3.3.10-1build1) ...
+linux	Install system dependencies	2026-07-23T17:26:24.4191721Z
+linux	Install system dependencies	2026-07-23T17:26:24.4198409Z Running kernel seems to be up-to-date.
+linux	Install system dependencies	2026-07-23T17:26:24.4198680Z
+linux	Install system dependencies	2026-07-23T17:26:24.4198770Z No services need to be restarted.
+linux	Install system dependencies	2026-07-23T17:26:24.4198912Z
+linux	Install system dependencies	2026-07-23T17:26:24.4198996Z No containers need to be restarted.
+linux	Install system dependencies	2026-07-23T17:26:24.4199129Z
+linux	Install system dependencies	2026-07-23T17:26:24.4199227Z No user sessions are running outdated binaries.
+linux	Install system dependencies	2026-07-23T17:26:24.4199382Z
+linux	Install system dependencies	2026-07-23T17:26:24.4199550Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+linux	Verify dependency lock	﻿2026-07-23T17:26:25.1291792Z ##[group]Run python3 tools/build/verify_dependencies.py verify --source-root . --include-ci
+linux	Verify dependency lock	2026-07-23T17:26:25.1292332Z [36;1mpython3 tools/build/verify_dependencies.py verify --source-root . --include-ci[0m
+linux	Verify dependency lock	2026-07-23T17:26:25.1333735Z shell: /usr/bin/bash -e {0}
+linux	Verify dependency lock	2026-07-23T17:26:25.1333947Z ##[endgroup]
+linux	Verify dependency lock	2026-07-23T17:26:25.2616125Z {
+linux	Verify dependency lock	2026-07-23T17:26:25.2616441Z   "ci_actions": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2616668Z     "actions/checkout": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2616861Z       "actual": [
+linux	Verify dependency lock	2026-07-23T17:26:25.2617047Z         "d23441a48e516b6c34aea4fa41551a30e30af803"
+linux	Verify dependency lock	2026-07-23T17:26:25.2617868Z       ],
+linux	Verify dependency lock	2026-07-23T17:26:25.2618064Z       "expected": "d23441a48e516b6c34aea4fa41551a30e30af803",
+linux	Verify dependency lock	2026-07-23T17:26:25.2618308Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2618482Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2618661Z     "actions/upload-artifact": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2618854Z       "actual": [
+linux	Verify dependency lock	2026-07-23T17:26:25.2619039Z         "b7c566a772e6b6bfb58ed0dc250532a479d7789f"
+linux	Verify dependency lock	2026-07-23T17:26:25.2619258Z       ],
+linux	Verify dependency lock	2026-07-23T17:26:25.2619529Z       "expected": "b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+linux	Verify dependency lock	2026-07-23T17:26:25.2619773Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2619930Z     }
+linux	Verify dependency lock	2026-07-23T17:26:25.2620065Z   },
+linux	Verify dependency lock	2026-07-23T17:26:25.2620200Z   "failures": [],
+linux	Verify dependency lock	2026-07-23T17:26:25.2620359Z   "include_ci": true,
+linux	Verify dependency lock	2026-07-23T17:26:25.2620519Z   "packages": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2620683Z     "cmake": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2620841Z       "actual": "3.28.3-1build7",
+linux	Verify dependency lock	2026-07-23T17:26:25.2621038Z       "expected": "3.28.3-1build7",
+linux	Verify dependency lock	2026-07-23T17:26:25.2621226Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2621382Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2621518Z     "g++": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2621668Z       "actual": "4:13.2.0-7ubuntu1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2621865Z       "expected": "4:13.2.0-7ubuntu1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2622053Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2622205Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2622344Z     "libgl-dev": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2622506Z       "actual": "1.7.0-1build1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2622716Z       "expected": "1.7.0-1build1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2622908Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2623059Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2623202Z     "libgl1-mesa-dri": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2623385Z       "actual": "25.2.8-0ubuntu0.24.04.2",
+linux	Verify dependency lock	2026-07-23T17:26:25.2623597Z       "expected": "25.2.8-0ubuntu0.24.04.2",
+linux	Verify dependency lock	2026-07-23T17:26:25.2623796Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2623945Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2624083Z     "libglfw3-dev": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2624243Z       "actual": "3.3.10-1build1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2624430Z       "expected": "3.3.10-1build1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2624617Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2624765Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2624900Z     "ninja-build": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2625062Z       "actual": "1.11.1-2",
+linux	Verify dependency lock	2026-07-23T17:26:25.2625238Z       "expected": "1.11.1-2",
+linux	Verify dependency lock	2026-07-23T17:26:25.2625412Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2625562Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2625693Z     "xauth": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2625842Z       "actual": "1:1.1.2-1build1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2626031Z       "expected": "1:1.1.2-1build1",
+linux	Verify dependency lock	2026-07-23T17:26:25.2626215Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2626362Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2626493Z     "xvfb": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2626648Z       "actual": "2:21.1.12-1ubuntu1.6",
+linux	Verify dependency lock	2026-07-23T17:26:25.2626848Z       "expected": "2:21.1.12-1ubuntu1.6",
+linux	Verify dependency lock	2026-07-23T17:26:25.2627040Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2627194Z     }
+linux	Verify dependency lock	2026-07-23T17:26:25.2627328Z   },
+linux	Verify dependency lock	2026-07-23T17:26:25.2627631Z   "schema_version": 1,
+linux	Verify dependency lock	2026-07-23T17:26:25.2627910Z   "status": "pass",
+linux	Verify dependency lock	2026-07-23T17:26:25.2628078Z   "vendored_files": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2628234Z     "glad": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2628497Z       "actual": "be38c9b914e0e3b41d7d4d78d377f36c51f865a912bf28783e9c1c510ec3eebf",
+linux	Verify dependency lock	2026-07-23T17:26:25.2628915Z       "expected": "be38c9b914e0e3b41d7d4d78d377f36c51f865a912bf28783e9c1c510ec3eebf",
+linux	Verify dependency lock	2026-07-23T17:26:25.2629219Z       "file_count": 3,
+linux	Verify dependency lock	2026-07-23T17:26:25.2629382Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2629533Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2629870Z     "glm": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2630126Z       "actual": "0f36f3f08d8e1c4cb4bcc91f4dfb23a41963dd8c4f7e25bf9d9cec6d7012b499",
+linux	Verify dependency lock	2026-07-23T17:26:25.2630531Z       "expected": "0f36f3f08d8e1c4cb4bcc91f4dfb23a41963dd8c4f7e25bf9d9cec6d7012b499",
+linux	Verify dependency lock	2026-07-23T17:26:25.2630835Z       "file_count": 258,
+linux	Verify dependency lock	2026-07-23T17:26:25.2631001Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2631152Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2631305Z     "stb_image_legacy_only": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2631589Z       "actual": "a10032d83ce708b2c967fbd2621492e61bac6b7cbc5defcfc94a7fd7259a2e76",
+linux	Verify dependency lock	2026-07-23T17:26:25.2632117Z       "expected": "a10032d83ce708b2c967fbd2621492e61bac6b7cbc5defcfc94a7fd7259a2e76",
+linux	Verify dependency lock	2026-07-23T17:26:25.2632424Z       "file_count": 2,
+linux	Verify dependency lock	2026-07-23T17:26:25.2632584Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2632737Z     },
+linux	Verify dependency lock	2026-07-23T17:26:25.2632884Z     "tinygltf_legacy_only": {
+linux	Verify dependency lock	2026-07-23T17:26:25.2633167Z       "actual": "04c97dee8bae4ad832528878346dce72b7615be259ce7450417a9a87704f7f23",
+linux	Verify dependency lock	2026-07-23T17:26:25.2633558Z       "expected": "04c97dee8bae4ad832528878346dce72b7615be259ce7450417a9a87704f7f23",
+linux	Verify dependency lock	2026-07-23T17:26:25.2633848Z       "file_count": 4,
+linux	Verify dependency lock	2026-07-23T17:26:25.2634005Z       "matches": true
+linux	Verify dependency lock	2026-07-23T17:26:25.2634156Z     }
+linux	Verify dependency lock	2026-07-23T17:26:25.2634292Z   }
+linux	Verify dependency lock	2026-07-23T17:26:25.2634423Z }
+linux	Configure	﻿2026-07-23T17:26:25.2699065Z ##[group]Run cmake --preset dev
+linux	Configure	2026-07-23T17:26:25.2699309Z [36;1mcmake --preset dev[0m
+linux	Configure	2026-07-23T17:26:25.2738861Z shell: /usr/bin/bash -e {0}
+linux	Configure	2026-07-23T17:26:25.2739069Z ##[endgroup]
+linux	Configure	2026-07-23T17:26:26.0871433Z Preset CMake variables:
+linux	Configure	2026-07-23T17:26:26.0871753Z
+linux	Configure	2026-07-23T17:26:26.0871861Z   BUILD_TESTING="ON"
+linux	Configure	2026-07-23T17:26:26.0872108Z   CMAKE_BUILD_TYPE="Debug"
+linux	Configure	2026-07-23T17:26:26.0872322Z   CMAKE_EXPORT_COMPILE_COMMANDS="ON"
+linux	Configure	2026-07-23T17:26:26.0872478Z
+linux	Configure	2026-07-23T17:26:26.0872583Z -- The C compiler identification is GNU 13.3.0
+linux	Configure	2026-07-23T17:26:26.3978451Z -- The CXX compiler identification is GNU 13.3.0
+linux	Configure	2026-07-23T17:26:26.6420528Z -- Detecting C compiler ABI info
+linux	Configure	2026-07-23T17:26:26.7299100Z -- Detecting C compiler ABI info - done
+linux	Configure	2026-07-23T17:26:26.7422969Z -- Check for working C compiler: /usr/bin/cc - skipped
+linux	Configure	2026-07-23T17:26:26.7533454Z -- Detecting C compile features
+linux	Configure	2026-07-23T17:26:26.7539570Z -- Detecting C compile features - done
+linux	Configure	2026-07-23T17:26:26.9398826Z -- Detecting CXX compiler ABI info
+linux	Configure	2026-07-23T17:26:27.0655215Z -- Detecting CXX compiler ABI info - done
+linux	Configure	2026-07-23T17:26:27.0783148Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+linux	Configure	2026-07-23T17:26:27.0786442Z -- Detecting CXX compile features
+linux	Configure	2026-07-23T17:26:27.0792161Z -- Detecting CXX compile features - done
+linux	Configure	2026-07-23T17:26:27.1295307Z -- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so
+linux	Configure	2026-07-23T17:26:27.4203042Z -- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter
+linux	Configure	2026-07-23T17:26:27.4211863Z -- Configuring done (1.9s)
+linux	Configure	2026-07-23T17:26:27.4322695Z -- Generating done (0.0s)
+linux	Configure	2026-07-23T17:26:27.4326031Z -- Build files have been written to: /home/runner/work/engine/engine/build/dev
+linux	Build	﻿2026-07-23T17:26:27.4398308Z ##[group]Run cmake --build --preset dev --parallel 2
+linux	Build	2026-07-23T17:26:27.4398641Z [36;1mcmake --build --preset dev --parallel 2[0m
+linux	Build	2026-07-23T17:26:27.4435910Z shell: /usr/bin/bash -e {0}
+linux	Build	2026-07-23T17:26:27.4436120Z ##[endgroup]
+linux	Build	2026-07-23T17:26:28.2109543Z [1/18] Building CXX object CMakeFiles/engine_platform.dir/src/engine/platform/window.cpp.o
+linux	Build	2026-07-23T17:26:28.5645429Z [2/18] Building CXX object CMakeFiles/engine_assets.dir/src/engine/assets/asset_root.cpp.o
+linux	Build	2026-07-23T17:26:28.5908078Z [3/18] Building CXX object CMakeFiles/engine_scene.dir/src/engine/scene/camera_state.cpp.o
+linux	Build	2026-07-23T17:26:28.8195888Z [4/18] Linking CXX static library libengine_scene.a
+linux	Build	2026-07-23T17:26:28.8205809Z [5/18] Linking CXX static library libengine_platform.a
+linux	Build	2026-07-23T17:26:28.9394470Z [6/18] Building C object CMakeFiles/engine_render.dir/src/glad.c.o
+linux	Build	2026-07-23T17:26:28.9494224Z [7/18] Building CXX object CMakeFiles/engine_render.dir/src/engine/render/opengl.cpp.o
+linux	Build	2026-07-23T17:26:29.0204186Z [8/18] Linking CXX static library libengine_assets.a
+linux	Build	2026-07-23T17:26:29.4969434Z [9/18] Building CXX object CMakeFiles/engine_samples.dir/src/engine/sample/sample_registry.cpp.o
+linux	Build	2026-07-23T17:26:29.7010030Z [10/18] Building CXX object CMakeFiles/engine_render.dir/src/engine/render/fullscreen_pass.cpp.o
+linux	Build	2026-07-23T17:26:29.7740100Z [11/18] Linking CXX static library libengine_render.a
+linux	Build	2026-07-23T17:26:30.1622058Z [12/18] Building CXX object CMakeFiles/render_samples.dir/src/apps/render_samples_main.cpp.o
+linux	Build	2026-07-23T17:26:30.3448887Z [13/18] Building CXX object CMakeFiles/engine_samples.dir/src/samples/ray_marching_sample.cpp.o
+linux	Build	2026-07-23T17:26:30.6308642Z [14/18] Linking CXX static library libengine_samples.a
+linux	Build	2026-07-23T17:26:30.7886189Z [15/18] Building CXX object CMakeFiles/render_samples.dir/src/apps/launcher_cli.cpp.o
+linux	Build	2026-07-23T17:26:30.8528345Z [16/18] Linking CXX executable render_samples
+linux	Build	2026-07-23T17:26:31.0314757Z [17/18] Building CXX object CMakeFiles/engine_sample_registry_tests.dir/tests/unit/sample_registry_tests.cpp.o
+linux	Build	2026-07-23T17:26:31.0893808Z [18/18] Linking CXX executable engine_sample_registry_tests
+linux	Test	﻿2026-07-23T17:26:31.0930574Z ##[group]Run mkdir -p build/dev/Testing
+linux	Test	2026-07-23T17:26:31.0930866Z [36;1mmkdir -p build/dev/Testing[0m
+linux	Test	2026-07-23T17:26:31.0931138Z [36;1mxvfb-run -a ctest --preset dev --output-on-failure \[0m
+linux	Test	2026-07-23T17:26:31.0931431Z [36;1m  --output-junit Testing/junit.xml[0m
+linux	Test	2026-07-23T17:26:31.0931656Z [36;1mpython3 - <<'PY'[0m
+linux	Test	2026-07-23T17:26:31.0931844Z [36;1mimport pathlib[0m
+linux	Test	2026-07-23T17:26:31.0932074Z [36;1mimport xml.etree.ElementTree as ElementTree[0m
+linux	Test	2026-07-23T17:26:31.0932315Z [36;1m[0m
+linux	Test	2026-07-23T17:26:31.0932520Z [36;1mreport = pathlib.Path("build/dev/Testing/junit.xml")[0m
+linux	Test	2026-07-23T17:26:31.0932805Z [36;1msuite = ElementTree.parse(report).getroot()[0m
+linux	Test	2026-07-23T17:26:31.0933055Z [36;1massert int(suite.attrib["tests"]) > 0[0m
+linux	Test	2026-07-23T17:26:31.0933310Z [36;1massert int(suite.attrib["failures"]) == 0[0m
+linux	Test	2026-07-23T17:26:31.0933531Z [36;1mPY[0m
+linux	Test	2026-07-23T17:26:31.0971579Z shell: /usr/bin/bash -e {0}
+linux	Test	2026-07-23T17:26:31.0971799Z ##[endgroup]
+linux	Test	2026-07-23T17:26:32.1754830Z Test project /home/runner/work/engine/engine/build/dev
+linux	Test	2026-07-23T17:26:32.1759309Z     Start 1: sample_registry_unit
+linux	Test	2026-07-23T17:26:32.1781140Z 1/7 Test #1: sample_registry_unit .............   Passed    0.00 sec
+linux	Test	2026-07-23T17:26:32.1781599Z     Start 2: launcher_cli
+linux	Test	2026-07-23T17:26:33.3685171Z 2/7 Test #2: launcher_cli .....................   Passed    1.19 sec
+linux	Test	2026-07-23T17:26:33.3685748Z     Start 3: baseline_schema
+linux	Test	2026-07-23T17:26:33.8179445Z 3/7 Test #3: baseline_schema ..................   Passed    0.45 sec
+linux	Test	2026-07-23T17:26:33.8179847Z     Start 4: asset_tool_unit
+linux	Test	2026-07-23T17:26:33.9660030Z 4/7 Test #4: asset_tool_unit ..................   Passed    0.15 sec
+linux	Test	2026-07-23T17:26:33.9660509Z     Start 5: fixture_gltf
+linux	Test	2026-07-23T17:26:34.0265981Z 5/7 Test #5: fixture_gltf .....................   Passed    0.06 sec
+linux	Test	2026-07-23T17:26:34.0266395Z     Start 6: dependency_lock
+linux	Test	2026-07-23T17:26:34.1311004Z 6/7 Test #6: dependency_lock ..................   Passed    0.10 sec
+linux	Test	2026-07-23T17:26:34.1311541Z     Start 7: dependency_lock_unit
+linux	Test	2026-07-23T17:26:34.2033901Z 7/7 Test #7: dependency_lock_unit .............   Passed    0.07 sec
+linux	Test	2026-07-23T17:26:34.2034963Z
+linux	Test	2026-07-23T17:26:34.2035122Z 100% tests passed, 0 tests failed out of 7
+linux	Test	2026-07-23T17:26:34.2035388Z
+linux	Test	2026-07-23T17:26:34.2035493Z Label Time Summary:
+linux	Test	2026-07-23T17:26:34.2035776Z build           =   0.18 sec*proc (2 tests)
+linux	Test	2026-07-23T17:26:34.2036175Z dependencies    =   0.18 sec*proc (2 tests)
+linux	Test	2026-07-23T17:26:34.2036526Z launcher        =   1.19 sec*proc (1 test)
+linux	Test	2026-07-23T17:26:34.2036872Z negative        =   1.19 sec*proc (1 test)
+linux	Test	2026-07-23T17:26:34.2037219Z samples         =   0.00 sec*proc (1 test)
+linux	Test	2026-07-23T17:26:34.2037707Z unit            =   0.07 sec*proc (2 tests)
+linux	Test	2026-07-23T17:26:34.2037915Z
+linux	Test	2026-07-23T17:26:34.2038032Z Total Test time (real) =   2.03 sec
+linux	Retain CTest results	﻿2026-07-23T17:26:34.2351891Z ##[group]Run actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+linux	Retain CTest results	2026-07-23T17:26:34.2352216Z with:
+linux	Retain CTest results	2026-07-23T17:26:34.2352381Z   name: phase-1-ctest
+linux	Retain CTest results	2026-07-23T17:26:34.2352654Z   path: build/dev/Testing/junit.xml
+linux	Retain CTest results	build/dev/Testing/Temporary/LastTest.log
+linux	Retain CTest results
+linux	Retain CTest results	2026-07-23T17:26:34.2352984Z   if-no-files-found: error
+linux	Retain CTest results	2026-07-23T17:26:34.2353174Z   compression-level: 6
+linux	Retain CTest results	2026-07-23T17:26:34.2353346Z   overwrite: false
+linux	Retain CTest results	2026-07-23T17:26:34.2353516Z   include-hidden-files: false
+linux	Retain CTest results	2026-07-23T17:26:34.2353703Z ##[endgroup]
+linux	Retain CTest results	2026-07-23T17:26:34.3582091Z Multiple search paths detected. Calculating the least common ancestor of all paths
+linux	Retain CTest results	2026-07-23T17:26:34.3583874Z The least common ancestor is /home/runner/work/engine/engine/build/dev/Testing. This will be the root directory of the artifact
+linux	Retain CTest results	2026-07-23T17:26:34.3584749Z With the provided path, there will be 2 files uploaded
+linux	Retain CTest results	2026-07-23T17:26:34.3585321Z Artifact name is valid!
+linux	Retain CTest results	2026-07-23T17:26:34.3585583Z Root directory input is valid!
+linux	Retain CTest results	2026-07-23T17:26:34.7054954Z Beginning upload of artifact content to blob storage
+linux	Retain CTest results	2026-07-23T17:26:35.0194824Z Uploaded bytes 4902
+linux	Retain CTest results	2026-07-23T17:26:35.0987319Z Finished uploading artifact content to blob storage!
+linux	Retain CTest results	2026-07-23T17:26:35.0988217Z SHA256 digest of uploaded artifact zip is ad70b09f21e6fc7773621b38cf059c9117aa4466724bac4770b5df44c31b372f
+linux	Retain CTest results	2026-07-23T17:26:35.0989930Z Finalizing artifact upload
+linux	Retain CTest results	2026-07-23T17:26:35.4782030Z Artifact phase-1-ctest.zip successfully finalized. Artifact ID 8572637196
+linux	Retain CTest results	2026-07-23T17:26:35.4782778Z Artifact phase-1-ctest has been successfully uploaded! Final size is 4902 bytes. Artifact ID is 8572637196
+linux	Retain CTest results	2026-07-23T17:26:35.4785932Z Artifact download URL: https://github.com/antash-mishra/engine/actions/runs/30029253959/artifacts/8572637196
+linux	Post Check out the exact source revision	﻿2026-07-23T17:26:35.4949107Z Post job cleanup.
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5604778Z [command]/usr/bin/git version
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5669676Z git version 2.54.0
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5700999Z Temporarily overriding HOME='/home/runner/work/_temp/9ed6e0e8-cb70-4792-82eb-68e67cf548c3' before making global git config changes
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5701989Z Adding repository directory to the temporary git global config as a safe directory
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5705652Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/engine/engine
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5733274Z Removing SSH command configuration
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5738505Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5770152Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5970408Z Removing HTTP extra header
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.5975302Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6007828Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6216086Z Removing includeIf entries pointing to credentials config files
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6222063Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6247127Z includeif.gitdir:/home/runner/work/engine/engine/.git.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6247991Z includeif.gitdir:/home/runner/work/engine/engine/.git/worktrees/*.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6248364Z includeif.gitdir:/github/workspace/.git.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6248688Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6257211Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/engine/engine/.git.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6278797Z /home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6289642Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/engine/engine/.git.path /home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6325388Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/engine/engine/.git/worktrees/*.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6350478Z /home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6359943Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/engine/engine/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6391575Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6419001Z /github/runner_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6428780Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6464111Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6487610Z /github/runner_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6496679Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6530022Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+linux	Post Check out the exact source revision	2026-07-23T17:26:35.6717569Z Removing credentials config '/home/runner/work/_temp/git-credentials-8b661f39-d475-419f-938a-adb94e4e5568.config'
+linux	Complete job	﻿2026-07-23T17:26:35.6842938Z Cleaning up orphan processes

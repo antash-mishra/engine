@@ -1,4 +1,20 @@
 {
+  "ci_actions": {
+    "actions/checkout": {
+      "actual": [
+        "d23441a48e516b6c34aea4fa41551a30e30af803"
+      ],
+      "expected": "d23441a48e516b6c34aea4fa41551a30e30af803",
+      "matches": true
+    },
+    "actions/upload-artifact": {
+      "actual": [
+        "b7c566a772e6b6bfb58ed0dc250532a479d7789f"
+      ],
+      "expected": "b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+      "matches": true
+    }
+  },
   "failures": [],
   "include_ci": false,
   "packages": {

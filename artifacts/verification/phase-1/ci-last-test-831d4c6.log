@@ -1,0 +1,392 @@
+Start testing: Jul 23 17:26 UTC
+----------------------------------------------------------
+1/7 Testing: sample_registry_unit
+1/7 Test: sample_registry_unit
+Command: "/home/runner/work/engine/engine/build/dev/engine_sample_registry_tests"
+Directory: /home/runner/work/engine/engine/build/dev
+"sample_registry_unit" start time: Jul 23 17:26 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"sample_registry_unit" end time: Jul 23 17:26 UTC
+"sample_registry_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/7 Testing: launcher_cli
+2/7 Test: launcher_cli
+Command: "/usr/bin/python3.12" "/home/runner/work/engine/engine/tests/launcher/test_render_samples_cli.py" "--executable" "/home/runner/work/engine/engine/build/dev/render_samples" "--build-dir" "/home/runner/work/engine/engine/build/dev" "--source-dir" "/home/runner/work/engine/engine"
+Directory: /home/runner/work/engine/engine/build/dev
+"launcher_cli" start time: Jul 23 17:26 UTC
+Output:
+----------------------------------------------------------
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.136s
+
+OK
+<end of output>
+Test time =   1.19 sec
+----------------------------------------------------------
+Test Passed.
+"launcher_cli" end time: Jul 23 17:26 UTC
+"launcher_cli" time elapsed: 00:00:01
+----------------------------------------------------------
+
+3/7 Testing: baseline_schema
+3/7 Test: baseline_schema
+Command: "/usr/bin/python3.12" "-m" "unittest" "discover" "-s" "/home/runner/work/engine/engine/tests/benchmarks" "-p" "test_*.py" "-v"
+Directory: /home/runner/work/engine/engine
+"baseline_schema" start time: Jul 23 17:26 UTC
+Output:
+----------------------------------------------------------
+test_acceptance_fixture_hashes_and_parameters_validate (test_benchmark_validation.BenchmarkValidationTests.test_acceptance_fixture_hashes_and_parameters_validate) ... ok
+test_all_frame_summaries_are_recomputed_with_nearest_rank_p95 (test_benchmark_validation.BenchmarkValidationTests.test_all_frame_summaries_are_recomputed_with_nearest_rank_p95) ... ok
+test_artifact_escape_hash_size_and_statistics_are_rejected (test_benchmark_validation.BenchmarkValidationTests.test_artifact_escape_hash_size_and_statistics_are_rejected) ... ok
+test_cli_rejects_an_unrelated_schema (test_benchmark_validation.BenchmarkValidationTests.test_cli_rejects_an_unrelated_schema) ... ok
+test_complete_capture_cannot_omit_frame_and_validation_data (test_benchmark_validation.BenchmarkValidationTests.test_complete_capture_cannot_omit_frame_and_validation_data) ... ok
+test_complete_record_and_artifacts_validate (test_benchmark_validation.BenchmarkValidationTests.test_complete_record_and_artifacts_validate) ... ok
+test_complete_record_failure_signals_are_rejected (test_benchmark_validation.BenchmarkValidationTests.test_complete_record_failure_signals_are_rejected) ... ok
+test_complete_record_requires_exact_sample_and_capture_frame_counts (test_benchmark_validation.BenchmarkValidationTests.test_complete_record_requires_exact_sample_and_capture_frame_counts) ... ok
+test_date_only_capture_timestamp_is_rejected (test_benchmark_validation.BenchmarkValidationTests.test_date_only_capture_timestamp_is_rejected) ... ok
+test_gl_debug_artifact_tamper_and_count_mismatches_are_rejected (test_benchmark_validation.BenchmarkValidationTests.test_gl_debug_artifact_tamper_and_count_mismatches_are_rejected) ... ok
+test_gl_debug_classification_matches_the_cpp_producer (test_benchmark_validation.BenchmarkValidationTests.test_gl_debug_classification_matches_the_cpp_producer) ... ok
+test_invalid_asset_hash_is_rejected (test_benchmark_validation.BenchmarkValidationTests.test_invalid_asset_hash_is_rejected) ... ok
+test_partial_diagnostic_is_schema_compatible_and_explicitly_blocked (test_benchmark_validation.BenchmarkValidationTests.test_partial_diagnostic_is_schema_compatible_and_explicitly_blocked) ... ok
+test_raw_float_nan_is_detected_independently_of_metadata (test_benchmark_validation.BenchmarkValidationTests.test_raw_float_nan_is_detected_independently_of_metadata) ... ok
+test_schema_rejects_forbidden_fields_and_invalid_ranges (test_benchmark_validation.BenchmarkValidationTests.test_schema_rejects_forbidden_fields_and_invalid_ranges) ... ok
+test_tampered_acceptance_fixture_hash_is_rejected (test_benchmark_validation.BenchmarkValidationTests.test_tampered_acceptance_fixture_hash_is_rejected) ... ok
+test_child_failure_writes_partial_record_and_fresh_logs (test_capture_legacy.CaptureLegacyTests.test_child_failure_writes_partial_record_and_fresh_logs) ... ok
+test_existing_output_is_never_reused (test_capture_legacy.CaptureLegacyTests.test_existing_output_is_never_reused) ... ok
+test_sponza_asset_description_maps_manifest_root_below_resources (test_capture_legacy.CaptureLegacyTests.test_sponza_asset_description_maps_manifest_root_below_resources) ... ok
+test_sponza_asset_root_is_verified_before_child_launch (test_capture_legacy.CaptureLegacyTests.test_sponza_asset_root_is_verified_before_child_launch) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.334s
+
+OK
+<end of output>
+Test time =   0.45 sec
+----------------------------------------------------------
+Test Passed.
+"baseline_schema" end time: Jul 23 17:26 UTC
+"baseline_schema" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/7 Testing: asset_tool_unit
+4/7 Test: asset_tool_unit
+Command: "/usr/bin/python3.12" "-m" "unittest" "discover" "-s" "/home/runner/work/engine/engine/tests/assets" "-p" "test_*.py" "-v"
+Directory: /home/runner/work/engine/engine
+"asset_tool_unit" start time: Jul 23 17:26 UTC
+Output:
+----------------------------------------------------------
+test_archive_checksum_corruption_is_detected (test_manage_assets.ManageAssetsTests.test_archive_checksum_corruption_is_detected) ... ok
+test_buffer_view_cannot_exceed_declared_buffer_length (test_manage_assets.ManageAssetsTests.test_buffer_view_cannot_exceed_declared_buffer_length) ... ok
+test_cli_reports_malformed_container_without_traceback (test_manage_assets.ManageAssetsTests.test_cli_reports_malformed_container_without_traceback) ... ok
+test_closure_checksum_changes_when_payload_changes (test_manage_assets.ManageAssetsTests.test_closure_checksum_changes_when_payload_changes) ... ok
+test_drive_like_archive_filename_is_rejected (test_manage_assets.ManageAssetsTests.test_drive_like_archive_filename_is_rejected) ... ok
+test_failed_atomic_install_leaves_empty_root_and_no_staging_directory (test_manage_assets.ManageAssetsTests.test_failed_atomic_install_leaves_empty_root_and_no_staging_directory) ... ok
+test_fetch_requires_license_acceptance_before_network (test_manage_assets.ManageAssetsTests.test_fetch_requires_license_acceptance_before_network) ... ok
+test_fixture_bounds_ignore_untrusted_accessor_metadata (test_manage_assets.ManageAssetsTests.test_fixture_bounds_ignore_untrusted_accessor_metadata) ... ok
+test_fixture_matches_independent_expected_contract (test_manage_assets.ManageAssetsTests.test_fixture_matches_independent_expected_contract) ... ok
+test_fixture_out_of_range_index_payload_is_detected (test_manage_assets.ManageAssetsTests.test_fixture_out_of_range_index_payload_is_detected) ... ok
+test_fixture_position_payload_corruption_is_detected (test_manage_assets.ManageAssetsTests.test_fixture_position_payload_corruption_is_detected) ... ok
+test_full_profile_must_match_closure_contract (test_manage_assets.ManageAssetsTests.test_full_profile_must_match_closure_contract) ... ok
+test_invalid_khr_light_index_is_detected (test_manage_assets.ManageAssetsTests.test_invalid_khr_light_index_is_detected) ... ok
+test_invalid_sparse_reference_is_detected (test_manage_assets.ManageAssetsTests.test_invalid_sparse_reference_is_detected) ... ok
+test_malformed_container_element_is_detected (test_manage_assets.ManageAssetsTests.test_malformed_container_element_is_detected) ... ok
+test_malformed_manifest_reports_a_contract_error (test_manage_assets.ManageAssetsTests.test_malformed_manifest_reports_a_contract_error) ... ok
+test_malformed_top_level_container_is_detected (test_manage_assets.ManageAssetsTests.test_malformed_top_level_container_is_detected) ... ok
+test_missing_external_reference_is_detected (test_manage_assets.ManageAssetsTests.test_missing_external_reference_is_detected) ... ok
+test_node_cycle_is_detected (test_manage_assets.ManageAssetsTests.test_node_cycle_is_detected) ... ok
+test_out_of_range_accessor_is_detected (test_manage_assets.ManageAssetsTests.test_out_of_range_accessor_is_detected) ... ok
+test_sparse_accessor_without_base_buffer_decodes_override (test_manage_assets.ManageAssetsTests.test_sparse_accessor_without_base_buffer_decodes_override) ... ok
+test_symbolic_link_install_root_is_rejected (test_manage_assets.ManageAssetsTests.test_symbolic_link_install_root_is_rejected) ... ok
+test_unsafe_archive_filename_is_rejected (test_manage_assets.ManageAssetsTests.test_unsafe_archive_filename_is_rejected) ... ok
+test_uri_traversal_is_detected (test_manage_assets.ManageAssetsTests.test_uri_traversal_is_detected) ... ok
+test_zip_member_size_limit_is_enforced (test_manage_assets.ManageAssetsTests.test_zip_member_size_limit_is_enforced) ... ok
+test_zip_path_traversal_is_rejected (test_manage_assets.ManageAssetsTests.test_zip_path_traversal_is_rejected) ... ok
+test_zip_symbolic_link_is_rejected (test_manage_assets.ManageAssetsTests.test_zip_symbolic_link_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.071s
+
+OK
+<end of output>
+Test time =   0.15 sec
+----------------------------------------------------------
+Test Passed.
+"asset_tool_unit" end time: Jul 23 17:26 UTC
+"asset_tool_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/7 Testing: fixture_gltf
+5/7 Test: fixture_gltf
+Command: "/usr/bin/python3.12" "/home/runner/work/engine/engine/tools/assets/manage_assets.py" "verify-gltf" "/home/runner/work/engine/engine/tests/fixtures/gltf/phase0_scene.gltf" "--expect" "/home/runner/work/engine/engine/tests/fixtures/gltf/phase0_scene.expected.json"
+Directory: /home/runner/work/engine/engine/build/dev
+"fixture_gltf" start time: Jul 23 17:26 UTC
+Output:
+----------------------------------------------------------
+{
+  "entrypoint": "/home/runner/work/engine/engine/tests/fixtures/gltf/phase0_scene.gltf",
+  "status": "pass",
+  "summary": {
+    "camera_count": 0,
+    "default_scene": 0,
+    "geometry_0": {
+      "indices": [
+        0,
+        1,
+        2
+      ],
+      "normals": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "position_bounds": {
+        "max": [
+          1.0,
+          1.0,
+          0.0
+        ],
+        "min": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "texcoords_0": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "light_0": {
+      "color": [
+        1.0,
+        0.5,
+        0.25
+      ],
+      "intensity": 3.0,
+      "type": "directional"
+    },
+    "light_count": 1,
+    "light_node_world_translations": [
+      [
+        10.0,
+        4.0,
+        1.0
+      ]
+    ],
+    "material_0": {
+      "base_color_factor": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "metallic_factor": 0.2,
+      "roughness_factor": 0.6
+    },
+    "material_count": 1,
+    "mesh_count": 1,
+    "mesh_node_world_translations": [
+      [
+        10.0,
+        2.0,
+        0.0
+      ]
+    ],
+    "node_count": 3,
+    "primitive_count": 1,
+    "scene_count": 1,
+    "world_position_bounds": {
+      "max": [
+        11.0,
+        3.0,
+        0.0
+      ],
+      "min": [
+        10.0,
+        2.0,
+        0.0
+      ]
+    }
+  }
+}
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"fixture_gltf" end time: Jul 23 17:26 UTC
+"fixture_gltf" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/7 Testing: dependency_lock
+6/7 Test: dependency_lock
+Command: "/usr/bin/python3.12" "/home/runner/work/engine/engine/tools/build/verify_dependencies.py" "verify" "--source-root" "/home/runner/work/engine/engine"
+Directory: /home/runner/work/engine/engine/build/dev
+"dependency_lock" start time: Jul 23 17:26 UTC
+Output:
+----------------------------------------------------------
+{
+  "ci_actions": {
+    "actions/checkout": {
+      "actual": [
+        "d23441a48e516b6c34aea4fa41551a30e30af803"
+      ],
+      "expected": "d23441a48e516b6c34aea4fa41551a30e30af803",
+      "matches": true
+    },
+    "actions/upload-artifact": {
+      "actual": [
+        "b7c566a772e6b6bfb58ed0dc250532a479d7789f"
+      ],
+      "expected": "b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+      "matches": true
+    }
+  },
+  "failures": [],
+  "include_ci": false,
+  "packages": {
+    "cmake": {
+      "actual": "3.28.3-1build7",
+      "expected": "3.28.3-1build7",
+      "matches": true
+    },
+    "g++": {
+      "actual": "4:13.2.0-7ubuntu1",
+      "expected": "4:13.2.0-7ubuntu1",
+      "matches": true
+    },
+    "libgl-dev": {
+      "actual": "1.7.0-1build1",
+      "expected": "1.7.0-1build1",
+      "matches": true
+    },
+    "libglfw3-dev": {
+      "actual": "3.3.10-1build1",
+      "expected": "3.3.10-1build1",
+      "matches": true
+    },
+    "ninja-build": {
+      "actual": "1.11.1-2",
+      "expected": "1.11.1-2",
+      "matches": true
+    }
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "vendored_files": {
+    "glad": {
+      "actual": "be38c9b914e0e3b41d7d4d78d377f36c51f865a912bf28783e9c1c510ec3eebf",
+      "expected": "be38c9b914e0e3b41d7d4d78d377f36c51f865a912bf28783e9c1c510ec3eebf",
+      "file_count": 3,
+      "matches": true
+    },
+    "glm": {
+      "actual": "0f36f3f08d8e1c4cb4bcc91f4dfb23a41963dd8c4f7e25bf9d9cec6d7012b499",
+      "expected": "0f36f3f08d8e1c4cb4bcc91f4dfb23a41963dd8c4f7e25bf9d9cec6d7012b499",
+      "file_count": 258,
+      "matches": true
+    },
+    "stb_image_legacy_only": {
+      "actual": "a10032d83ce708b2c967fbd2621492e61bac6b7cbc5defcfc94a7fd7259a2e76",
+      "expected": "a10032d83ce708b2c967fbd2621492e61bac6b7cbc5defcfc94a7fd7259a2e76",
+      "file_count": 2,
+      "matches": true
+    },
+    "tinygltf_legacy_only": {
+      "actual": "04c97dee8bae4ad832528878346dce72b7615be259ce7450417a9a87704f7f23",
+      "expected": "04c97dee8bae4ad832528878346dce72b7615be259ce7450417a9a87704f7f23",
+      "file_count": 4,
+      "matches": true
+    }
+  }
+}
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"dependency_lock" end time: Jul 23 17:26 UTC
+"dependency_lock" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/7 Testing: dependency_lock_unit
+7/7 Test: dependency_lock_unit
+Command: "/usr/bin/python3.12" "-m" "unittest" "discover" "-s" "/home/runner/work/engine/engine/tests/build" "-p" "test_*.py" "-v"
+Directory: /home/runner/work/engine/engine
+"dependency_lock_unit" start time: Jul 23 17:26 UTC
+Output:
+----------------------------------------------------------
+test_ci_action_pin_mismatch_is_rejected (test_verify_dependencies.ClosureHashTests.test_ci_action_pin_mismatch_is_rejected) ... ok
+test_duplicate_multiarch_package_versions_are_normalized (test_verify_dependencies.ClosureHashTests.test_duplicate_multiarch_package_versions_are_normalized) ... ok
+test_nested_mutation_addition_and_removal_change_digest (test_verify_dependencies.ClosureHashTests.test_nested_mutation_addition_and_removal_change_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.003s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"dependency_lock_unit" end time: Jul 23 17:26 UTC
+"dependency_lock_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Jul 23 17:26 UTC
+
+build =   0.18 sec*proc
+
+dependencies =   0.18 sec*proc
+
+launcher =   1.19 sec*proc
+
+negative =   1.19 sec*proc
+
+samples =   0.00 sec*proc
+
+unit =   0.07 sec*proc
+
