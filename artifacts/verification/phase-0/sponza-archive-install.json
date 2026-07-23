@@ -1,0 +1,33 @@
+{
+  "archive": {
+    "etag_md5": "8c9c6c6f7d8bd75f15737379be181ba3",
+    "path": "/home/antash/Downloads/main_sponza.zip",
+    "sha256": "b8bb853884ab1566b3beb35666bd09882a4e0dc16661e4684e103792cf0229b9",
+    "size": 3987608266
+  },
+  "asset_id": "intel-sponza-base",
+  "install_root": "/tmp/phase0-durable-install-20260723",
+  "status": "pass",
+  "verification": {
+    "asset_id": "intel-sponza-base",
+    "closure": {
+      "algorithm": "sha256-v1",
+      "file_count": 74,
+      "total_bytes": 2171830243,
+      "tree_sha256": "2d6102dc617e6e5cfed37d5fe23674d518cfb6d1a6b2fbd86084010ce7246645"
+    },
+    "entrypoint_sha256": "e04c4c540c74bdddcbd3f590a85c14119bfd5839702246a23b3a737c0cce2400",
+    "root": "/tmp/phase0-durable-install-20260723",
+    "status": "pass",
+    "structure": {
+      "camera_count": 6,
+      "default_scene": 0,
+      "light_count": 24,
+      "material_count": 28,
+      "mesh_count": 115,
+      "node_count": 155,
+      "primitive_count": 405,
+      "scene_count": 1
+    }
+  }
+}

@@ -3,3 +3,8 @@ build/*
 .cache/*
 .config/*
 .helix/*
+__pycache__/
+*.py[cod]
+
+# Intel Sponza is an externally licensed, multi-gigabyte validation input.
+resources/main-sponza/

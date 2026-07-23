@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "subject": {
+    "feature": "phase-0-asset-loading-and-baselines",
+    "revision": "44577008dfcdcbcad68cfb39ccfc38bdd87165f5",
+    "dirty": true,
+    "claim": "Reproducible Sponza inputs, deterministic fixtures, and numerically validated legacy baseline measurements; this claim does not certify Sponza rendering correctness"
+  },
+  "environment": {
+    "build_type": "Release",
+    "compiler": "GCC 13.3.0",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "driver": "570.153.02",
+    "api": "OpenGL 4.3",
+    "asset_hash": "sha256:2d6102dc617e6e5cfed37d5fe23674d518cfb6d1a6b2fbd86084010ce7246645",
+    "resolution": "800x600",
+    "seed": 1597463007
+  },
+  "checks": [
+    {
+      "id": "phase0.build",
+      "category": "build",
+      "required": true,
+      "method": "Configure and build both legacy executables from an empty Release build directory, then run default and opt-in CTest registrations.",
+      "command": "cmake -S . -B /tmp/engine-phase0-evidence-build-20260723 -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/engine-phase0-evidence-build-20260723 --parallel 4 && ctest --test-dir /tmp/engine-phase0-evidence-build-20260723 --output-on-failure",
+      "artifacts": [
+        "configure.log",
+        "build.log",
+        "ctest-default.log",
+        "ctest-opt-in.log"
+      ],
+      "assertions": [
+        {
+          "name": "default CTest failures",
+          "op": "eq",
+          "actual": 0,
+          "expected": 0
+        },
+        {
+          "name": "opt-in CTest failures",
+          "op": "eq",
+          "actual": 0,
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "phase0.fixture",
+      "category": "fixture-reference",
+      "required": true,
+      "method": "Decode the locally authored CC0 glTF payload independently and compare geometry, material, light, hierarchy, and world bounds with the pinned expectation.",
+      "command": "python3 tools/assets/manage_assets.py verify-gltf tests/fixtures/gltf/phase0_scene.gltf --expect tests/fixtures/gltf/phase0_scene.expected.json",
+      "artifacts": [
+        "fixture-verify.json"
+      ],
+      "assertions": [
+        {
+          "name": "fixture validation status",
+          "op": "eq",
+          "actual": "pass",
+          "expected": "pass"
+        },
+        {
+          "name": "decoded triangle indices",
+          "op": "eq",
+          "actual": [
+            0,
+            1,
+            2
+          ],
+          "expected": [
+            0,
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase0.numeric",
+      "category": "numeric-invariants",
+      "required": true,
+      "method": "Validate ten schema-bound records against deduplicated raw framebuffer, float attachment, timing, and structured GL-debug artifacts.",
+      "command": "tar -xzf artifacts/verification/phase-0/baseline-bundle.tar.gz -C <EMPTY_ROOT> && python3 tools/benchmarks/validate_benchmark.py --acceptance validation/acceptance.json validation/schemas/benchmark.schema.json <EMPTY_ROOT>/{ray,sponza}-{1,2,3,4,5}.json",
+      "artifacts": [
+        "baseline-bundle.tar.gz",
+        "baseline-summary.json"
+      ],
+      "assertions": [
+        {
+          "name": "validated complete baseline records",
+          "op": "eq",
+          "actual": 10,
+          "expected": 10
+        },
+        {
+          "name": "OpenGL errors across accepted runs",
+          "op": "eq",
+          "actual": 0,
+          "expected": 0
+        },
+        {
+          "name": "non-finite values across accepted runs",
+          "op": "eq",
+          "actual": 0,
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "phase0.negative-inputs",
+      "category": "negative-inputs",
+      "required": true,
+      "method": "Exercise malformed manifests, archives, glTF structures and payloads, benchmark summaries, timestamps, raw buffers, GL logs, and child failure behavior.",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/assets -p 'test_*.py' -v && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/benchmarks -p 'test_*.py' -v",
+      "artifacts": [
+        "asset-tests.log",
+        "benchmark-tests.log"
+      ],
+      "assertions": [
+        {
+          "name": "asset tests passed",
+          "op": "eq",
+          "actual": 27,
+          "expected": 27
+        },
+        {
+          "name": "benchmark tests passed",
+          "op": "eq",
+          "actual": 20,
+          "expected": 20
+        }
+      ]
+    },
+    {
+      "id": "phase0.lifecycle",
+      "category": "lifecycle",
+      "required": true,
+      "method": "Run the literal checksum-gated fetch flow into an empty root, verify staging and final roots, rerun offline verification, then remove the temporary installation.",
+      "command": "python3 tools/assets/manage_assets.py fetch --asset intel-sponza-base --cache /home/antash/Downloads --root /tmp/phase0-fetch-root-20260723 --accept-license --evidence artifacts/verification/phase-0/sponza-fetch.json",
+      "artifacts": [
+        "sponza-fetch.json",
+        "sponza-fetch.time.txt",
+        "sponza-fetch-post-verify.json"
+      ],
+      "assertions": [
+        {
+          "name": "fetch flow status",
+          "op": "eq",
+          "actual": "pass",
+          "expected": "pass"
+        },
+        {
+          "name": "verified cache hit",
+          "op": "eq",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "post-install closure file count",
+          "op": "eq",
+          "actual": 74,
+          "expected": 74
+        },
+        {
+          "name": "temporary install retained after evidence capture",
+          "op": "eq",
+          "actual": false,
+          "expected": false
+        }
+      ]
+    },
+    {
+      "id": "phase0.performance",
+      "category": "performance",
+      "required": true,
+      "method": "Run five fixed-seed repetitions per sample, retain every 600-frame CPU/GPU series, and report cross-run median and nearest-rank p95 without post-hoc parameter changes.",
+      "command": "python3 tools/benchmarks/capture_legacy.py --sample <ray-marching|sponza> --config validation/acceptance.json --output <RUN_JSON>",
+      "artifacts": [
+        "baseline-bundle.tar.gz",
+        "baseline-summary.json"
+      ],
+      "assertions": [
+        {
+          "name": "Sponza repetition count",
+          "op": "eq",
+          "actual": 5,
+          "expected": 5
+        },
+        {
+          "name": "Sponza p95 first-frame regression ceiling in milliseconds",
+          "op": "le",
+          "actual": 40778.83019,
+          "expected": 60000
+        },
+        {
+          "name": "Sponza p95 peak RSS regression ceiling in bytes",
+          "op": "le",
+          "actual": 10538360832,
+          "expected": 12884901888
+        },
+        {
+          "name": "Sponza first-frame measurements finite",
+          "op": "all_finite",
+          "actual": [
+            40018.760327,
+            40646.631839,
+            40756.476531,
+            40762.634504,
+            40778.83019
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase0.test-sensitivity",
+      "category": "test-sensitivity",
+      "required": true,
+      "method": "Confirm focused negative tests reject corrupted geometry payloads, path traversal, stale provenance, falsified timing summaries, unrelated schemas, tampered raw buffers, and tampered GL logs.",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/assets -p 'test_*.py' -v && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/benchmarks -p 'test_*.py' -v",
+      "artifacts": [
+        "asset-tests.log",
+        "benchmark-tests.log"
+      ],
+      "assertions": [
+        {
+          "name": "focused sensitivity and contract tests",
+          "op": "eq",
+          "actual": 47,
+          "expected": 47
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The literal fetch command used a checksum-verified local cache hit; live publisher availability and current HTTP headers were not tested.",
+    "OS cache state was uncontrolled and every accepted record declares cold_cache=false.",
+    "Sponza retained CPU staging is 5,131,527,552 bytes, well above the later 512 MiB optimization target.",
+    "Sponza view-position, view-normal, and SSAO attachments are clear-valued in every run. Capture integrity passes, but Sponza render correctness fails and is assigned to Phase 5.",
+    "Phase 0 does not yet provide GPU live-object accounting; resource ownership and lifecycle instrumentation are Phase 3 scope."
+  ]
+}

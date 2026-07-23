@@ -1,0 +1,985 @@
+1498544 execve("/tmp/engine-phase1-independent.MV33d4/source/build/dev/render_samples", ["/tmp/engine-phase1-independent.M"..., "--sample", "ray-marching", "--frames", "1"], 0x7fffbe743128 /* 67 vars */) = 0
+1498544 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libglfw.so.3", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libstdc++.so.6", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libX11.so.6", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libxcb.so.1", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXau.so.6", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXdmcp.so.6", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libbsd.so.0", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libmd.so.0", O_RDONLY|O_CLOEXEC) = 3
+1498544 readlink("/proc", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/proc/self", "1498544", 1023) = 7
+1498544 readlink("/proc/1498544", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/proc/1498544/exe", "/tmp/engine-phase1-independent.M"..., 1023) = 69
+1498544 readlink("/tmp", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/render_samples", 0x7fff63851ef0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 newfstatat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+1498544 openat(AT_FDCWD, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/usr/lib/locale/C.UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/usr/lib/locale/C.utf8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = 3
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY|O_CLOEXEC) = 3
+1498544 access("/home/antash/.Xauthority", R_OK) = 0
+1498544 openat(AT_FDCWD, "/home/antash/.Xauthority", O_RDONLY) = 4
+1498544 openat(AT_FDCWD, "/usr/share/X11/locale/locale.alias", O_RDONLY) = 4
+1498544 openat(AT_FDCWD, "/usr/share/X11/locale/locale.dir", O_RDONLY) = 4
+1498544 access("/usr/share/X11/locale/en_US.UTF-8/XLC_LOCALE", R_OK) = 0
+1498544 openat(AT_FDCWD, "/usr/share/X11/locale/en_US.UTF-8/XLC_LOCALE", O_RDONLY) = 4
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXxf86vm.so.1", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXext.so.6", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXi.so.6", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXrandr.so.2", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXrender.so.1", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXcursor.so.1", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXfixes.so.3", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libXinerama.so.1", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libX11-xcb.so.1", O_RDONLY|O_CLOEXEC) = 6
+1498544 openat(AT_FDCWD, "/home/antash/.Xdefaults-sensai", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/usr/share/X11/locale/compose.dir", O_RDONLY) = 6
+1498544 access("/usr/share/X11/locale/en_US.UTF-8/Compose", R_OK) = 0
+1498544 openat(AT_FDCWD, "/usr/share/X11/locale/en_US.UTF-8/Compose", O_RDONLY) = 6
+1498544 openat(AT_FDCWD, "/home/antash/.XCompose", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/usr/share/X11/locale/compose.dir", O_RDONLY) = 6
+1498544 access("/usr/share/X11/locale/en_US.UTF-8/Compose", R_OK) = 0
+1498544 newfstatat(AT_FDCWD, "/usr/share/X11/locale/en_US.UTF-8/Compose", {st_mode=S_IFREG|0644, st_size=454647, ...}, 0) = 0
+1498544 newfstatat(AT_FDCWD, "/var/cache/libx11/compose/", 0x7fff638520c0, 0) = -1 ENOENT (No such file or directory)
+1498544 newfstatat(AT_FDCWD, "/usr/share/X11/locale/en_US.UTF-8/Compose", {st_mode=S_IFREG|0644, st_size=454647, ...}, 0) = 0
+1498544 newfstatat(AT_FDCWD, "/home/antash/.compose-cache/", 0x7fff638520c0, 0) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/usr/share/X11/locale/en_US.UTF-8/Compose", O_RDONLY) = 6
+1498544 openat(AT_FDCWD, "/usr/share/X11/XKeysymDB", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 inotify_add_watch(6, "/dev/input", IN_ATTRIB|IN_CREATE|IN_DELETE) = 1
+1498544 openat(AT_FDCWD, "/dev/input", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 7
+1498544 openat(AT_FDCWD, "/dev/input/event10", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event9", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event8", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event7", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event6", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event5", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event4", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event3", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event21", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event20", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event19", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event18", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event17", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event16", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event15", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event14", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event13", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event12", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event11", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event2", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event1", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/dev/input/event0", O_RDONLY|O_NONBLOCK) = -1 EACCES (Permission denied)
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libGLX.so.0", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libGLdispatch.so.0", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libGLX_nvidia.so.0", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libnvidia-glsi.so.570.153.02", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libnvidia-tls.so.570.153.02", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/librt.so.1", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libnvidia-gpucomp.so.570.153.02", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/home/antash/.nv/nvidia-application-profile-globals-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/home/antash/.nv/nvidia-application-profiles-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/home/antash/.nv/nvidia-application-profiles-rc.d", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/etc/nvidia/nvidia-application-profiles-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/etc/nvidia/nvidia-application-profiles-rc.d/", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/usr/share/nvidia/nvidia-application-profiles-570.153.02-rc", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/usr/share/nvidia/nvidia-application-profiles-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 readlink("/proc/1498544/exe", "/tmp/engine-phase1-independent.M"..., 4095) = 69
+1498544 openat(AT_FDCWD, "/proc/self/cmdline", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/render_samples", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libglfw.so.3.3", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXau.so.6.0.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libbsd.so.0.12.1", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libmd.so.0.1.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXext.so.6.4.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXi.so.6.1.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glsi.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-tls.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/librt.so.1", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-gpucomp.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/proc/self/comm", O_RDONLY) = 7
+1498544 readlink("/proc/1498544/exe", "/tmp/engine-phase1-independent.M"..., 4095) = 69
+1498544 statfs("/sys/fs/selinux", 0x7fff63851130) = -1 ENOENT (No such file or directory)
+1498544 statfs("/selinux", 0x7fff63851130) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/proc/filesystems", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 9
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 9
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 9
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 9
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 9
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 8
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 8
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 9
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/status", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/proc/self/status", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/online", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu0/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu1/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu2/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu3/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu4/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu5/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu6/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu7/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu8/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu9/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu10/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index0/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index0/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index1/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index1/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index2/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index2/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index3/level", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/cache/index3/id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/topology/physical_package_id", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/sys/devices/system/cpu/cpu11/topology/thread_siblings", O_RDONLY) = 7
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libxcb-glx.so.0", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libxcb-randr.so.0", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libxcb-dri3.so.0", O_RDONLY|O_CLOEXEC) = 7
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/render_samples", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libglfw.so.3.3", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXau.so.6.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libbsd.so.0.12.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libmd.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXext.so.6.4.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXi.so.6.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glsi.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-tls.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/librt.so.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-gpucomp.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/home/antash/.nv/nvidia-application-profile-globals-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/home/antash/.nv/nvidia-application-profiles-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/home/antash/.nv/nvidia-application-profiles-rc.d", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/etc/nvidia/nvidia-application-profiles-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/etc/nvidia/nvidia-application-profiles-rc.d/", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/usr/share/nvidia/nvidia-application-profiles-570.153.02-rc", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/usr/share/nvidia/nvidia-application-profiles-rc", O_RDONLY) = -1 ENOENT (No such file or directory)
+1498544 readlink("/proc/1498544/exe", "/tmp/engine-phase1-independent.M"..., 4095) = 69
+1498544 openat(AT_FDCWD, "/proc/self/cmdline", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/render_samples", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libglfw.so.3.3", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXau.so.6.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libbsd.so.0.12.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libmd.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXext.so.6.4.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXi.so.6.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glsi.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-tls.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/librt.so.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-gpucomp.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/proc/self/comm", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/render_samples", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libglfw.so.3.3", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXau.so.6.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libbsd.so.0.12.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libmd.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXext.so.6.4.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXi.so.6.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glsi.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-tls.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-glcore.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/librt.so.1", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libnvidia-gpucomp.so.570.153.02", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.1.0", O_RDONLY) = 9
+1498544 openat(AT_FDCWD, "/proc/self/stat", O_RDONLY|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/stat", O_RDONLY) = 10
+1498544 access("/sys/module/nvidia/initstate", R_OK) = 0
+1498544 openat(AT_FDCWD, "/proc/driver/nvidia/params", O_RDONLY) = 9
+1498544 stat("/dev/nvidiactl", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xff), ...}) = 0
+1498544 stat("/dev/nvidiactl", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xff), ...}) = 0
+1498544 unlink("/dev/char/195:255")     = -1 EACCES (Permission denied)
+1498544 symlink("../nvidiactl", "/dev/char/195:255") = -1 EEXIST (File exists)
+1498544 stat("/dev/char/195:255", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xff), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR) = 9
+1498544 openat(AT_FDCWD, "/sys/devices/system/memory/block_size_bytes", O_RDONLY) = 10
+1498544 stat("/proc/driver/nvidia/gpus/0000:02:00.0/numa_status", 0x7fff63851460) = -1 ENOENT (No such file or directory)
+1498544 access("/sys/module/nvidia_modeset/initstate", R_OK) = 0
+1498544 openat(AT_FDCWD, "/proc/driver/nvidia/params", O_RDONLY) = 10
+1498544 stat("/dev/nvidia-modeset", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 stat("/dev/nvidia-modeset", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 unlink("/dev/char/195:254")     = -1 EACCES (Permission denied)
+1498544 symlink("../nvidia-modeset", "/dev/char/195:254") = -1 EEXIST (File exists)
+1498544 stat("/dev/char/195:254", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/nvidia-modeset", O_RDWR|O_CLOEXEC) = 10
+1498544 openat(AT_FDCWD, "/proc/driver/nvidia/params", O_RDONLY) = 11
+1498544 stat("/dev/nvidia0", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0), ...}) = 0
+1498544 stat("/dev/nvidia0", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0), ...}) = 0
+1498544 unlink("/dev/char/195:0")       = -1 EACCES (Permission denied)
+1498544 symlink("../nvidia0", "/dev/char/195:0") = -1 EEXIST (File exists)
+1498544 stat("/dev/char/195:0", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 11
+1498544 openat(AT_FDCWD, "/proc/driver/nvidia/params", O_RDONLY) = 12
+1498544 stat("/dev/nvidia0", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0), ...}) = 0
+1498544 stat("/dev/nvidia0", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0), ...}) = 0
+1498544 unlink("/dev/char/195:0")       = -1 EACCES (Permission denied)
+1498544 symlink("../nvidia0", "/dev/char/195:0") = -1 EEXIST (File exists)
+1498544 stat("/dev/char/195:0", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 12
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 13
+1498544 stat("/home/antash/.nv/GLCache", 0x7fff6384f9e0) = -1 ENOENT (No such file or directory)
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libdbus-1.so.3", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libsystemd.so.0", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libcap.so.2", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libgcrypt.so.20", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/liblz4.so.1", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/liblzma.so.5", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libzstd.so.1", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libgpg-error.so.0", O_RDONLY|O_CLOEXEC) = 13
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 14
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 14
+1498544 openat(AT_FDCWD, "/proc/meminfo", O_RDONLY) = 14
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 14
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libdrm.so.2", O_RDONLY|O_CLOEXEC) = 14
+1498544 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 14
+1498544 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libnvidia-allocator.so.1", O_RDONLY|O_CLOEXEC) = 14
+1498544 openat(AT_FDCWD, "/dev/dri", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 14
+1498544 stat("/dev/dri/renderD128", {st_mode=S_IFCHR|0660, st_rdev=makedev(0xe2, 0x80), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/dri/renderD128", O_RDWR|O_CLOEXEC) = 15
+1498544 openat(AT_FDCWD, "/dev/dri", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 14
+1498544 stat("/dev/dri/renderD128", {st_mode=S_IFCHR|0660, st_rdev=makedev(0xe2, 0x80), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/dri/renderD128", O_RDWR|O_CLOEXEC) = 16
+1498544 stat("/dev/dri/card1", {st_mode=S_IFCHR|0660, st_rdev=makedev(0xe2, 0x1), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 14
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 16
+1498544 access("/sys/module/nvidia_modeset/initstate", R_OK) = 0
+1498544 openat(AT_FDCWD, "/proc/driver/nvidia/params", O_RDONLY) = 16
+1498544 stat("/dev/nvidia-modeset", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 stat("/dev/nvidia-modeset", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 unlink("/dev/char/195:254")     = -1 EACCES (Permission denied)
+1498544 symlink("../nvidia-modeset", "/dev/char/195:254") = -1 EEXIST (File exists)
+1498544 stat("/dev/char/195:254", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/nvidia-modeset", O_RDWR|O_CLOEXEC) = 16
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 17
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 17
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 17
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 17
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 17
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 17
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 17
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 18
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 19
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 20
+1498544 openat(AT_FDCWD, "/dev/nvidia0", O_RDWR|O_CLOEXEC) = 21
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 22
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 22
+1498544 access("/sys/module/nvidia_modeset/initstate", R_OK) = 0
+1498544 openat(AT_FDCWD, "/proc/driver/nvidia/params", O_RDONLY) = 22
+1498544 stat("/dev/nvidia-modeset", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 stat("/dev/nvidia-modeset", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 unlink("/dev/char/195:254")     = -1 EACCES (Permission denied)
+1498544 symlink("../nvidia-modeset", "/dev/char/195:254") = -1 EEXIST (File exists)
+1498544 stat("/dev/char/195:254", {st_mode=S_IFCHR|0666, st_rdev=makedev(0xc3, 0xfe), ...}) = 0
+1498544 openat(AT_FDCWD, "/dev/nvidia-modeset", O_RDWR|O_CLOEXEC) = 22
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 23
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 23
+1498544 openat(AT_FDCWD, "/dev/nvidiactl", O_RDWR|O_CLOEXEC) = 23
+1498544 stat("/home/antash/.nv/GLCache", 0x7fff6384c9b0) = -1 ENOENT (No such file or directory)
+1498544 mkdir("/home/antash/.cache/nvidia/", 0700) = -1 EEXIST (File exists)
+1498544 mkdir("/home/antash/.cache/nvidia/GLCache", 0700) = -1 EEXIST (File exists)
+1498544 mkdir("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/", 0700) = -1 EEXIST (File exists)
+1498544 mkdir("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/", 0700) = -1 EEXIST (File exists)
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/075691ae58945d45.toc", O_RDWR|O_CLOEXEC) = 23
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/075691ae58945d45.bin", O_RDWR|O_CLOEXEC) = 24
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 25
+1498544 stat("/home/antash/.cache/nvidia/GLCache/.", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 26
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/.", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/..", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 27
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/d5a6ead1042faa74.toc", {st_mode=S_IFREG|0664, st_size=4064, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/9cd601fd3f14d49e.bin", {st_mode=S_IFREG|0664, st_size=57940, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2b.toc", {st_mode=S_IFREG|0664, st_size=1024, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2a.bin", {st_mode=S_IFREG|0664, st_size=101368, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/.", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/d5a6ead1042faa74.bin", {st_mode=S_IFREG|0664, st_size=645497, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c29.toc", {st_mode=S_IFREG|0664, st_size=14400, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2c.toc", {st_mode=S_IFREG|0664, st_size=3712, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/9cd601fd3f14d49e.toc", {st_mode=S_IFREG|0664, st_size=608, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/f32251b32a8c8bf9.toc", {st_mode=S_IFREG|0664, st_size=448, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/22c0f3ca366cedd5.bin", {st_mode=S_IFREG|0664, st_size=449300, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2a.toc", {st_mode=S_IFREG|0664, st_size=1024, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2d.toc", {st_mode=S_IFREG|0664, st_size=1024, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2b.bin", {st_mode=S_IFREG|0664, st_size=101368, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2d.bin", {st_mode=S_IFREG|0664, st_size=101368, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/..", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/f32251b32a8c8bf9.bin", {st_mode=S_IFREG|0664, st_size=32689, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/9cd601fd3f14d49d.bin", {st_mode=S_IFREG|0664, st_size=101496, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c2c.bin", {st_mode=S_IFREG|0664, st_size=434127, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/f9070459847a81e9.toc", {st_mode=S_IFREG|0664, st_size=1568, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/9cd601fd3f14d49d.toc", {st_mode=S_IFREG|0664, st_size=768, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/f9070459847a81e9.bin", {st_mode=S_IFREG|0664, st_size=144818, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/305befa2b72b4c29.bin", {st_mode=S_IFREG|0664, st_size=2331874, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805/22c0f3ca366cedd5.toc", {st_mode=S_IFREG|0664, st_size=4000, ...}) = 0
+1498544 unlink("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805") = -1 EISDIR (Is a directory)
+1498544 rmdir("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d/632bfd0540dc1805") = -1 ENOTEMPTY (Directory not empty)
+1498544 unlink("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d") = -1 EISDIR (Is a directory)
+1498544 rmdir("/home/antash/.cache/nvidia/GLCache/c46226ad4f81a4f2b5a1023d39a06b3d") = -1 ENOTEMPTY (Directory not empty)
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 26
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/.", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/..", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 27
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46acb4b8e00cc99a.toc", {st_mode=S_IFREG|0664, st_size=13024, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/31a8b18cf5aa79d0.bin", {st_mode=S_IFREG|0664, st_size=16365, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae117b3df0b681e5.toc", {st_mode=S_IFREG|0664, st_size=352, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/bf70260d41c7b5cd.bin", {st_mode=S_IFREG|0664, st_size=163383, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/92f74448a56b9fe6.bin", {st_mode=S_IFREG|0664, st_size=6938, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/b305ad192d5c36a3.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/c6f4c87045128616.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/6374a6767af34cc3.bin", {st_mode=S_IFREG|0664, st_size=11157640, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae117b3df0b681e4.bin", {st_mode=S_IFREG|0664, st_size=8189905, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae117b3df0b681e4.toc", {st_mode=S_IFREG|0664, st_size=46368, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/25b0557f030f8f05.toc", {st_mode=S_IFREG|0664, st_size=4000, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/bd629dff834e58a5.bin", {st_mode=S_IFREG|0664, st_size=324401, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/08664b64b5a397f0.toc", {st_mode=S_IFREG|0664, st_size=544, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/6374a6767af34cc4.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/b2b9b1fa2b2de663.toc", {st_mode=S_IFREG|0664, st_size=1344, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/d1a188c485afa6e7.bin", {st_mode=S_IFREG|0664, st_size=1553115, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46a940cc7006e74b.bin", {st_mode=S_IFREG|0664, st_size=130972, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/.", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/92f74448a56b9fe8.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/92f74448a56b9fe8.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/143eff091dd77f41.bin", {st_mode=S_IFREG|0664, st_size=163692, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46a940cc7006e74b.toc", {st_mode=S_IFREG|0664, st_size=960, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae67d8b308fd746e.toc", {st_mode=S_IFREG|0664, st_size=9952, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/45f4feaf29dd4e46.toc", {st_mode=S_IFREG|0664, st_size=28384, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/2283d3090a2be4c5.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/31a8b18cf5aa79d0.toc", {st_mode=S_IFREG|0664, st_size=128, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/d1a188c485afa6e7.toc", {st_mode=S_IFREG|0664, st_size=13760, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/bd629dff834e58a5.toc", {st_mode=S_IFREG|0664, st_size=3520, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/f32251b32a8c8bf9.toc", {st_mode=S_IFREG|0664, st_size=288, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/c6f4c87045128616.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/454e4f616944caa3.bin", {st_mode=S_IFREG|0664, st_size=37543698, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae67d8b308fd746d.toc", {st_mode=S_IFREG|0664, st_size=11904, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/c6f4c87045128615.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46a940cc7006e74a.bin", {st_mode=S_IFREG|0664, st_size=163692, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/0414de1345c31978.bin", {st_mode=S_IFREG|0664, st_size=2232186, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/6374a6767af34cc3.toc", {st_mode=S_IFREG|0664, st_size=74208, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/319e4708191b047d.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/075691ae58945d45.toc", {st_mode=S_IFREG|0664, st_size=288, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ab8be687e5e601e9.bin", {st_mode=S_IFREG|0664, st_size=11651385, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/c33f3f04cc045eb1.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/001a7d21c0350c1f.toc", {st_mode=S_IFREG|0664, st_size=3808, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/92f74448a56b9fe6.toc", {st_mode=S_IFREG|0664, st_size=192, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/b1ba811bad87fcd7.bin", {st_mode=S_IFREG|0664, st_size=202525, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/319e4708191b047d.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/6374a6767af34cc4.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/c33f3f04cc045eb1.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46acb4b8e00cc999.toc", {st_mode=S_IFREG|0664, st_size=470016, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/075691ae58945d45.bin", {st_mode=S_IFREG|0664, st_size=16082, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/45f4feaf29dd4e46.bin", {st_mode=S_IFREG|0664, st_size=391703, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/bf70260d41c7b5cd.toc", {st_mode=S_IFREG|0664, st_size=2272, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/92f74448a56b9fe7.bin", {st_mode=S_IFREG|0664, st_size=382693, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/45fd69cb167676fd.bin", {st_mode=S_IFREG|0664, st_size=32347, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/..", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/c6f4c87045128615.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/b305ad192d5c36a3.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/7f85708160e52f92.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/08664b64b5a397f0.bin", {st_mode=S_IFREG|0664, st_size=22401, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46acb4b8e00cc99a.bin", {st_mode=S_IFREG|0664, st_size=4263303, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae117b3df0b681e5.bin", {st_mode=S_IFREG|0664, st_size=11554, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ab8be687e5e601e9.toc", {st_mode=S_IFREG|0664, st_size=64192, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/454e4f616944caa3.toc", {st_mode=S_IFREG|0664, st_size=120736, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae67d8b308fd746e.bin", {st_mode=S_IFREG|0664, st_size=5280886, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/bea342fa0c634c32.toc", {st_mode=S_IFREG|0664, st_size=2496, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/bea342fa0c634c32.bin", {st_mode=S_IFREG|0664, st_size=1323052, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/f32251b32a8c8bf9.bin", {st_mode=S_IFREG|0664, st_size=15588, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/0414de1345c31978.toc", {st_mode=S_IFREG|0664, st_size=12864, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/b1ba811bad87fcd7.toc", {st_mode=S_IFREG|0664, st_size=2368, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46acb4b8e00cc999.bin", {st_mode=S_IFREG|0664, st_size=144646323, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/ae67d8b308fd746d.bin", {st_mode=S_IFREG|0664, st_size=4856460, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/92f74448a56b9fe7.toc", {st_mode=S_IFREG|0664, st_size=1600, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/143eff091dd77f41.toc", {st_mode=S_IFREG|0664, st_size=1920, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/b2b9b1fa2b2de663.bin", {st_mode=S_IFREG|0664, st_size=89651, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/45fd69cb167676fd.toc", {st_mode=S_IFREG|0664, st_size=192, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/001a7d21c0350c1f.bin", {st_mode=S_IFREG|0664, st_size=292064, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/7f85708160e52f92.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/31e9dfa7351bf56d.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/25b0557f030f8f05.bin", {st_mode=S_IFREG|0664, st_size=467102, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/31e9dfa7351bf56d.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/31a8b18cf5aa79d1.toc", {st_mode=S_IFREG|0664, st_size=1664, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/2283d3090a2be4c5.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/31a8b18cf5aa79d1.bin", {st_mode=S_IFREG|0664, st_size=183828, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/5c8780756c4f55060fcbe034fac8a37b/632bfd0540dc1805/46a940cc7006e74a.toc", {st_mode=S_IFREG|0664, st_size=1920, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 26
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/.", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 openat(AT_FDCWD, "/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 27
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8/9a0fda869f9bc3be.bin", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8/23b502f99abb563c.bin", {st_mode=S_IFREG|0664, st_size=880, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8/.", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8/9a0fda869f9bc3be.toc", {st_mode=S_IFREG|0664, st_size=32, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8/..", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8/23b502f99abb563c.toc", {st_mode=S_IFREG|0664, st_size=128, ...}) = 0
+1498544 unlink("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8") = -1 EISDIR (Is a directory)
+1498544 rmdir("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/c1e25fa4f8337dd8") = -1 ENOTEMPTY (Directory not empty)
+1498544 stat("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb/..", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 unlink("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb") = -1 EISDIR (Is a directory)
+1498544 rmdir("/home/antash/.cache/nvidia/GLCache/583625091b91ea491090605886784eeb") = -1 ENOTEMPTY (Directory not empty)
+1498544 stat("/home/antash/.cache/nvidia/GLCache/..", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+1498544 readlink("/tmp", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders/fragmentCube.glsl", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 newfstatat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders/fragmentCube.glsl", {st_mode=S_IFREG|0664, st_size=2487, ...}, 0) = 0
+1498544 readlink("/tmp", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 readlink("/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders/vertexCube.glsl", 0x7fff63851db0, 1023) = -1 EINVAL (Invalid argument)
+1498544 newfstatat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders/vertexCube.glsl", {st_mode=S_IFREG|0664, st_size=433, ...}, 0) = 0
+1498544 openat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders/vertexCube.glsl", O_RDONLY) = 25
+1498544 openat(AT_FDCWD, "/tmp/engine-phase1-independent.MV33d4/source/build/dev/assets/shaders/fragmentCube.glsl", O_RDONLY) = 25
+1498544 +++ exited with 0 +++

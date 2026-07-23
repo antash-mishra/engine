@@ -1,0 +1,70 @@
+digraph "mini_engine" {
+node [
+  fontsize = "12"
+];
+subgraph clusterLegend {
+  label = "Legend";
+  color = black;
+  edge [ style = invis ];
+  legendNode0 [ label = "Executable", shape = egg ];
+  legendNode1 [ label = "Static Library", shape = octagon ];
+  legendNode2 [ label = "Shared Library", shape = doubleoctagon ];
+  legendNode3 [ label = "Module Library", shape = tripleoctagon ];
+  legendNode4 [ label = "Interface Library", shape = pentagon ];
+  legendNode5 [ label = "Object Library", shape = hexagon ];
+  legendNode6 [ label = "Unknown Library", shape = septagon ];
+  legendNode7 [ label = "Custom Target", shape = box ];
+  legendNode0 -> legendNode1 [ style = solid ];
+  legendNode0 -> legendNode2 [ style = solid ];
+  legendNode0 -> legendNode3;
+  legendNode1 -> legendNode4 [ label = "Interface", style = dashed ];
+  legendNode2 -> legendNode5 [ label = "Private", style = dotted ];
+  legendNode3 -> legendNode6 [ style = solid ];
+  legendNode0 -> legendNode7;
+}
+    "node0" [ label = "engine_assets", shape = octagon ];
+    "node1" [ label = "engine_sanitizers", shape = pentagon ];
+    "node0" -> "node1" [ style = dotted ] // engine_assets -> engine_sanitizers
+    "node2" [ label = "engine_warnings", shape = pentagon ];
+    "node0" -> "node2" [ style = dotted ] // engine_assets -> engine_warnings
+    "node3" [ label = "engine_glm", shape = pentagon ];
+    "node4" [ label = "engine_platform", shape = octagon ];
+    "node4" -> "node1" [ style = dotted ] // engine_platform -> engine_sanitizers
+    "node4" -> "node2" [ style = dotted ] // engine_platform -> engine_warnings
+    "node5" [ label = "glfw", shape = doubleoctagon ];
+    "node4" -> "node5"  // engine_platform -> glfw
+    "node6" [ label = "engine_render", shape = octagon ];
+    "node7" [ label = "OpenGL::GL", shape = pentagon ];
+    "node8" [ label = "OpenGL::GLX", shape = septagon ];
+    "node9" [ label = "OpenGL::OpenGL", shape = septagon ];
+    "node8" -> "node9" [ style = dashed ] // OpenGL::GLX -> OpenGL::OpenGL
+    "node7" -> "node8" [ style = dashed ] // OpenGL::GL -> OpenGL::GLX
+    "node7" -> "node9" [ style = dashed ] // OpenGL::GL -> OpenGL::OpenGL
+    "node6" -> "node7" [ style = dotted ] // engine_render -> OpenGL::GL
+    "node10" [ label = "dl", shape = septagon ];
+    "node6" -> "node10" [ style = dotted ] // engine_render -> dl
+    "node6" -> "node3"  // engine_render -> engine_glm
+    "node6" -> "node4"  // engine_render -> engine_platform
+    "node6" -> "node1" [ style = dotted ] // engine_render -> engine_sanitizers
+    "node11" [ label = "engine_scene", shape = octagon ];
+    "node11" -> "node3"  // engine_scene -> engine_glm
+    "node11" -> "node1" [ style = dotted ] // engine_scene -> engine_sanitizers
+    "node11" -> "node2" [ style = dotted ] // engine_scene -> engine_warnings
+    "node6" -> "node11"  // engine_render -> engine_scene
+    "node6" -> "node2" [ style = dotted ] // engine_render -> engine_warnings
+    "node12" [ label = "engine_sample_registry_tests", shape = egg ];
+    "node13" [ label = "engine_samples", shape = octagon ];
+    "node13" -> "node0"  // engine_samples -> engine_assets
+    "node13" -> "node4"  // engine_samples -> engine_platform
+    "node13" -> "node6"  // engine_samples -> engine_render
+    "node13" -> "node1" [ style = dotted ] // engine_samples -> engine_sanitizers
+    "node13" -> "node11"  // engine_samples -> engine_scene
+    "node13" -> "node2" [ style = dotted ] // engine_samples -> engine_warnings
+    "node12" -> "node13" [ style = dotted ] // engine_sample_registry_tests -> engine_samples
+    "node12" -> "node1" [ style = dotted ] // engine_sample_registry_tests -> engine_sanitizers
+    "node12" -> "node2" [ style = dotted ] // engine_sample_registry_tests -> engine_warnings
+    "node14" [ label = "render_samples", shape = egg ];
+    "node14" -> "node13" [ style = dotted ] // render_samples -> engine_samples
+    "node14" -> "node1" [ style = dotted ] // render_samples -> engine_sanitizers
+    "node14" -> "node2" [ style = dotted ] // render_samples -> engine_warnings
+}

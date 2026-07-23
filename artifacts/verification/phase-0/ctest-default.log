@@ -1,0 +1,12 @@
+Internal ctest changing into directory: /tmp/engine-phase0-evidence-build-20260723
+Test project /tmp/engine-phase0-evidence-build-20260723
+    Start 1: baseline_schema
+1/3 Test #1: baseline_schema ..................   Passed    0.19 sec
+    Start 2: asset_tool_unit
+2/3 Test #2: asset_tool_unit ..................   Passed    0.15 sec
+    Start 3: fixture_gltf
+3/3 Test #3: fixture_gltf .....................   Passed    0.06 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =   0.41 sec

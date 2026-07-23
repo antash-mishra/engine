@@ -12,6 +12,7 @@
 
 #include "shader.h"
 #include "camera.h"
+#include "legacy_baseline.h"
 #include "stb_image.h"
 
 #include <filesystem>
@@ -108,14 +109,36 @@ float lerp(float a, float b, float t) {
     return a + (b - a) * t;
 }
 
-int main() {
+// A specified integer generator keeps the SSAO kernel stable across standard
+// library implementations. The high 24 bits map exactly into a float mantissa.
+float nextBaselineRandom(std::uint32_t& state) {
+    state ^= state << 13;
+    state ^= state >> 17;
+    state ^= state << 5;
+    return static_cast<float>(state >> 8) * (1.0f / 16777216.0f);
+}
+
+int main(int argc, char** argv) {
+    const legacy_baseline::TimePoint processStart = legacy_baseline::Clock::now();
+    legacy_baseline::Session baseline(argc, argv, "sponza", processStart);
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    if (baseline.enabled()) {
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    }
 
     // create window
-    GLFWwindow *window = glfwCreateWindow(800, 600, "Lighting Example", nullptr, nullptr);
+    const unsigned int renderWidth =
+        baseline.enabled() ? baseline.config().width : SCR_WIDTH;
+    const unsigned int renderHeight =
+        baseline.enabled() ? baseline.config().height : SCR_HEIGHT;
+    GLFWwindow *window = glfwCreateWindow(
+        renderWidth, renderHeight, "Lighting Example", nullptr, nullptr);
     if (window == NULL)
     {
         std::cout << "Failed to create window" << std::endl;
@@ -125,22 +148,44 @@ int main() {
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    // capture/release cursor automatically when window focus changes
-    glfwSetWindowFocusCallback(window, window_focus_callback);
-
-    // initially disable the cursor once window is ready and focused
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (!baseline.enabled()) {
+        glfwSetCursorPosCallback(window, mouse_callback);
+        glfwSetScrollCallback(window, scroll_callback);
+        // Capture/release cursor automatically when window focus changes.
+        glfwSetWindowFocusCallback(window, window_focus_callback);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    } else {
+        glfwSwapInterval(0);
+        gWindowWidth = renderWidth;
+        gWindowHeight = renderHeight;
+    }
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    baseline.installGlDiagnostics();
+    baseline.addStartupSpan(
+        "window_context_glad", processStart, legacy_baseline::Clock::now());
 
-    camera.near = 0.5f;
-    camera.far  = 60.0f;
+    if (baseline.enabled()) {
+        const auto& settings = baseline.config().camera;
+        camera.Position = glm::vec3(
+            settings.position[0], settings.position[1], settings.position[2]);
+        camera.Front = glm::normalize(glm::vec3(
+            settings.forward[0], settings.forward[1], settings.forward[2]));
+        camera.WorldUp = glm::normalize(glm::vec3(
+            settings.up[0], settings.up[1], settings.up[2]));
+        camera.Right = glm::normalize(glm::cross(camera.Front, camera.WorldUp));
+        camera.Up = glm::normalize(glm::cross(camera.Right, camera.Front));
+        camera.Zoom = settings.verticalFovDegrees;
+        camera.near = settings.nearPlane;
+        camera.far = settings.farPlane;
+    } else {
+        camera.near = 0.5f;
+        camera.far = 60.0f;
+    }
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
@@ -151,37 +196,62 @@ int main() {
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 
-    std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
+    const fs::path resourceRoot = baseline.enabled()
+        ? baseline.config().resourceRoot
+        : fs::current_path().parent_path() / "resources";
+    const legacy_baseline::TimePoint shaderStart = legacy_baseline::Clock::now();
     // Shader shader(
-    //     (parentDir + "/resources/shaders/debugDepthQuad.vs").c_str(),
-    //     (parentDir + "/resources/shaders/debugDepthQuad.fs").c_str());
+    //     (resourceRoot / "shaders/debugDepthQuad.vs").c_str(),
+    //     (resourceRoot / "shaders/debugDepthQuad.fs").c_str());
     Shader modelSponza (
-        (parentDir + "/resources/sponza/modelSponza.vs").c_str(),
-        (parentDir + "/resources/sponza/modelSponza.fs").c_str());
-    Shader equirectangularToCubemapShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
-    // Shader proceduralSkyShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/cube.fs").c_str());
-    Shader depthShader((parentDir + "/resources/sponza/depthMap.vs").c_str(), (parentDir + "/resources/sponza/depthMap.fs").c_str());
-    Shader debugDepthQuadShader((parentDir + "/resources/sponza/debugDepthQuad.vs").c_str(), (parentDir + "/resources/sponza/debugDepthQuad.fs").c_str());
-    Shader cubeMapShader((parentDir + "/resources/shaders/background.vs").c_str(), (parentDir + "/resources/shaders/background.fs").c_str());
-    Shader irradianceShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/irradiance.fs").c_str());
-    Shader prefilterShader((parentDir + "/resources/shaders/cube.vs").c_str(), (parentDir + "/resources/shaders/prefilter.fs").c_str());
-    Shader brdfShader((parentDir + "/resources/shaders/brdf.vs").c_str(), (parentDir + "/resources/shaders/brdf.fs").c_str());
-    Shader geometryPassShader((parentDir + "/resources/sponza/gPass.vs").c_str(), (parentDir + "/resources/sponza/gPass.fs").c_str());
-    Shader ssao((parentDir + "/resources/sponza/ssao.vs").c_str(), (parentDir + "/resources/sponza/ssao.fs").c_str());
-    Shader ssaoBlur((parentDir + "/resources/sponza/ssao.vs").c_str(),   (parentDir + "/resources/sponza/ssaoBlur.fs").c_str());
+        (resourceRoot / "sponza/modelSponza.vs").c_str(),
+        (resourceRoot / "sponza/modelSponza.fs").c_str());
+    Shader equirectangularToCubemapShader((resourceRoot / "shaders/cube.vs").c_str(), (resourceRoot / "shaders/cube.fs").c_str());
+    // Shader proceduralSkyShader((resourceRoot / "shaders/cube.vs").c_str(), (resourceRoot / "shaders/cube.fs").c_str());
+    Shader depthShader((resourceRoot / "sponza/depthMap.vs").c_str(), (resourceRoot / "sponza/depthMap.fs").c_str());
+    Shader debugDepthQuadShader((resourceRoot / "sponza/debugDepthQuad.vs").c_str(), (resourceRoot / "sponza/debugDepthQuad.fs").c_str());
+    Shader cubeMapShader((resourceRoot / "shaders/background.vs").c_str(), (resourceRoot / "shaders/background.fs").c_str());
+    Shader irradianceShader((resourceRoot / "shaders/cube.vs").c_str(), (resourceRoot / "shaders/irradiance.fs").c_str());
+    Shader prefilterShader((resourceRoot / "shaders/cube.vs").c_str(), (resourceRoot / "shaders/prefilter.fs").c_str());
+    Shader brdfShader((resourceRoot / "shaders/brdf.vs").c_str(), (resourceRoot / "shaders/brdf.fs").c_str());
+    Shader geometryPassShader((resourceRoot / "sponza/gPass.vs").c_str(), (resourceRoot / "sponza/gPass.fs").c_str());
+    Shader ssao((resourceRoot / "sponza/ssao.vs").c_str(), (resourceRoot / "sponza/ssao.fs").c_str());
+    Shader ssaoBlur((resourceRoot / "sponza/ssao.vs").c_str(),   (resourceRoot / "sponza/ssaoBlur.fs").c_str());
+    baseline.addStartupSpan(
+        "shader_creation", shaderStart, legacy_baseline::Clock::now());
 
     // Use GLTFLoader class
     // GLTFLoader loader; // This line is moved to global scope
-    std::string gltfPath = parentDir + "/resources/main-sponza/main_sponza/NewSponza_Main_glTF_003.gltf";
-    if (!loader.loadModel(gltfPath)) {
+    const fs::path gltfPath =
+        resourceRoot / "main-sponza/main_sponza/NewSponza_Main_glTF_003.gltf";
+    const legacy_baseline::TimePoint modelStart = legacy_baseline::Clock::now();
+    if (!loader.loadModel(gltfPath.string())) {
         std::cout << "Failed to load model" << std::endl;
         return -1;
     }
+    baseline.addStartupSpan(
+        "gltf_load_and_gpu_upload", modelStart, legacy_baseline::Clock::now());
+    std::uint64_t retainedCpuLowerBound = 0;
+    for (const tinygltf::Buffer& buffer : loader.model.buffers) {
+        retainedCpuLowerBound += buffer.data.size();
+    }
+    for (const tinygltf::Image& image : loader.model.images) {
+        retainedCpuLowerBound += image.image.size();
+    }
+    for (const Mesh& mesh : loader.meshes) {
+        retainedCpuLowerBound += mesh.vertices.size() * sizeof(Vertex);
+        retainedCpuLowerBound += mesh.indices.size() * sizeof(unsigned int);
+    }
+    baseline.setRetainedCpuBytes(
+        retainedCpuLowerBound,
+        "Lower bound: live TinyGLTF buffer/image payload sizes plus GLTFLoader CPU mesh "
+        "vertex/index sizes; excludes vector capacity, object overhead, allocator slack, and GPU memory");
 
+    const legacy_baseline::TimePoint sceneSetupStart = legacy_baseline::Clock::now();
     stbi_set_flip_vertically_on_load(true);
     int width, height, nrComponents;
     // Load the .hdr file
-    float *data = stbi_loadf((parentDir + "/resources/w.hdr").c_str(), &width, &height, &nrComponents, 0);
+    float *data = stbi_loadf((resourceRoot / "w.hdr").c_str(), &width, &height, &nrComponents, 0);
     unsigned int hdrTexture;
     if (data) {
       glGenTextures(1, &hdrTexture);
@@ -200,17 +270,16 @@ int main() {
     }
 
     // Generating random sample kernel with 64 sample values
-    std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
-    std::default_random_engine generator;
+    std::uint32_t randomState = baseline.enabled() ? baseline.config().seed : 1u;
     std::vector<glm::vec3> ssaoKernel;
     for (unsigned int i=0; i<64; ++i) {
         glm::vec3 sample(
-            randomFloats(generator) * 2.0 - 1.0,
-            randomFloats(generator) * 2.0 - 1.0,
-            randomFloats(generator)
+            nextBaselineRandom(randomState) * 2.0f - 1.0f,
+            nextBaselineRandom(randomState) * 2.0f - 1.0f,
+            nextBaselineRandom(randomState)
         );
         sample = glm::normalize(sample);
-        sample *= randomFloats(generator);
+        sample *= nextBaselineRandom(randomState);
         float scale = (float)i / 64.0f;
         scale = lerp(0.1f, 1.0f, scale * scale);
         sample *= scale;
@@ -219,12 +288,13 @@ int main() {
 
     // Generating noise Texture
     // used to rotate sample kernel
-    std::vector<glm::vec3> ssaoNoise;
-    for (unsigned int i=0; i<16; i++) {
-        glm::vec3 noise(
-            randomFloats(generator) * 2.0 - 1.0,
-            randomFloats(generator) * 2.0 - 1.0,
-            0.0f
+    std::vector<glm::vec4> ssaoNoise;
+    for (unsigned int i = 0; i < 25; ++i) {
+        glm::vec4 noise(
+            nextBaselineRandom(randomState) * 2.0f - 1.0f,
+            nextBaselineRandom(randomState) * 2.0f - 1.0f,
+            0.0f,
+            1.0f
         );
         ssaoNoise.push_back(noise);
     }
@@ -238,7 +308,7 @@ int main() {
     unsigned int gPosition, gNormal;
     glGenTextures(1, &gPosition);
     glBindTexture(GL_TEXTURE_2D, gPosition);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, renderWidth, renderHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -248,7 +318,7 @@ int main() {
     // normal color buffer;
     glGenTextures(1, &gNormal);
     glBindTexture(GL_TEXTURE_2D, gNormal);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, renderWidth, renderHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
@@ -260,7 +330,7 @@ int main() {
     unsigned int grboDepth;
     glGenRenderbuffers(1, &grboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, grboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, renderWidth, renderHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, grboDepth);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
@@ -290,7 +360,7 @@ int main() {
     unsigned int ssaoColorBuffer;
     glGenTextures(1, &ssaoColorBuffer);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, renderWidth, renderHeight, 0, GL_RED, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
@@ -303,7 +373,7 @@ int main() {
     glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
     glGenTextures(1, &ssaoColorBufferBlur);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, renderWidth, renderHeight, 0, GL_RED, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
@@ -513,17 +583,30 @@ int main() {
     int scrWidth, scrHeight;
     glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
     glViewport(0, 0, scrWidth, scrHeight);
+    const bool framebufferExtentMatches =
+        !baseline.enabled() ||
+        (scrWidth == static_cast<int>(renderWidth) &&
+         scrHeight == static_cast<int>(renderHeight));
+    baseline.addStartupSpan(
+        "scene_targets_and_ibl", sceneSetupStart, legacy_baseline::Clock::now());
 
     while (!glfwWindowShouldClose(window)) {
+        const legacy_baseline::TimePoint frameStart = baseline.beginFrame();
         // Update window title with FPS information
-        showFPS(window);
+        if (!baseline.enabled()) {
+            showFPS(window);
+        }
 
         // calculate delta Time
-        float currentFrame = static_cast<float>(glfwGetTime());
+        float currentFrame = baseline.enabled()
+            ? static_cast<float>(baseline.fixedTimeSeconds())
+            : static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(window);
+        if (!baseline.enabled()) {
+            processInput(window);
+        }
 
         // Clear the screen
         glClearColor(0.9999999, 0.9999998, 1.0, 1.0f);
@@ -561,7 +644,9 @@ int main() {
                 ssao.setVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
             }
             ssao.setMat4("projection", projectionMatrix);
-            ssao.setVec2("noiseScale", glm::vec2(SCR_WIDTH / 5.0f, SCR_HEIGHT / 5.0f));
+            ssao.setVec2(
+                "noiseScale",
+                glm::vec2(renderWidth / 5.0f, renderHeight / 5.0f));
             renderQuad();
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -668,6 +753,46 @@ int main() {
         // After skybox rendering:
         glDepthFunc(GL_LESS);
 
+        baseline.endCpuFrame(frameStart);
+        baseline.markFirstFrameGpuComplete();
+        if (baseline.isFinalCaptureFrame()) {
+            baseline.captureDefaultColor(
+                "final_color",
+                static_cast<int>(gWindowWidth),
+                static_cast<int>(gWindowHeight));
+            baseline.captureTextureFloat(
+                "view_position",
+                gPosition,
+                static_cast<int>(renderWidth),
+                static_cast<int>(renderHeight),
+                GL_RGBA,
+                4,
+                "view_space_position");
+            baseline.captureTextureFloat(
+                "view_normal",
+                gNormal,
+                static_cast<int>(renderWidth),
+                static_cast<int>(renderHeight),
+                GL_RGBA,
+                4,
+                "view_space_normal");
+            baseline.captureTextureFloat(
+                "ssao",
+                ssaoColorBufferBlur,
+                static_cast<int>(renderWidth),
+                static_cast<int>(renderHeight),
+                GL_RED,
+                1,
+                "ambient_visibility");
+            baseline.captureTextureFloat(
+                "shadow_depth",
+                depthMap,
+                static_cast<int>(SHADOW_WIDTH),
+                static_cast<int>(SHADOW_HEIGHT),
+                GL_DEPTH_COMPONENT,
+                1,
+                "normalized_depth");
+        }
 
 
         // render Depth map to quad for visual debugging
@@ -684,13 +809,17 @@ int main() {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+        if (baseline.advanceFrame()) {
+            glfwSetWindowShouldClose(window, true);
+        }
     }
 
     // Clean up VAOs if needed (GLTFLoader manages them)
+    const int result = baseline.finish(framebufferExtentMatches ? 0 : 1);
     glfwDestroyWindow(window);
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
-    return 0;
+    return result;
 }
 
 

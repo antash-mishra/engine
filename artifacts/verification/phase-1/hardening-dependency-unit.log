@@ -1,0 +1,8 @@
+test_ci_action_pin_mismatch_is_rejected (test_verify_dependencies.ClosureHashTests.test_ci_action_pin_mismatch_is_rejected) ... ok
+test_duplicate_multiarch_package_versions_are_normalized (test_verify_dependencies.ClosureHashTests.test_duplicate_multiarch_package_versions_are_normalized) ... ok
+test_nested_mutation_addition_and_removal_change_digest (test_verify_dependencies.ClosureHashTests.test_nested_mutation_addition_and_removal_change_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.004s
+
+OK

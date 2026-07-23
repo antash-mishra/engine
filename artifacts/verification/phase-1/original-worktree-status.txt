@@ -1,0 +1,26 @@
+ M .gitignore
+ M CMakeLists.txt
+ M README.md
+D  external/imgui
+ M src/ray_marching.cpp
+ M src/sponza.cpp
+?? .github/
+?? CMakePresets.json
+?? artifacts/
+?? assets/
+?? cmake/
+?? dependencies.lock.json
+?? docs/adding-a-sample.md
+?? docs/architecture.md
+?? docs/audit/
+?? docs/plans/
+?? docs/verification/
+?? include/engine/
+?? include/legacy_baseline.h
+?? src/apps/
+?? src/engine/
+?? src/legacy_baseline.cpp
+?? src/samples/
+?? tests/
+?? tools/
+?? validation/

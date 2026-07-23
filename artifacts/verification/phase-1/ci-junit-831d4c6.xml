@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-c++"
+	tests="7"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="runnervmvrwv9"
+	time="2"
+	timestamp="2026-07-23T17:26:32"
+	>
+	<testcase name="sample_registry_unit" classname="sample_registry_unit" time="0.00210522" status="run">
+		<properties>
+			<property name="cmake_labels" value="samples;unit"/>
+		</properties>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="launcher_cli" classname="launcher_cli" time="1.19017" status="run">
+		<properties>
+			<property name="cmake_labels" value="launcher;negative"/>
+		</properties>
+		<system-out>........
+----------------------------------------------------------------------
+Ran 8 tests in 1.136s
+
+OK
+</system-out>
+	</testcase>
+	<testcase name="baseline_schema" classname="baseline_schema" time="0.449229" status="run">
+		<properties/>
+		<system-out>test_acceptance_fixture_hashes_and_parameters_validate (test_benchmark_validation.BenchmarkValidationTests.test_acceptance_fixture_hashes_and_parameters_validate) ... ok
+test_all_frame_summaries_are_recomputed_with_nearest_rank_p95 (test_benchmark_validation.BenchmarkValidationTests.test_all_frame_summaries_are_recomputed_with_nearest_rank_p95) ... ok
+test_artifact_escape_hash_size_and_statistics_are_rejected (test_benchmark_validation.BenchmarkValidationTests.test_artifact_escape_hash_size_and_statistics_are_rejected) ... ok
+test_cli_rejects_an_unrelated_schema (test_benchmark_validation.BenchmarkValidationTests.test_cli_rejects_an_unrelated_schema) ... ok
+test_complete_capture_cannot_omit_frame_and_validation_data (test_benchmark_validation.BenchmarkValidationTests.test_complete_capture_cannot_omit_frame_and_validation_data) ... ok
+test_complete_record_and_artifacts_validate (test_benchmark_validation.BenchmarkValidationTests.test_complete_record_and_artifacts_validate) ... ok
+test_complete_record_failure_s...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="asset_tool_unit" classname="asset_tool_unit" time="0.147879" status="run">
+		<properties/>
+		<system-out>test_archive_checksum_corruption_is_detected (test_manage_assets.ManageAssetsTests.test_archive_checksum_corruption_is_detected) ... ok
+test_buffer_view_cannot_exceed_declared_buffer_length (test_manage_assets.ManageAssetsTests.test_buffer_view_cannot_exceed_declared_buffer_length) ... ok
+test_cli_reports_malformed_container_without_traceback (test_manage_assets.ManageAssetsTests.test_cli_reports_malformed_container_without_traceback) ... ok
+test_closure_checksum_changes_when_payload_changes (test_manage_assets.ManageAssetsTests.test_closure_checksum_changes_when_payload_changes) ... ok
+test_drive_like_archive_filename_is_rejected (test_manage_assets.ManageAssetsTests.test_drive_like_archive_filename_is_rejected) ... ok
+test_failed_atomic_install_leaves_empty_root_and_no_staging_directory (test_manage_assets.ManageAssetsTests.test_failed_atomic_install_leaves_empty_root_and_no_staging_directory) ... ok
+test_fetch_requires_license_acceptance_before_network (test_manage_assets.ManageAssetsTests.test_fetch_requi...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="fixture_gltf" classname="fixture_gltf" time="0.0603923" status="run">
+		<properties/>
+		<system-out>{
+  "entrypoint": "/home/runner/work/engine/engine/tests/fixtures/gltf/phase0_scene.gltf",
+  "status": "pass",
+  "summary": {
+    "camera_count": 0,
+    "default_scene": 0,
+    "geometry_0": {
+      "indices": [
+        0,
+        1,
+        2
+      ],
+      "normals": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "position_bounds": {
+        "max": [
+          1.0,
+          1.0,
+          0.0
+        ],
+        "min": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "texcoords_0": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="dependency_lock" classname="dependency_lock" time="0.104266" status="run">
+		<properties>
+			<property name="cmake_labels" value="build;dependencies"/>
+		</properties>
+		<system-out>{
+  "ci_actions": {
+    "actions/checkout": {
+      "actual": [
+        "d23441a48e516b6c34aea4fa41551a30e30af803"
+      ],
+      "expected": "d23441a48e516b6c34aea4fa41551a30e30af803",
+      "matches": true
+    },
+    "actions/upload-artifact": {
+      "actual": [
+        "b7c566a772e6b6bfb58ed0dc250532a479d7789f"
+      ],
+      "expected": "b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+      "matches": true
+    }
+  },
+  "failures": [],
+  "include_ci": false,
+  "packages": {
+    "cmake": {
+      "actual": "3.28.3-1build7",
+      "expected": "3.28.3-1build7",
+      "matches": true
+    },
+    "g++": {
+      "actual": "4:13.2.0-7ubuntu1",
+      "expected": "4:13.2.0-7ubuntu1",
+      "matches": true
+    },
+    "libgl-dev": {
+      "actual": "1.7.0-1build1",
+      "expected": "1.7.0-1build1",
+      "matches": true
+    },
+    "libglfw3-dev": {
+      "actual": "3.3.10-1build1",
+      "expected": "3.3.10-1build1",
+      "matches": true
+    },
+    "ninja-build": {
+      "actual": "1.11.1-2",
+      "expected": "1.11.1-2"...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="dependency_lock_unit" classname="dependency_lock_unit" time="0.0721121" status="run">
+		<properties>
+			<property name="cmake_labels" value="build;dependencies;unit"/>
+		</properties>
+		<system-out>test_ci_action_pin_mismatch_is_rejected (test_verify_dependencies.ClosureHashTests.test_ci_action_pin_mismatch_is_rejected) ... ok
+test_duplicate_multiarch_package_versions_are_normalized (test_verify_dependencies.ClosureHashTests.test_duplicate_multiarch_package_versions_are_normalized) ... ok
+test_nested_mutation_addition_and_removal_change_digest (test_verify_dependencies.ClosureHashTests.test_nested_mutation_addition_and_removal_change_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.003s
+
+OK
+</system-out>
+	</testcase>
+</testsuite>

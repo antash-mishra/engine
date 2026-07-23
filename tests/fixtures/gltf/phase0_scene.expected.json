@@ -1,0 +1,122 @@
+{
+  "scene_count": 1,
+  "node_count": 3,
+  "mesh_count": 1,
+  "primitive_count": 1,
+  "material_count": 1,
+  "light_count": 1,
+  "camera_count": 0,
+  "default_scene": 0,
+  "material_0": {
+    "base_color_factor": [
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "metallic_factor": 0.2,
+    "roughness_factor": 0.6
+  },
+  "light_0": {
+    "type": "directional",
+    "color": [
+      1.0,
+      0.5,
+      0.25
+    ],
+    "intensity": 3.0
+  },
+  "geometry_0": {
+    "positions": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "normals": [
+      [
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "texcoords_0": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "indices": [
+      0,
+      1,
+      2
+    ],
+    "position_bounds": {
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        1.0,
+        1.0,
+        0.0
+      ]
+    }
+  },
+  "mesh_node_world_translations": [
+    [
+      10.0,
+      2.0,
+      0.0
+    ]
+  ],
+  "light_node_world_translations": [
+    [
+      10.0,
+      4.0,
+      1.0
+    ]
+  ],
+  "world_position_bounds": {
+    "min": [
+      10.0,
+      2.0,
+      0.0
+    ],
+    "max": [
+      11.0,
+      3.0,
+      0.0
+    ]
+  }
+}

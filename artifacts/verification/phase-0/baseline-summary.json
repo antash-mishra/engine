@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "revision": {
+    "git_commit": "44577008dfcdcbcad68cfb39ccfc38bdd87165f5",
+    "dirty": true,
+    "capture_contract_sha256": "349e093a1c51964ad630769bd6d14d435b86a44d5a1d83118989bcc41ea02ffe"
+  },
+  "bundle": {
+    "path": "baseline-bundle.tar.gz",
+    "sha256": "2088e8216ab403ec9df034c81fdae5c8ce64277679bcedc70b2d43b1bc921f94",
+    "compressed_bytes": 2397507,
+    "record_count": 10,
+    "repetitions_per_sample": 5,
+    "deduplication": "All runs produced identical readback and GL-debug hashes per sample. The bundle stores one shared copy of each unique raw artifact and rewrites only artifact-relative paths in the validated record copies."
+  },
+  "environment": {
+    "os": "Linux Mint 22.2, Linux 6.8.0-88-generic x86_64",
+    "compiler": "GCC 13.3.0",
+    "cmake": "3.28.3",
+    "build_type": "Release",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "driver": "570.153.02",
+    "gpu_memory_mib": 12288,
+    "resolution": [
+      800,
+      600
+    ],
+    "warmup_frames": 120,
+    "measured_frames": 600,
+    "cold_cache": false
+  },
+  "ray_marching": {
+    "first_frame_ms": [
+      445.968615,
+      237.835381,
+      218.403296,
+      211.835927,
+      192.965956
+    ],
+    "first_frame_median_ms": 218.403296,
+    "first_frame_p95_ms": 445.968615,
+    "peak_rss_bytes": [
+      56991744,
+      57761792,
+      57888768,
+      58093568,
+      57765888
+    ],
+    "cpu_frame_median_ms_by_run": [
+      0.006084,
+      0.003496,
+      0.003582,
+      0.003571,
+      0.0058915
+    ],
+    "gpu_frame_median_ms_by_run": [
+      0.06144,
+      0.06144,
+      0.06144,
+      0.06144,
+      0.06144
+    ],
+    "gl_error_count_by_run": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "readback_sha256": {
+      "final_color": "6e37fd4b0e7bc9c2267980994fdbfc1b18e1a950a28641062cb1bbf148d6a8dc"
+    }
+  },
+  "sponza": {
+    "first_frame_ms": [
+      40018.760327,
+      40646.631839,
+      40756.476531,
+      40762.634504,
+      40778.83019
+    ],
+    "first_frame_median_ms": 40756.476531,
+    "first_frame_p95_ms": 40778.83019,
+    "gltf_load_upload_ms": [
+      39051.32884,
+      38705.60838,
+      38742.292311,
+      38787.208965,
+      38836.18128
+    ],
+    "gltf_load_upload_median_ms": 38787.208965,
+    "gltf_load_upload_p95_ms": 39051.32884,
+    "peak_rss_bytes": [
+      10496036864,
+      10538360832,
+      10536452096,
+      10522935296,
+      10536484864
+    ],
+    "peak_rss_median_bytes": 10536452096,
+    "peak_rss_p95_bytes": 10538360832,
+    "retained_cpu_bytes_after_first_frame": 5131527552,
+    "cpu_frame_median_ms_by_run": [
+      2.5912285,
+      2.7600265,
+      2.6059525,
+      2.390071,
+      2.4199685
+    ],
+    "gpu_frame_median_ms_by_run": [
+      39.419392,
+      53.366784,
+      51.6608,
+      40.978944,
+      43.821056
+    ],
+    "gl_error_count_by_run": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "gl_performance_warning_count_by_run": [
+      11,
+      11,
+      11,
+      11,
+      11
+    ],
+    "readback_sha256": {
+      "final_color": "19d25d8d7836696e411629c5d27af48bbdcce0e90829f9e8ab1413afc3a638a4",
+      "view_position": "625dd2e53b3216f671548d58912ebf14cb19cab2b8000e469ae7d499646c1778",
+      "view_normal": "625dd2e53b3216f671548d58912ebf14cb19cab2b8000e469ae7d499646c1778",
+      "ssao": "124617c1f65e92d3bc895fbd869e4bb16a30754b198f59e6e973949b9aaa1b01",
+      "shadow_depth": "1dc16270a61f88b749af490e56b38f9e297fa508fcbc82e39668003fd8c2978c"
+    },
+    "semantic_diagnostics": {
+      "final_color_nonuniform": "pass",
+      "shadow_depth_nonuniform": "pass",
+      "view_position_nonuniform": "fail",
+      "view_normal_nonuniform": "fail",
+      "ssao_nonuniform": "fail"
+    }
+  },
+  "verdict_scope": {
+    "capture_integrity": "pass",
+    "ray_marching_render_diagnostic": "pass",
+    "sponza_render_correctness": "fail",
+    "note": "A complete baseline capture is evidence of current behavior, not certification that the captured renderer is correct."
+  }
+}

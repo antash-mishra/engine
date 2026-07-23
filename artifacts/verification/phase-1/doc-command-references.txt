@@ -1,0 +1,7 @@
+README.md:41:cmake --preset dev
+README.md:42:cmake --build --preset dev --parallel
+README.md:43:ctest --preset dev --output-on-failure
+README.md:61:build/dev/render_samples --list-samples
+README.md:62:build/dev/render_samples --sample ray-marching --frames 10
+README.md:76:  -DENGINE_BUILD_LEGACY_SAMPLES=ON \
+docs/architecture.md:24:`ENGINE_BUILD_LEGACY_SAMPLES=ON`.

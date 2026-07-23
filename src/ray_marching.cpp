@@ -5,6 +5,7 @@
 #include <shader.h>
 #include <camera.h>
 #include <stb_image.h>
+#include <legacy_baseline.h>
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -95,14 +96,27 @@ float cubeVertices[] = {
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // Original V34
 };
 
-int main() {
+int main(int argc, char** argv) {
+    const legacy_baseline::TimePoint processStart = legacy_baseline::Clock::now();
+    legacy_baseline::Session baseline(argc, argv, "ray-marching", processStart);
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    if (baseline.enabled()) {
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    }
 
     // create window
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Ray Marcher", NULL, NULL);
+    const unsigned int initialWidth =
+        baseline.enabled() ? baseline.config().width : SCR_WIDTH;
+    const unsigned int initialHeight =
+        baseline.enabled() ? baseline.config().height : SCR_HEIGHT;
+    GLFWwindow *window = glfwCreateWindow(
+        initialWidth, initialHeight, "Ray Marcher", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -111,22 +125,35 @@ int main() {
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    glfwSetWindowFocusCallback(window, window_focus_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (!baseline.enabled()) {
+        glfwSetCursorPosCallback(window, mouse_callback);
+        glfwSetScrollCallback(window, scroll_callback);
+        glfwSetWindowFocusCallback(window, window_focus_callback);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    } else {
+        glfwSwapInterval(0);
+        gWindowWidth = initialWidth;
+        gWindowHeight = initialHeight;
+    }
 
     // load glad
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    baseline.installGlDiagnostics();
+    baseline.addStartupSpan(
+        "window_context_glad", processStart, legacy_baseline::Clock::now());
 
     glEnable(GL_DEPTH_TEST);
 
-    std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
-    Shader shader((parentDir + "/resources/shaders/vertexCube.glsl").c_str(),
-        (parentDir + "/resources/shaders/fragmentCube.glsl").c_str());
+    const fs::path resourceRoot = baseline.enabled()
+        ? baseline.config().resourceRoot
+        : fs::current_path().parent_path() / "resources";
+    const legacy_baseline::TimePoint shaderStart = legacy_baseline::Clock::now();
+    Shader shader(
+        (resourceRoot / "shaders/vertexCube.glsl").c_str(),
+        (resourceRoot / "shaders/fragmentCube.glsl").c_str());
 
     GLuint cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
@@ -141,21 +168,49 @@ int main() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-    renderQuad();
+    baseline.addStartupSpan(
+        "shader_and_geometry", shaderStart, legacy_baseline::Clock::now());
+    baseline.setRetainedCpuBytes(
+        0,
+        "No CPU asset staging containers are retained by the procedural ray-marching sample");
+
+    if (baseline.enabled()) {
+        const auto& settings = baseline.config().camera;
+        camera.Position = glm::vec3(
+            settings.position[0], settings.position[1], settings.position[2]);
+        camera.Front = glm::normalize(glm::vec3(
+            settings.forward[0], settings.forward[1], settings.forward[2]));
+        camera.WorldUp = glm::normalize(glm::vec3(
+            settings.up[0], settings.up[1], settings.up[2]));
+        camera.Right = glm::normalize(glm::cross(camera.Front, camera.WorldUp));
+        camera.Up = glm::normalize(glm::cross(camera.Right, camera.Front));
+        camera.Zoom = settings.verticalFovDegrees;
+        camera.near = settings.nearPlane;
+        camera.far = settings.farPlane;
+    }
 
     while (!glfwWindowShouldClose(window)) {
-        showFPS(window);
-        float currentFrame = glfwGetTime();
+        const legacy_baseline::TimePoint frameStart = baseline.beginFrame();
+        if (!baseline.enabled()) {
+            showFPS(window);
+        }
+        float currentFrame = baseline.enabled()
+            ? static_cast<float>(baseline.fixedTimeSeconds())
+            : static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(window);
+        if (!baseline.enabled()) {
+            processInput(window);
+        }
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
-            static_cast<float>(SCR_WIDTH)/static_cast<float>(SCR_HEIGHT), 0.1f, 100.0f);
+            static_cast<float>(gWindowWidth) / static_cast<float>(gWindowHeight),
+            baseline.enabled() ? camera.near : 0.1f,
+            baseline.enabled() ? camera.far : 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
         shader.use();
@@ -164,19 +219,32 @@ int main() {
         shader.setMat4("view", view);
         shader.setMat4("model", glm::mat4(1.0f));
         shader.setFloat("iTime", currentFrame);
-        shader.setVec2("iResolution", SCR_WIDTH, SCR_HEIGHT);
+        shader.setVec2("iResolution", gWindowWidth, gWindowHeight);
         renderQuad();
 
+        baseline.endCpuFrame(frameStart);
+        baseline.markFirstFrameGpuComplete();
+        if (baseline.isFinalCaptureFrame()) {
+            baseline.captureDefaultColor(
+                "final_color",
+                static_cast<int>(gWindowWidth),
+                static_cast<int>(gWindowHeight));
+        }
         glfwSwapBuffers(window);
         glfwPollEvents();
+        if (baseline.advanceFrame()) {
+            glfwSetWindowShouldClose(window, true);
+        }
     }
 
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteBuffers(1, &cubeVBO);
     glDeleteVertexArrays(1, &quadVAO);
     glDeleteBuffers(1, &quadVBO);
+    const int result = baseline.finish();
+    glfwDestroyWindow(window);
     glfwTerminate();
-    return 0;
+    return result;
 }
 
 

@@ -1,0 +1,6 @@
+configure-dev.log DIAGNOSTICS=0
+build-dev.log DIAGNOSTICS=0
+ctest-dev.log DIAGNOSTICS=0
+configure-sanitizers.log DIAGNOSTICS=0
+build-sanitizers.log DIAGNOSTICS=0
+ctest-sanitizers.log DIAGNOSTICS=0
