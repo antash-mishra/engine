@@ -66,6 +66,22 @@ class ClosureHashTests(unittest.TestCase):
             VERIFY_DEPENDENCIES.installed_package_version("package"),
         )
 
+    def test_ci_action_pin_mismatch_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            workflow = root / ".github" / "workflows"
+            workflow.mkdir(parents=True)
+            (workflow / "ci.yml").write_text(
+                "steps:\n  - uses: actions/checkout@floating\n",
+                encoding="utf-8",
+            )
+            results, failures = VERIFY_DEPENDENCIES.verify_ci_action_pins(
+                root,
+                {"ci_actions": {"actions/checkout": "a" * 40}},
+            )
+            self.assertFalse(results["actions/checkout"]["matches"])
+            self.assertEqual(1, len(failures))
+
 
 if __name__ == "__main__":
     unittest.main()

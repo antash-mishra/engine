@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import pathlib
+import re
 import subprocess
 import sys
 from typing import Any
@@ -69,6 +70,45 @@ def closure_sha256(source_root: pathlib.Path, paths: list[str]) -> tuple[str, in
     return digest.hexdigest(), len(files)
 
 
+def verify_ci_action_pins(
+    source_root: pathlib.Path,
+    lock: dict[str, Any],
+) -> tuple[dict[str, dict[str, Any]], list[str]]:
+    workflow_path = source_root / ".github" / "workflows" / "ci.yml"
+    workflow = workflow_path.read_text(encoding="utf-8")
+    uses = re.findall(r"^\s*uses:\s*([^@\s]+)@([^\s#]+)", workflow, re.MULTILINE)
+    configured: dict[str, list[str]] = {}
+    for action, revision in uses:
+        if action.startswith("./"):
+            continue
+        configured.setdefault(action, []).append(revision)
+
+    failures: list[str] = []
+    results: dict[str, dict[str, Any]] = {}
+    expected_actions = lock["ci_actions"]
+    for action, expected in sorted(expected_actions.items()):
+        actual = configured.pop(action, [])
+        matches = bool(actual) and all(revision == expected for revision in actual)
+        results[action] = {
+            "expected": expected,
+            "actual": actual,
+            "matches": matches,
+        }
+        if not matches:
+            failures.append(
+                f"CI action {action}: expected only {expected}, got {actual or '<missing>'}"
+            )
+
+    for action, revisions in sorted(configured.items()):
+        failures.append(f"CI action {action} is not present in dependencies.lock.json")
+        results[action] = {
+            "expected": "<missing-lock-entry>",
+            "actual": revisions,
+            "matches": False,
+        }
+    return results, failures
+
+
 def verify(source_root: pathlib.Path, include_ci: bool) -> int:
     lock = load_lock(source_root)
     failures: list[str] = []
@@ -104,6 +144,9 @@ def verify(source_root: pathlib.Path, include_ci: bool) -> int:
                 f"vendored closure {dependency}: expected {expected}, got {actual}"
             )
 
+    action_results, action_failures = verify_ci_action_pins(source_root, lock)
+    failures.extend(action_failures)
+
     print(
         json.dumps(
             {
@@ -112,6 +155,7 @@ def verify(source_root: pathlib.Path, include_ci: bool) -> int:
                 "include_ci": include_ci,
                 "packages": package_results,
                 "vendored_files": file_results,
+                "ci_actions": action_results,
                 "failures": failures,
             },
             indent=2,
